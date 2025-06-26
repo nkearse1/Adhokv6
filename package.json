@@ -12,7 +12,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.9",
+    "@clerk/nextjs": "^4.31.8",
     "@hookform/resolvers": "^3.3.4",
     "@neondatabase/serverless": "^0.9.0",
     "@netlify/next": "^1.4.9",
@@ -52,7 +52,7 @@
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.344.0",
-    "next": "14.1.0",
+    "next": "^14.2.25",
     "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
