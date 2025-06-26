@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@supabase/supabaseClient';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 import AdminTalentList from '@/components/AdminTalentList';

@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { supabase } from '@supabase/supabaseClient'
 import ExperienceBadge from '@/components/ExperienceBadge'
 
 export default function TalentPortfolioPage() {

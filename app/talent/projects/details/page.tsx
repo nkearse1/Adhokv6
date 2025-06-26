@@ -1,6 +1,5 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { supabase } from '@supabase/supabaseClient';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 import { BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, MessageSquare, Briefcase } from 'lucide-react';

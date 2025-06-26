@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { supabase } from '@supabase/supabaseClient';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 import { 

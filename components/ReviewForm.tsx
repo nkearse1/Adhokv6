@@ -6,7 +6,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@supabase/supabaseClient';
 
 interface ReviewFormProps {
   projectId: string;

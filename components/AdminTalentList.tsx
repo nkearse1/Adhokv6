@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@supabase/supabaseClient";
 import { getUpdatedTalentsWithQualification } from "@/lib/qualificationUtils";
 import { toast } from "sonner";
 import {

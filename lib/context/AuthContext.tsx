@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@supabase/supabaseClient';
 
 type UserRole = 'admin' | 'client' | 'talent' | null;
 

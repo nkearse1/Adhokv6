@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { updateUserStatusAPI, updateProjectStatusAPI } from '@/lib/adminApi';
-import { supabase } from '@supabase/supabaseClient';
 import { 
   Users, 
   Briefcase, 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/useAuth';
-import { supabase } from '@supabase/supabaseClient';
 import { toast } from 'sonner';
 import { Plus, Briefcase, CheckCircle, Clock } from 'lucide-react';
 

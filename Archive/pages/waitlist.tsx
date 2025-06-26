@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
-import { supabase } from "@supabase/supabaseClient";
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState('');

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, UserX, DollarSign, MessageCircle } from 'lucide-react';
-import { supabase } from '@supabase/supabaseClient';
 
 interface AlertItem {
   id: string;

@@ -32,7 +32,6 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@supabase/supabaseClient";
 
 export default function RevenuePanel() {
   const navigate = useNavigate();

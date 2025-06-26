@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { supabase } from "@supabase/supabaseClient";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();

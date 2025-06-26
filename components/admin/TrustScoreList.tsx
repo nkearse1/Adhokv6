@@ -14,7 +14,6 @@ import {
   User,
   Shield
 } from 'lucide-react';
-import { supabase } from '@supabase/supabaseClient';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 

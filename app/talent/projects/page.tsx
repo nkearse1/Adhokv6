@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { supabase } from '@supabase/supabaseClient';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 

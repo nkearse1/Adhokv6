@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search as SearchIcon } from "lucide-react";
-import { supabase } from "@supabase/supabaseClient";
 import { toast } from "sonner";
 
 export default function AdminProjectList() {

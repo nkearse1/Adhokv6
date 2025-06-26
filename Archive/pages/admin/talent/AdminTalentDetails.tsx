@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AlertTriangle, CheckCircle, Flag, RefreshCw, User, Mail, MapPin, Briefcase, Link as LinkIcon } from 'lucide-react';
-import { supabase } from '@supabase/supabaseClient';
 import { toast } from 'sonner';
 import TrustScoreCard from '@/components/admin/TrustScoreCard';
 import { useAuth } from '@/lib/useAuth';

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '@supabase/supabaseClient'
 import ExperienceBadge from '@/components/ExperienceBadge'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
