@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/lib/useAuth';
 
 export interface TimeEntry {
@@ -60,6 +59,55 @@ interface ProjectStatusResult {
 
 const accessibleStatuses = ['Picked Up', 'Scope Defined', 'In Progress', 'Submitted', 'Revisions', 'Final Payment', 'Approved', 'Performance Tracking', 'Complete'];
 
+// Mock data for deliverables
+const mockDeliverables: Deliverable[] = [
+  {
+    id: '1',
+    title: 'Technical SEO Audit',
+    description: 'Comprehensive technical audit to identify crawlability, indexation, and speed issues.',
+    problem: 'Site has poor indexation and crawl efficiency',
+    kpis: ['Improve crawl rate by 30%', 'Fix all critical technical issues'],
+    status: 'in_progress',
+    estimatedHours: 8,
+    actualHours: 4,
+    timeEntries: [{ startTime: new Date(), endTime: new Date(), hoursLogged: 4 }]
+  },
+  {
+    id: '2',
+    title: 'Keyword Strategy',
+    description: 'Develop comprehensive keyword targeting strategy',
+    problem: 'Current keyword targeting is too broad',
+    kpis: ['Identify 50+ high-value keywords', 'Create keyword mapping document'],
+    status: 'recommended',
+    estimatedHours: 6,
+    actualHours: 0,
+    timeEntries: []
+  }
+];
+
+// Mock data for activity log
+const mockActivityLog = [
+  'Project started',
+  'Initial deliverables proposed',
+  'Technical SEO audit started'
+];
+
+// Mock data for messages
+const mockMessages: Message[] = [
+  {
+    id: '1',
+    sender: 'client',
+    text: 'Welcome to the workspace! Let us know when you\'re ready to begin.',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+  },
+  {
+    id: '2',
+    sender: 'talent',
+    text: 'Thanks for the opportunity! I\'ve reviewed the brief and I\'m excited to get started.',
+    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+  }
+];
+
 export function useProjectStatus(projectId?: string): ProjectStatusResult {
   const [projectStatus, setProjectStatus] = useState<string>('Loading...');
   const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
@@ -102,81 +150,22 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
     try {
       setLoading(true);
 
-      // Fetch project details
-      const { data: projectData, error: projectError } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectId)
-        .single();
-
-      if (projectError) {
-        console.error('Error fetching project:', projectError);
-        return;
-      }
-
-      // Check if project is assigned to talent
-      const isAssigned = projectData.talent_id !== null;
-      setIsAssignedToTalent(isAssigned);
-
-      // Fetch deliverables
-      const { data: deliverablesData, error: deliverablesError } = await supabase
-        .from('project_deliverables')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: true });
-
-      if (deliverablesError) {
-        console.error('Error fetching deliverables:', deliverablesError);
-      }
-
-      const formattedDeliverables: Deliverable[] = deliverablesData?.map(d => ({
-        id: d.id,
-        title: d.title,
-        description: d.description,
-        problem: d.notes || '',
-        kpis: [],
-        status: d.status as Deliverable['status'],
-        estimatedHours: 8, // Default value
-        actualHours: 0,
-        timeEntries: [],
-        files: []
-      })) || [];
-
-      setDeliverables(formattedDeliverables);
+      // Set mock data
+      setDeliverables(mockDeliverables);
+      setActivityLog(mockActivityLog);
+      setMessages(mockMessages);
+      setIsAssignedToTalent(true);
 
       // Calculate project status
       const calculatedStatus = calculateProjectStatus(
-        formattedDeliverables,
+        mockDeliverables,
         hasTrackingInfo,
         isArchived,
-        isAssigned
+        true // isAssigned
       );
 
       setProjectStatus(calculatedStatus);
       setStatusReady(true);
-
-      // Fetch activity logs
-      const { data: activityData, error: activityError } = await supabase
-        .from('activity_logs')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: false });
-
-      if (activityError) {
-        console.error('Error fetching activity logs:', activityError);
-      } else {
-        setActivityLog(activityData?.map(log => log.action) || []);
-      }
-
-      setMessages([
-        {
-          id: 'init-1',
-          sender: 'client',
-          text: 'Welcome to the workspace! Let us know when you\'re ready to begin.',
-          timestamp: new Date(),
-        }
-      ]);
-
     } catch (error) {
       console.error('Error fetching project data:', error);
     } finally {
@@ -188,13 +177,6 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
 
   const updateDeliverableStatus = useCallback(async (id: string, newStatus: Deliverable['status']) => {
     try {
-      const { error } = await supabase
-        .from('project_deliverables')
-        .update({ status: newStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-
       setDeliverables(prev => {
         const updated = prev.map(d => d.id === id ? { ...d, status: newStatus } : d);
         const newProjectStatus = calculateProjectStatus(updated, hasTrackingInfo, isArchived, isAssignedToTalent);
@@ -210,25 +192,11 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
 
   const addDeliverable = useCallback(async (deliverable: Partial<Deliverable>) => {
     try {
-      const { data, error } = await supabase
-        .from('project_deliverables')
-        .insert({
-          project_id: projectId,
-          title: deliverable.title || '',
-          description: deliverable.description || '',
-          notes: deliverable.problem || '',
-          status: 'recommended'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
       const newDeliverable: Deliverable = {
-        id: data.id,
-        title: data.title,
-        description: data.description,
-        problem: data.notes || '',
+        id: Date.now().toString(),
+        title: deliverable.title || '',
+        description: deliverable.description || '',
+        problem: deliverable.problem || '',
         kpis: deliverable.kpis || [],
         status: 'recommended',
         estimatedHours: deliverable.estimatedHours || 8,
@@ -248,7 +216,7 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
     } catch (error) {
       console.error('Error adding deliverable:', error);
     }
-  }, [projectId, calculateProjectStatus, hasTrackingInfo, isArchived, isAssignedToTalent]);
+  }, [calculateProjectStatus, hasTrackingInfo, isArchived, isAssignedToTalent]);
 
   const updateDeliverable = useCallback((id: string, updates: Partial<Deliverable>) => {
     setDeliverables(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));

@@ -1,4 +1,6 @@
-export function applyAutoQualification(talent) {
+// This file contains utility functions for talent qualification
+
+export function applyAutoQualification(talent: any) {
   const invited = talent.join_method === 'invited';
   const hasKeywords = talent.bio?.toLowerCase().includes('seo') || talent.expertise?.toLowerCase().includes('seo');
 
@@ -15,13 +17,13 @@ export function applyAutoQualification(talent) {
   };
 }
 
-export function validateCSVHeaders(headers) {
+export function validateCSVHeaders(headers: string[]) {
   const required = ['full_name', 'email', 'expertise'];
   const missing = required.filter((h) => !headers.includes(h));
   return missing;
 }
 
-export function parseCSVData(text) {
+export function parseCSVData(text: string) {
   const lines = text.split('\n').filter(Boolean);
   const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
   const missing = validateCSVHeaders(headers);
@@ -29,37 +31,13 @@ export function parseCSVData(text) {
 
   return lines.slice(1).map((line) => {
     const values = line.split(',').map((v) => v.trim());
-    const record = {};
+    const record: Record<string, string> = {};
     headers.forEach((h, i) => (record[h] = values[i] || ''));
     return record;
   });
 }
 
-export async function insertInvitedTalents(records, supabase) {
-  let count = 0;
-  for (const r of records) {
-    const { full_name, email, expertise } = r;
-    if (!full_name || !email || !expertise) continue;
-    const { error } = await supabase.from('talent_profiles').insert({
-      full_name,
-      email,
-      expertise,
-      join_method: 'invited',
-      is_qualified: true,
-      qualification_reason: 'invited',
-      qualification_history: [
-        {
-          reason: 'invited',
-          timestamp: new Date().toISOString(),
-        },
-      ],
-    });
-    if (!error) count++;
-  }
-  return count;
-}
-
-export function getUpdatedTalentsWithQualification(talents, shouldQualify) {
+export function getUpdatedTalentsWithQualification(talents: any[], shouldQualify: boolean) {
   return talents.map((talent) => {
     const reason = 'manual';
     const historyEntry = {

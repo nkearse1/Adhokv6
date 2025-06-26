@@ -1,12 +1,11 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import type { User } from '@supabase/supabase-js';
+import { useUser } from '@clerk/nextjs';
 
 type UserRole = 'admin' | 'client' | 'talent' | null;
 
 interface AuthState {
-  authUser: User | null;
+  authUser: any | null;
   userId: string | null;
   userRole: UserRole;
   username: string | null;
@@ -33,67 +32,32 @@ export const useAuth = () => useContext(AuthContext);
 // This is the provider you'll wrap your app with
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<AuthState>(defaultAuthState);
-
-  const resetAuth = () => {
-    setState({
-      ...defaultAuthState,
-      loading: false,
-    });
-  };
-
-  const fetchUserDetails = async (user: User) => {
-    try {
-      const { data: userData, error } = await supabase
-        .from('users')
-        .select('user_role, username')
-        .eq('id', user.id)
-        .single();
-
-      if (error || !userData) {
-        console.warn('[useAuth] Could not fetch user metadata:', error);
-        resetAuth();
-        return;
-      }
-
-      const role = userData.user_role as UserRole;
-      const uname = userData.username || user.id;
-
-      setState({
-        authUser: user,
-        userId: user.id,
-        userRole: role,
-        username: uname,
-        isAuthenticated: true,
-        isAdmin: role === 'admin',
-        loading: false,
-      });
-    } catch (err) {
-      console.error('[useAuth] Unexpected error during fetch:', err);
-      resetAuth();
-    }
-  };
+  const { user, isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        fetchUserDetails(session.user);
-      } else {
-        resetAuth();
-      }
-    });
+    if (isLoaded) {
+      if (isSignedIn && user) {
+        // Get user role from Clerk metadata
+        const role = user.publicMetadata?.role as UserRole || 'talent';
+        const username = user.username || user.id;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUserDetails(session.user);
+        setState({
+          authUser: user,
+          userId: user.id,
+          userRole: role,
+          username: username,
+          isAuthenticated: true,
+          isAdmin: role === 'admin',
+          loading: false,
+        });
       } else {
-        resetAuth();
+        setState({
+          ...defaultAuthState,
+          loading: false,
+        });
       }
-    });
-
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 };

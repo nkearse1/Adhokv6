@@ -8,13 +8,13 @@
     "build": "next build",
     "lint": "eslint .",
     "start": "next start",
-    "setup-mock-data": "tsx scripts/setupMockData.ts",
-    "list-users": "node --import dotenv/config scripts/list-users.js",
-    "seed-auth": "node --import dotenv/config scripts/seed-auth-users.js"
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.9",
     "@hookform/resolvers": "^3.3.4",
+    "@neondatabase/serverless": "^0.9.0",
     "@netlify/next": "^1.4.9",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -44,15 +44,16 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@supabase/supabase-js": "^2.39.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
     "date-fns": "^3.3.1",
+    "drizzle-orm": "^0.30.4",
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.344.0",
     "next": "14.1.0",
+    "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",
@@ -67,15 +68,16 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "@types/pg": "^8.11.2",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.17",
     "dotenv": "^16.4.1",
+    "drizzle-kit": "^0.21.2",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
 }

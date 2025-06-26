@@ -1,23 +1,11 @@
-import { supabase } from '@supabase/supabaseClient';
-import { logAdminAction } from '@/lib/logAdminAction';
+// Mock admin API functions
 
 export async function updateUserStatusAPI(userId: string, newStatus: string) {
   try {
-    const { error } = await supabase
-      .from('talent_profiles')
-      .update({ status: newStatus })
-      .eq('id', userId);
-
-    if (error) throw error;
-
-    // Log the admin action
-    await logAdminAction(
-      `update_user_status_${newStatus}`,
-      'talent_profiles',
-      userId,
-      { newStatus }
-    );
-
+    // In a real implementation, this would update the user's status in the database
+    console.log(`Updating user ${userId} status to ${newStatus}`);
+    
+    // Simulate a successful API call
     return { success: true };
   } catch (error) {
     console.error('Error updating user status:', error);
@@ -27,21 +15,10 @@ export async function updateUserStatusAPI(userId: string, newStatus: string) {
 
 export async function updateProjectStatusAPI(projectId: string, newStatus: string) {
   try {
-    const { error } = await supabase
-        .from('projects')
-      .update({ status: newStatus })
-      .eq('id', projectId);
-
-    if (error) throw error;
-
-    // Log the admin action
-    await logAdminAction(
-      `update_project_status_${newStatus}`,
-      'projects',
-      projectId,
-      { newStatus }
-    );
-
+    // In a real implementation, this would update the project's status in the database
+    console.log(`Updating project ${projectId} status to ${newStatus}`);
+    
+    // Simulate a successful API call
     return { success: true };
   } catch (error) {
     console.error('Error updating project status:', error);

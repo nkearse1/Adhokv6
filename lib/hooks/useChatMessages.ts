@@ -1,6 +1,5 @@
 // useChatMessages.ts
 import { useState, useEffect } from 'react';
-import { supabase } from '@supabase/supabaseClient';
 
 export interface ChatMessage {
   id: string;
@@ -15,55 +14,58 @@ export function useChatMessages(projectId?: string) {
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
-    async function loadMessages() {
-      if (!projectId) return;
-      const { data, error } = await supabase
-        .from('project_messages')
-        .select('id, sender_role, text, created_at, deliverable_id')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: true });
-
-      if (!error && data) {
-        setMessages(
-          data.map((m) => ({
-            id: m.id,
-            sender: m.sender_role,
-            text: m.text,
-            timestamp: new Date(m.created_at),
-            deliverableId: m.deliverable_id,
-          }))
-        );
-      } else if (error) {
-        console.error('Error loading messages', error);
-      }
+    // Load mock messages when projectId changes
+    if (projectId) {
+      const mockMessages: ChatMessage[] = [
+        {
+          id: '1',
+          sender: 'client',
+          text: 'Hi there! Looking forward to working with you on this project.',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+        },
+        {
+          id: '2',
+          sender: 'talent',
+          text: 'Thanks for the opportunity! I\'ve reviewed the brief and I\'m excited to get started.',
+          timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+        }
+      ];
+      
+      setMessages(mockMessages);
     }
-    loadMessages();
   }, [projectId]);
 
   const sendMessage = async (text: string, deliverableId?: string) => {
-    if (!projectId) return;
-    const { data, error } = await supabase
-      .from('project_messages')
-      .insert({
-        project_id: projectId,
-        text,
-        deliverable_id: deliverableId,
-      })
-      .select()
-      .single();
-
-    if (!error && data) {
-      const newMessage: ChatMessage = {
-        id: data.id,
-        text: data.text,
-        sender: data.sender_role,
-        timestamp: new Date(data.created_at),
-        deliverableId: data.deliverable_id,
-      };
-      setMessages((prev) => [...prev, newMessage]);
-    } else if (error) {
-      console.error('Error sending message', error);
-    }
+    if (!projectId || !text.trim()) return;
+    
+    // Create a new message
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: 'talent', // Assuming the sender is always the talent
+      text,
+      timestamp: new Date(),
+      deliverableId
+    };
+    
+    // Add the new message to the state
+    setMessages(prev => [...prev, newMessage]);
+    
+    // Simulate client response
+    setTimeout(() => {
+      setIsTyping(true);
+      
+      setTimeout(() => {
+        setIsTyping(false);
+        const responseMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: 'client',
+          text: 'Thanks for the update! Looking good so far.',
+          timestamp: new Date(),
+          deliverableId
+        };
+        setMessages(prev => [...prev, responseMessage]);
+      }, 3000);
+    }, 1000);
   };
 
   return { messages, setMessages, sendMessage, isTyping };

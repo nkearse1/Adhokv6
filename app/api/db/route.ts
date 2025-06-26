@@ -1,0 +1,156 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { users, projects, talentProfiles } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const table = searchParams.get('table');
+    const id = searchParams.get('id');
+    
+    if (!table) {
+      return NextResponse.json({ error: 'Table parameter is required' }, { status: 400 });
+    }
+    
+    let data;
+    
+    switch (table) {
+      case 'users':
+        if (id) {
+          data = await db.select().from(users).where(eq(users.id, id));
+        } else {
+          data = await db.select().from(users).limit(100);
+        }
+        break;
+        
+      case 'projects':
+        if (id) {
+          data = await db.select().from(projects).where(eq(projects.id, id));
+        } else {
+          data = await db.select().from(projects).limit(100);
+        }
+        break;
+        
+      case 'talent_profiles':
+        if (id) {
+          data = await db.select().from(talentProfiles).where(eq(talentProfiles.id, id));
+        } else {
+          data = await db.select().from(talentProfiles).limit(100);
+        }
+        break;
+        
+      default:
+        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    }
+    
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error('Database query error:', error);
+    return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { table, data } = await request.json();
+    
+    if (!table || !data) {
+      return NextResponse.json({ error: 'Table and data parameters are required' }, { status: 400 });
+    }
+    
+    let result;
+    
+    switch (table) {
+      case 'users':
+        result = await db.insert(users).values(data).returning();
+        break;
+        
+      case 'projects':
+        result = await db.insert(projects).values(data).returning();
+        break;
+        
+      case 'talent_profiles':
+        result = await db.insert(talentProfiles).values(data).returning();
+        break;
+        
+      default:
+        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    }
+    
+    return NextResponse.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Database insert error:', error);
+    return NextResponse.json({ error: 'Database insert failed' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { table, id, data } = await request.json();
+    
+    if (!table || !id || !data) {
+      return NextResponse.json({ error: 'Table, id, and data parameters are required' }, { status: 400 });
+    }
+    
+    let result;
+    
+    switch (table) {
+      case 'users':
+        result = await db.update(users).set(data).where(eq(users.id, id)).returning();
+        break;
+        
+      case 'projects':
+        result = await db.update(projects).set(data).where(eq(projects.id, id)).returning();
+        break;
+        
+      case 'talent_profiles':
+        result = await db.update(talentProfiles).set(data).where(eq(talentProfiles.id, id)).returning();
+        break;
+        
+      default:
+        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    }
+    
+    return NextResponse.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Database update error:', error);
+    return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const table = searchParams.get('table');
+    const id = searchParams.get('id');
+    
+    if (!table || !id) {
+      return NextResponse.json({ error: 'Table and id parameters are required' }, { status: 400 });
+    }
+    
+    let result;
+    
+    switch (table) {
+      case 'users':
+        result = await db.delete(users).where(eq(users.id, id)).returning();
+        break;
+        
+      case 'projects':
+        result = await db.delete(projects).where(eq(projects.id, id)).returning();
+        break;
+        
+      case 'talent_profiles':
+        result = await db.delete(talentProfiles).where(eq(talentProfiles.id, id)).returning();
+        break;
+        
+      default:
+        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    }
+    
+    return NextResponse.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Database delete error:', error);
+    return NextResponse.json({ error: 'Database delete failed' }, { status: 500 });
+  }
+}

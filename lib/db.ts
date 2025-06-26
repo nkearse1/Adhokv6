@@ -1,12 +1,23 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL as string;
+// Get the database connection string from environment variables
+const connectionString = process.env.DATABASE_URL;
 
+// Check if the connection string is defined
 if (!connectionString) {
-  throw new Error('DATABASE_URL is not set');
+  throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
-const pool = new Pool({ connectionString });
+// Create a Neon SQL client
+const sql = neon(connectionString);
 
-export const db = drizzle(pool);
+// Create a Drizzle ORM instance with the Neon client and schema
+export const db = drizzle(sql, { schema });
+
+// Export a function to get a new database connection
+// This is useful for serverless functions where you might need a fresh connection
+export function getDb() {
+  return drizzle(neon(connectionString), { schema });
+}

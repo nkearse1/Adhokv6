@@ -1,42 +1,80 @@
-import { supabase } from '@supabase/supabaseClient';
+// Mock notifications data and functions
+
+interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+  metadata?: Record<string, any>;
+}
+
+// Mock notifications data
+const mockNotifications: Record<string, Notification[]> = {};
 
 export async function getUserNotifications(userId: string) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-
-  if (error) throw error;
-  return data;
+  // Return mock notifications for the user or an empty array
+  return mockNotifications[userId] || [];
 }
 
 export async function markNotificationRead(notificationId: string) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .update({ is_read: true })
-    .eq('id', notificationId);
-
-  if (error) throw error;
-  return data;
+  // Find the notification in the mock data and mark it as read
+  Object.keys(mockNotifications).forEach(userId => {
+    mockNotifications[userId] = mockNotifications[userId].map(notification => {
+      if (notification.id === notificationId) {
+        return { ...notification, isRead: true };
+      }
+      return notification;
+    });
+  });
+  
+  // Return the updated notification
+  let updatedNotification: Notification | undefined;
+  Object.values(mockNotifications).forEach(notifications => {
+    const found = notifications.find(n => n.id === notificationId);
+    if (found) {
+      updatedNotification = found;
+    }
+  });
+  
+  return updatedNotification;
 }
 
 export async function markAllNotificationsRead(userId: string) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .update({ is_read: true })
-    .eq('user_id', userId);
-
-  if (error) throw error;
-  return data;
+  // Mark all notifications for the user as read
+  if (mockNotifications[userId]) {
+    mockNotifications[userId] = mockNotifications[userId].map(notification => ({
+      ...notification,
+      isRead: true
+    }));
+  }
+  
+  // Return the updated notifications
+  return mockNotifications[userId] || [];
 }
 
 export async function updateUserStatus(userId: string, newStatus: string) {
-  const { data, error } = await supabase
-    .from('users')
-    .update({ status: newStatus })
-    .eq('id', userId);
+  // This would update a user's status in a real database
+  // For mock purposes, we'll just return a success response
+  return { success: true, userId, status: newStatus };
+}
 
-  if (error) throw error;
-  return data;
+// Function to add a mock notification (for testing)
+export function addMockNotification(userId: string, notification: Omit<Notification, 'id' | 'createdAt' | 'isRead'>) {
+  if (!mockNotifications[userId]) {
+    mockNotifications[userId] = [];
+  }
+  
+  const newNotification: Notification = {
+    id: Date.now().toString(),
+    userId,
+    ...notification,
+    isRead: false,
+    createdAt: new Date().toISOString()
+  };
+  
+  mockNotifications[userId].unshift(newNotification);
+  return newNotification;
 }
