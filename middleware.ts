@@ -9,6 +9,9 @@ export default authMiddleware({
     '/sign-up',
     '/waitlist',
     '/api/clerk/webhook',
+    '/api/public', 
+    '/_next/static', 
+    '/favicon.ico'
   ],
   
   afterAuth(auth, req) {
