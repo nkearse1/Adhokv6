@@ -6,4 +6,4 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
   return client
     ? NextResponse.json({ client })
     : NextResponse.json({ error: 'Client not found' }, { status: 404 });
-}
+} 
