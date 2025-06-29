@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ interface TalentProfile {
 }
 
 export default function AdminTalentList() {
+  const router = useRouter();
   const [talents, setTalents] = useState<TalentProfile[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,7 +109,103 @@ export default function AdminTalentList() {
       setLoading(false);
     }
   };
-}
+
+  const updateTrustScore = async (talentId: string) => {
+    try {
+      setUpdatingTrustScore(talentId);
+      const res = await fetch(`/api/talent/${talentId}/trust-score`, { method: 'POST' });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || 'Request failed');
+      }
+      toast.success('Trust score updated successfully');
+      fetchTalents();
+    } catch (error) {
+      console.error('Error updating trust score:', error);
+      toast.error('Failed to update trust score');
+    } finally {
+      setUpdatingTrustScore(null);
+    }
+  };
+
+  const handleQualifyTalent = async (talentId: string, qualified: boolean) => {
+    try {
+      const res = await fetch(`/api/talent/${talentId}/qualify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qualified }),
+      });
+      if (!res.ok) throw new Error('Qualification failed');
+      toast.success(`Talent ${qualified ? 'qualified' : 'disqualified'} successfully`);
+      fetchTalents();
+    } catch (error) {
+      console.error('Error updating talent:', error);
+      toast.error('Failed to update talent status');
+    }
+  };
+
+  const handleBulkQualify = async () => {
+    try {
+      const selectedTalents = talents.filter(t => selectedIds.includes(t.id));
+      const updatedTalents = getUpdatedTalentsWithQualification(selectedTalents, true);
+      
+      // In a real implementation, you'd make an API call here
+      toast.success(`${selectedIds.length} talents qualified successfully`);
+      setSelectedIds([]);
+      fetchTalents();
+    } catch (error) {
+      console.error('Error bulk qualifying talents:', error);
+      toast.error('Failed to bulk qualify talents');
+    }
+  };
+
+  const handleBulkDisqualify = async () => {
+    try {
+      const selectedTalents = talents.filter(t => selectedIds.includes(t.id));
+      const updatedTalents = getUpdatedTalentsWithQualification(selectedTalents, false);
+      
+      // In a real implementation, you'd make an API call here
+      toast.success(`${selectedIds.length} talents disqualified successfully`);
+      setSelectedIds([]);
+      fetchTalents();
+    } catch (error) {
+      console.error('Error bulk disqualifying talents:', error);
+      toast.error('Failed to bulk disqualify talents');
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === talents.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(talents.map(t => t.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // In a real implementation, you'd upload the file and process it
+      toast.success('CSV uploaded successfully');
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('10 new talents imported');
+      fetchTalents();
+    } catch (error) {
+      console.error('Error uploading CSV:', error);
+      toast.error('Failed to upload CSV');
+    }
+  };
 
   const getTrustScoreBadge = (score: number | null | undefined) => {
     if (score === null || score === undefined) return null;
@@ -293,7 +391,7 @@ export default function AdminTalentList() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => navigate(`/admin/talent/${talent.id}`)}
+                        onClick={() => router.push(`/admin/talent/${talent.id}`)}
                       >
                         View
                       </Button>

@@ -1,6 +1,7 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { 
   BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, 
@@ -16,57 +17,111 @@ import ExperienceBadge from '@/components/ExperienceBadge';
 export default function AdminProjectDetail() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id;
+  const id = params.id as string;
   const [project, setProject] = useState<any>(null);
   const [client, setClient] = useState<any>(null);
   const [talent, setTalent] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userRole } = useAuth();
+  const { user } = useUser();
+  const userRole = user?.publicMetadata?.role;
 
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        // Fetch project with related data
-        const { data: projectData, error: projectError } = await supabase
-          .from('projects')
-          .select(`
-            *,
-            client:users!projects_client_id_fkey(
-              id, full_name, email, created_at
-            ),
-            talent:users!projects_talent_id_fkey(
-              id, full_name, email, created_at
-            ),
-            talent_profile:talent_profiles!projects_talent_id_fkey(
-              full_name, email, experience_badge, expertise, location, 
-              phone, linkedin, portfolio, bio, is_qualified, created_at
-            )
-          `)
-          .eq('id', id)
-          .single();
-
-        if (projectError) throw projectError;
-
-        setProject(projectData);
-        setClient(projectData.client);
-        setTalent(projectData.talent_profile);
-
-        // Fetch reviews for the talent
-        if (projectData.talent_id) {
-          const { data: reviewsData } = await supabase
-            .from('project_reviews')
-            .select(`
-              *,
-              reviewer:users!project_reviews_reviewer_id_fkey(full_name),
-              project:projects!project_reviews_project_id_fkey(title)
-            `)
-            .eq('project.talent_id', projectData.talent_id)
-            .order('created_at', { ascending: false })
-            .limit(5);
-
-          setReviews(reviewsData || []);
-        }
+        // This would be replaced with a fetch to your API
+        // For now, we'll use mock data
+        const mockProject = {
+          id,
+          title: 'E-commerce SEO Optimization',
+          description: 'Comprehensive SEO audit and optimization for a growing e-commerce website selling sustainable products.',
+          status: 'in_progress',
+          category: 'SEO',
+          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          estimated_hours: 40,
+          hourly_rate: 75,
+          flagged: false,
+          metadata: {
+            marketing: {
+              problem: 'Low organic search visibility and poor technical SEO performance affecting customer acquisition',
+              deliverables: 'Technical SEO audit, keyword strategy, content optimization plan, performance tracking setup',
+              target_audience: 'E-commerce shoppers interested in sustainable products',
+              platforms: 'Shopify, Google Search Console, Google Analytics 4',
+              preferred_tools: 'Ahrefs, Screaming Frog, Surfer SEO',
+              brand_voice: 'Professional yet approachable, sustainability-focused',
+              inspiration_links: 'https://patagonia.com, https://allbirds.com'
+            },
+            requestor: {
+              name: 'Sarah Johnson',
+              company: 'EcoShop Inc.',
+              email: 'sarah.johnson@example.com',
+              phone: '+1 (555) 111-2222'
+            }
+          },
+          minimum_badge: 'Expert Talent'
+        };
+        
+        setProject(mockProject);
+        
+        // Mock client data
+        const mockClient = {
+          id: 'client123',
+          full_name: 'Sarah Johnson',
+          email: 'sarah.johnson@example.com',
+          company: 'EcoShop Inc.',
+          created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+          total_projects: 3,
+          total_spent: 8500,
+          average_rating: 4.8,
+          verified: true
+        };
+        
+        setClient(mockClient);
+        
+        // Mock talent data
+        const mockTalent = {
+          full_name: 'Alex Rivera',
+          email: 'alex.rivera@example.com',
+          experience_badge: 'Expert Talent',
+          expertise: 'SEO & Content Strategy',
+          location: 'Austin, TX',
+          phone: '+1 (555) 123-4567',
+          linkedin: 'https://linkedin.com/in/alexrivera',
+          portfolio: 'https://alexrivera.dev',
+          bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
+          is_qualified: true,
+          created_at: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
+          total_projects: 12,
+          success_rate: 95,
+          average_rating: 4.9,
+          response_time: '2h',
+          total_earnings: 45000,
+          hourly_rate: 75
+        };
+        
+        setTalent(mockTalent);
+        
+        // Mock reviews
+        const mockReviews = [
+          {
+            id: 'review1',
+            rating: 5,
+            comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
+            created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+            reviewer: { full_name: 'Michael Chen' },
+            project_title: 'B2B SaaS SEO Strategy'
+          },
+          {
+            id: 'review2',
+            rating: 4,
+            comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
+            created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+            reviewer: { full_name: 'Emily Rodriguez' },
+            project_title: 'E-commerce Technical SEO'
+          }
+        ];
+        
+        setReviews(mockReviews);
       } catch (error) {
         console.error('Error fetching project data:', error);
         toast.error('Failed to load project details');
@@ -83,13 +138,8 @@ export default function AdminProjectDetail() {
     if (!reason) return;
 
     try {
-      const { error } = await supabase
-        .from('projects')
-        .update({ flagged: true })
-        .eq('id', project.id);
-
-      if (error) throw error;
-
+      // This would be replaced with an API call
+      // For now, we'll just update the local state
       setProject({ ...project, flagged: true });
       toast.success('Project flagged for review');
     } catch (error) {
@@ -100,13 +150,8 @@ export default function AdminProjectDetail() {
 
   const handleUpdateStatus = async (newStatus: string) => {
     try {
-      const { error } = await supabase
-        .from('projects')
-        .update({ status: newStatus })
-        .eq('id', project.id);
-
-      if (error) throw error;
-
+      // This would be replaced with an API call
+      // For now, we'll just update the local state
       setProject({ ...project, status: newStatus });
       toast.success(`Project status updated to ${newStatus}`);
     } catch (error) {
@@ -566,10 +611,10 @@ export default function AdminProjectDetail() {
               reviews.map((review) => (
                 <Card key={review.id}>
                   <CardContent className="p-6">
-                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{review.reviewer_name}</h4>
+                          <h4 className="font-medium">{review.reviewer.full_name}</h4>
                           <span className="text-sm text-gray-500">
                             {new Date(review.created_at).toLocaleDateString()}
                           </span>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminProjectList() {
+  const router = useRouter();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,7 +24,6 @@ export default function AdminProjectList() {
   const [bidFilter, setBidFilter] = useState("all");
   const [revenueFilter, setRevenueFilter] = useState("all");
   const [deadlineFilter, setDeadlineFilter] = useState("all");
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProjects();
@@ -194,7 +194,7 @@ export default function AdminProjectList() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => navigate(`/admin/projects/${project.id}`)}
+                        onClick={() => router.push(`/admin/projects/${project.id}`)}
                       >
                         View
                       </Button>
