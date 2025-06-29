@@ -65,7 +65,7 @@ interface Profile {
 
 export default function TalentDashboard() {
   const router = useRouter();
-  const { user, isSignedIn } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -80,10 +80,10 @@ export default function TalentDashboard() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isSignedIn && user) {
+    if (isLoaded && isSignedIn && user) {
       fetchTalentData();
     }
-  }, [isSignedIn, user]);
+  }, [isLoaded, isSignedIn, user]);
 
   const fetchTalentData = async () => {
     try {
@@ -153,7 +153,7 @@ export default function TalentDashboard() {
     }
   };
 
-  if (!isSignedIn || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="max-w-6xl mx-auto p-4 sm:p-6">
         <div className="animate-pulse">
@@ -164,6 +164,14 @@ export default function TalentDashboard() {
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 text-center">
+        <p className="text-gray-600">Please sign in to view your dashboard.</p>
       </div>
     );
   }

@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { qualifyTalent } from '@/lib/apiHandlers/talent';
+import { auth } from '@clerk/nextjs';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const { qualified } = await req.json();
-  const data = await qualifyTalent(params.id, qualified);
-  return NextResponse.json({ data });
+  const { userId, sessionClaims } = auth();
+  
+  // Check if user is authenticated and has admin role
+  if (!userId || sessionClaims?.metadata?.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  try {
+    const { qualified } = await req.json();
+    const data = await qualifyTalent(params.id, qualified);
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error('Error updating talent qualification:', error);
+    return NextResponse.json({ error: 'Failed to update talent qualification' }, { status: 500 });
+  }
 }

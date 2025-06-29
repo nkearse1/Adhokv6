@@ -42,17 +42,17 @@ export default function AdminTalentDetails() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const isAdmin = user?.publicMetadata?.role === 'admin';
   const [talent, setTalent] = useState<TalentProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingTrustScore, setUpdatingTrustScore] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (isLoaded && isSignedIn && isAdmin && id) {
       fetchTalentDetails();
     }
-  }, [id]);
+  }, [isLoaded, isSignedIn, isAdmin, id]);
 
   const fetchTalentDetails = async () => {
     try {
@@ -170,7 +170,16 @@ export default function AdminTalentDetails() {
     }
   };
 
-  if (!isAdmin) {
+  if (!isLoaded) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2E3A8C] mx-auto mb-4"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isSignedIn || !isAdmin) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
         <p className="text-red-600">Unauthorized access. Admin privileges required.</p>

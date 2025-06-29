@@ -42,12 +42,14 @@ export default function AdminPanel() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   useEffect(() => {
-    checkAdminAuth();
-    fetchData();
-  }, []);
+    if (isLoaded && isSignedIn && user) {
+      checkAdminAuth();
+      fetchData();
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   const checkAdminAuth = async () => {
     try {
@@ -152,6 +154,14 @@ export default function AdminPanel() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn || !user || user.publicMetadata?.role !== 'admin') {
+    return (
+      <div className="p-6 text-center text-red-600">
+        Unauthorized access. Admin privileges required.
       </div>
     );
   }
