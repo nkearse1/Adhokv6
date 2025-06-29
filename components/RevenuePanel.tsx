@@ -1,5 +1,6 @@
+'use client';
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ import { toast } from "sonner";
 
 
 export default function RevenuePanel() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [projects, setProjects] = useState<any[]>([]);
   const [escrow, setEscrow] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -135,7 +136,7 @@ export default function RevenuePanel() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => navigate(`/admin/projects/${project.id}`)}
+                        onClick={() => router.push(`/admin/projects/${project.id}`)}
                       >
                         View
                       </Button>
@@ -176,7 +177,7 @@ export default function RevenuePanel() {
                     <TableCell>{new Date(e.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>{e.released_at ? new Date(e.released_at).toLocaleDateString() : '—'}</TableCell>
                     <TableCell>
-                      <Button size="sm" variant="outline" onClick={() => navigate(`/admin/projects/${e.project_id}`)}>
+                      <Button size="sm" variant="outline" onClick={() => router.push(`/admin/projects/${e.project_id}`)}>
                         Manage
                       </Button>
                     </TableCell>
