@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { authMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
 const isProtectedRoute = createRouteMatcher([
@@ -7,7 +7,7 @@ const isProtectedRoute = createRouteMatcher([
   '/talent/dashboard(.*)',
 ]);
 
-export default clerkMiddleware((auth, req) => {
+export default authMiddleware((auth, req) => {
   // If the route is protected and user is not authenticated, redirect to sign-in
   if (isProtectedRoute(req) && !auth().userId) {
     const signInUrl = new URL('/sign-in', req.url);
