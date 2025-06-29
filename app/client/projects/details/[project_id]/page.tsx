@@ -22,15 +22,16 @@ export default function ClientProjectDetail() {
       const res = await fetch(`/api/db?table=projects&id=${project_id}`);
       const json = await res.json();
       if (res.ok && json.data[0]) {
-      const data = json.data[0];
-  setProject(data);
-      if (data?.talent_id) {
-      const tRes = await fetch('/api/db?table=talent_profiles');
-      const tJson = await tRes.json();
-      if (tRes.ok) {
-      const talent = (tJson.data || []).find((p: any) => p.id ===   data.talent_id);
-      if (talent) setTalentProfile(talent);
+        const data = json.data[0];
+        setProject(data);
+        if (data?.talent_id) {
+          const tRes = await fetch('/api/db?table=talent_profiles');
+          const tJson = await tRes.json();
+          if (tRes.ok) {
+            const talent = (tJson.data || []).find((p: any) => p.id === data.talent_id);
+            if (talent) setTalentProfile(talent);
           }
+        }
       }
     };
 
