@@ -1,11 +1,16 @@
-'use client';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
 import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/useAuth';
+import DevRoleSwitcher from '@/components/DevRoleSwitcher';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata = {
+  title: 'Adhok',
+  description: 'Next.js + Clerk App',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             {children}
             <Toaster />
+            <DevRoleSwitcher />
           </AuthProvider>
         </body>
       </html>
