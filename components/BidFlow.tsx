@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import ExperienceBadge from '@/components/ExperienceBadge';
 import { Button } from '@/components/ui/button';

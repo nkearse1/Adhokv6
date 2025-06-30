@@ -1,3 +1,4 @@
+'use client';
 import { ForgotPassword } from "@clerk/nextjs";
 
 export default function ForgotPasswordPage() {

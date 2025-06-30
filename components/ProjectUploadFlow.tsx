@@ -1,4 +1,4 @@
-// Full updated ProjectUploadFlow component with all 4 steps and logic
+'use client';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
