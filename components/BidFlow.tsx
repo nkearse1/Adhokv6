@@ -169,3 +169,4 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
     </div>
   )
 }
+      

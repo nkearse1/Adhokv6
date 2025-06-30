@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    ignoreBuildErrors: true, // helpful during migration
+    ignoreBuildErrors: false, 
   },
   eslint: {
     ignoreDuringBuilds: true,
