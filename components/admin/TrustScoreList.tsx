@@ -118,7 +118,7 @@ export default function TrustScoreList() {
     if (score >= 40) return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Fair</Badge>;
     return <Badge className="bg-red-100 text-red-800 border-red-200">Poor</Badge>;
   };
-}
+
   const viewTalentDetails = (talentId: string) => {
     navigate(`/admin/talent/${talentId}`);
   };
@@ -304,3 +304,4 @@ export default function TrustScoreList() {
     </div>
   );
 }
+
