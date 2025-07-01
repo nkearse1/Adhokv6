@@ -1,5 +1,4 @@
 'use client';
-import { ResetPassword } from "@clerk/nextjs";
 
 export default function ResetPasswordPage() {
   return (
