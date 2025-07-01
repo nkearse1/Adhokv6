@@ -1,9 +1,20 @@
 'use client';
+
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
-import { BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, MessageSquare, Briefcase } from 'lucide-react';
+import {
+  BadgeCheck,
+  CalendarIcon,
+  Clock,
+  FileText,
+  Link as LinkIcon,
+  Target,
+  Users,
+  MessageSquare,
+  Briefcase,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,21 +33,23 @@ export default function ClientProjectDetail() {
       const res = await fetch(`/api/db?table=projects&id=${project_id}`);
       const json = await res.json();
       if (res.ok && json.data[0]) {
-      const data = json.data[0];
-  setProject(data);
-      if (data?.talent_id) {
-      const tRes = await fetch('/api/db?table=talent_profiles');
-      const tJson = await tRes.json();
-      if (tRes.ok) {
-      const talent = (tJson.data || []).find((p: any) => p.id ===   data.talent_id);
-      if (talent) setTalentProfile(talent);
+        const data = json.data[0];
+        setProject(data);
+
+        if (data?.talent_id) {
+          const tRes = await fetch('/api/db?table=talent_profiles');
+          const tJson = await tRes.json();
+          if (tRes.ok) {
+            const talent = (tJson.data || []).find((p: any) => p.id === data.talent_id);
+            if (talent) setTalentProfile(talent);
           }
+        }
       }
     };
 
     fetchProject();
   }, [project_id]);
-    
+
   if (!isLoaded) return <p className="p-6 text-center text-gray-600">Loading...</p>;
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
@@ -46,10 +59,11 @@ export default function ClientProjectDetail() {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
-      {/* Mobile-responsive header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#2E3A8C] mb-2 break-words">{project.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#2E3A8C] mb-2 break-words">
+            {project.title}
+          </h1>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="bg-blue-50 text-blue-700">
               {project.category}
@@ -74,7 +88,6 @@ export default function ClientProjectDetail() {
         </div>
       </div>
 
-      {/* Mobile-responsive project details card */}
       <Card>
         <CardContent className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
@@ -142,7 +155,6 @@ export default function ClientProjectDetail() {
         </CardContent>
       </Card>
 
-      {/* Mobile-responsive team section */}
       <Card>
         <CardContent className="p-4 sm:p-6">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -200,7 +212,6 @@ export default function ClientProjectDetail() {
         </Card>
       )}
 
-      {/* Mobile-responsive action buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
           onClick={handleApprove}
@@ -220,4 +231,25 @@ export default function ClientProjectDetail() {
       </div>
     </div>
   );
+}
+
+function getBadgeStyle(badge: string) {
+  switch (badge) {
+    case 'Expert Talent':
+      return 'bg-green-100 text-green-800';
+    case 'Pro Talent':
+      return 'bg-blue-100 text-blue-800';
+    case 'Specialist':
+      return 'bg-yellow-100 text-yellow-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+}
+
+async function handleApprove() {
+  toast.success('Work approved. (Stub handler)');
+}
+
+async function handleLeaveReview() {
+  toast.success('Review submitted. (Stub handler)');
 }
