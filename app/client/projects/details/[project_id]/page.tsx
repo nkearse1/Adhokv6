@@ -47,7 +47,7 @@ export default function ClientProjectDetail() {
       }
     };
 
-    fetchProject();
+    if (project_id) fetchProject();
   }, [project_id]);
 
   if (!isLoaded) return <p className="p-6 text-center text-gray-600">Loading...</p>;
