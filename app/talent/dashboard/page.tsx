@@ -1,11 +1,12 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/lib/useAuth";
 import {
   Clock,
   ArrowRight,
@@ -14,6 +15,15 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import TalentEarnings from "@/components/TalentEarnings";
 import CaseStudyModal from "@/components/CaseStudyModal";
+
+const USE_MOCK_SESSION = true;
+const TEAL_COLOR = "#00A499";
+
+const experienceBadgeMap: Record<string, string> = {
+  "Entry Level": "Specialist",
+  "Mid-Level": "Pro Talent",
+  "Expert": "Expert",
+};
 
 interface Deliverable {
   id: string;
@@ -64,8 +74,8 @@ interface Profile {
 }
 
 export default function TalentDashboard() {
-  const router = useRouter();
-  const { user, isSignedIn, isLoaded } = useUser();
+  const navigate = useNavigate();
+  const { userId, authUser, isAuthenticated, loading: authLoading } = useAuth();
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -80,101 +90,67 @@ export default function TalentDashboard() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoaded && isSignedIn && user) {
-      fetchTalentData();
-    }
-  }, [isLoaded, isSignedIn, user]);
-
-  const fetchTalentData = async () => {
-    try {
-      setLoading(true);
-
-      // This would be replaced with a fetch to your API
-      // For now, we'll use mock data
-      setTimeout(() => {
-        const mockProjects = [
-          {
-            id: '1',
-            title: 'SEO Optimization Campaign',
-            description: 'Improve search rankings for e-commerce website',
-            status: 'open',
-            deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-            project_budget: 3500,
-            bidCount: 3
+    if (USE_MOCK_SESSION) {
+      setProfile({
+        id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
+        full_name: "Mock Talent",
+        email: "talent@adhok.dev",
+        expertise: "SEO",
+        location: "Tampa, FL",
+        rate: 75,
+        linkedin_url: "https://linkedin.com/in/mocktalent",
+        is_qualified: true,
+        metadata: { marketing: { expertiseLevel: "Pro Talent" } },
+      });
+      const mockProjects = [
+        {
+          id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
+          title: "Mock SEO Audit",
+          description: "Audit a small business website",
+          status: "open",
+          deadline: new Date().toISOString(),
+          project_budget: 500,
+          bidCount: 4,
+          lastBid: 72,
+          metadata: { marketing: { expertiseLevel: "Pro Talent" } },
+        },
+        {
+          id: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15",
+          title: "Social Media Strategy",
+          description: "Develop comprehensive social media plan",
+          status: "completed",
+          deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          project_budget: 1500,
+          bidCount: 1,
+          lastBid: 140,
+          deliverables: [
+            { id: "1", title: "Content Calendar" },
+            { id: "2", title: "Platform Strategy" },
+          ],
+          caseStudy: {
+            id: "cs1",
+            summary: "Developed and implemented a full strategy.",
+            outcome: "Client doubled their engagement.",
+            deliverableId: "1",
           },
-          {
-            id: '2',
-            title: 'Social Media Strategy',
-            description: 'Develop comprehensive social media plan',
-            status: 'completed',
-            deadline: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            project_budget: 2800,
-            bidCount: 5
-          }
-        ];
-        
-        setProjects(mockProjects);
-        
-        // Calculate stats
-        const activeBids = mockProjects.filter(p => p.status === 'open').length;
-        const completedProjects = mockProjects.filter(p => p.status === 'completed').length;
-        const totalEarnings = mockProjects
-          .filter(p => p.status === 'completed')
-          .reduce((sum, p) => sum + (p.project_budget || 0), 0);
-
-        setStats({
-          activeBids,
-          totalEarnings,
-          completedProjects,
-        });
-
-        setLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error fetching talent data:', error);
-      toast.error('Failed to load dashboard data');
+          metadata: { marketing: { expertiseLevel: "Expert" } },
+        },
+      ];
+      setProjects(mockProjects);
+      setStats({ activeBids: 1, totalEarnings: 1200, completedProjects: 1 });
       setLoading(false);
+      return;
     }
-  };
+  }, [authLoading, isAuthenticated, userId]);
 
-  const handleSaveCaseStudy = async (projectId: string, newData: CaseStudy) => {
-    try {
-      // In a real implementation, you'd save this to a case_studies table
-      // For now, we'll just update the local state
-      setProjects(prev =>
-        prev.map(project =>
-          project.id === projectId ? { ...project, caseStudy: newData } : project
-        )
-      );
-      toast.success("Case study saved!");
-    } catch (error) {
-      console.error('Error saving case study:', error);
-      toast.error('Failed to save case study');
-    }
-  };
-
-  if (!isLoaded || loading) {
-    return (
-      <div className="max-w-6xl mx-auto p-4 sm:p-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-24 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
+  const handleSaveCaseStudy = (projectId: string, newData: CaseStudy) => {
+    setProjects(prev =>
+      prev.map(project =>
+        project.id === projectId ? { ...project, caseStudy: newData } : project
+      )
     );
-  }
-
-  if (!isSignedIn) {
-    return (
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 text-center">
-        <p className="text-gray-600">Please sign in to view your dashboard.</p>
-      </div>
-    );
-  }
+    toast.success("Case study saved!");
+  };
 
   const statLabelMap = {
     activeBids: "Active Bids",
@@ -186,7 +162,7 @@ export default function TalentDashboard() {
   const statValueMap = {
     activeBids: stats.activeBids,
     wonProjects: stats.completedProjects,
-    earnings: `$${stats.totalEarnings.toLocaleString()}`,
+    earnings: stats.totalEarnings.toLocaleString(),
     portfolio: stats.completedProjects,
   };
 
@@ -197,103 +173,72 @@ export default function TalentDashboard() {
     return false;
   });
 
-  const username = user?.username || user?.id;
+  const username = authUser?.user_metadata?.username || authUser?.id;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6">
-      {/* Mobile-responsive header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
-        <Button 
-          onClick={() => router.push(`/talent/projects`)}
-          className="w-full sm:w-auto"
-        >
-          Browse Projects
-        </Button>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-6 px-2 md:px-0">
+        <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
+        <Button onClick={() => navigate(`/talent/${username}/projects`)}>Browse Projects</Button>
       </div>
 
-      {/* Mobile-responsive stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {Object.keys(statLabelMap).filter(tab => tab !== currentTab).map((tab) => (
           <Card
             key={tab}
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            style={{ borderColor: "#00A499" }}
+            className="cursor-pointer"
+            style={{ borderColor: TEAL_COLOR }}
             onClick={() => setCurrentTab(tab as typeof currentTab)}
           >
             <CardContent className="p-4">
-              <h3 className="text-sm text-gray-600">{statLabelMap[tab as keyof typeof statLabelMap]}</h3>
-              <p className="text-xl sm:text-2xl font-bold">{statValueMap[tab as keyof typeof statValueMap]}</p>
+              <h3 className="text-sm text-gray-600">{statLabelMap[tab]}</h3>
+              <p className="text-2xl font-bold">{statValueMap[tab]}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <h2 className="text-lg sm:text-xl font-semibold text-[#2E3A8C] mb-4">{statLabelMap[currentTab as keyof typeof statLabelMap]}</h2>
+      <h2 className="text-xl font-semibold text-[#2E3A8C] mb-4">{statLabelMap[currentTab]}</h2>
 
-      {/* Mobile-responsive content */}
       <div className="space-y-4">
         {currentTab === "portfolio" ? (
-          filteredProjects.length > 0 ? (
-            filteredProjects.map(project => (
-              <div key={project.id} className="bg-white border rounded-lg p-4 shadow-sm">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
-                  <h3 className="font-semibold text-lg text-[#2E3A8C] break-words">{project.title}</h3>
-                  <Badge variant="outline">Complete</Badge>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  Deadline: {formatDistanceToNow(new Date(project.deadline), { addSuffix: true })}
-                </p>
-                {project.caseStudy ? (
-                  <div className="bg-gray-50 p-3 rounded-md mb-2 text-sm">
-                    <p className="font-medium text-[#2E3A8C] mb-1">📘 Case Study Summary</p>
-                    <p className="break-words">{project.caseStudy.summary}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm italic text-gray-500 mb-2">No case study submitted yet.</p>
-                )}
-                <Button 
-                  variant="secondary" 
-                  onClick={() => setEditingProjectId(project.id)}
-                  className="w-full sm:w-auto"
-                >
-                  {project.caseStudy ? "Edit Case Study" : "Add Case Study"}
-                </Button>
-
-                {editingProjectId === project.id && (
-                  <CaseStudyModal
-                    open={true}
-                    onClose={() => setEditingProjectId(null)}
-                    deliverables={project.deliverables || []}
-                    initialData={project.caseStudy}
-                    onSubmit={(newData) => {
-                      handleSaveCaseStudy(project.id, newData);
-                      setEditingProjectId(null);
-                    }}
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm">No completed projects yet.</p>
-          )
-        ) : currentTab === "earnings" ? (
-          <TalentEarnings />
-        ) : filteredProjects.length > 0 ? (
           filteredProjects.map(project => (
             <div key={project.id} className="bg-white border rounded-lg p-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
-                <h3 className="font-semibold text-lg text-[#2E3A8C] break-words">{project.title}</h3>
-                <Badge variant="secondary">{project.status}</Badge>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-semibold text-lg text-[#2E3A8C]">{project.title}</h3>
+                <Badge variant="outline">Complete</Badge>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{project.description}</p>
-              <p className="text-sm text-gray-600">
-                Budget: ${project.project_budget?.toLocaleString() || 'N/A'}
-              </p>
+              <p className="text-sm text-gray-600 mb-2">Deadline: {formatDistanceToNow(new Date(project.deadline), { addSuffix: true })}</p>
+              {project.caseStudy ? (
+                <div className="bg-gray-50 p-3 rounded-md mb-2 text-sm">
+                  <p className="font-medium text-[#2E3A8C] mb-1">📘 Case Study Summary</p>
+                  <p>{project.caseStudy.summary}</p>
+                </div>
+              ) : (
+                <p className="text-sm italic text-gray-500 mb-2">No case study submitted yet.</p>
+              )}
+              <Button variant="secondary" onClick={() => setEditingProjectId(project.id)}>
+                {project.caseStudy ? "Edit Case Study" : "Add Case Study"}
+              </Button>
+
+              {editingProjectId === project.id && (
+                <CaseStudyModal
+                  open={true}
+                  onClose={() => setEditingProjectId(null)}
+                  deliverables={project.deliverables || []}
+                  initialData={project.caseStudy}
+                  onSubmit={(newData) => {
+                    handleSaveCaseStudy(project.id, newData);
+                    setEditingProjectId(null);
+                  }}
+                />
+              )}
             </div>
           ))
+        ) : currentTab === "earnings" ? (
+          <TalentEarnings />
         ) : (
-          <p className="text-gray-500 text-sm">No projects in this category.</p>
+          <p className="text-gray-500 text-sm">No projects in this tab.</p>
         )}
       </div>
     </div>
