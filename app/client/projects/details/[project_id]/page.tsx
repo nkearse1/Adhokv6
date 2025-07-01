@@ -27,11 +27,12 @@ export default function ClientProjectDetail() {
       if (data?.talent_id) {
       const tRes = await fetch('/api/db?table=talent_profiles');
       const tJson = await tRes.json();
-      if (tRes.ok) {
-      const talent = (tJson.data || []).find((p: any) => p.id ===   data.talent_id);
-      if (talent) setTalentProfile(talent);
-          }
+        if (tRes.ok) {
+          const talent = (tJson.data || []).find((p: any) => p.id === data.talent_id);
+          if (talent) setTalentProfile(talent);
+        }
       }
+    }
     };
 
     fetchProject();
