@@ -1,4 +1,4 @@
-'use client';
+// ProjectWorkspace.tsx (Talent View)
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,8 +13,8 @@ import DeliverablesPanel from '@/components/DeliverablesPanel';
 import ActivityLog from '@/components/ActivityLog';
 import ChatPanel from '@/components/ChatPanel';
 import FileUpload from '@/components/FileUpload';
-import { useProjectStatus } from '@/lib/useProjectStatus';
-import { useEscrow } from '@/lib/useEscrow';
+import { useProjectStatus } from '@/hooks/useProjectStatus';
+import { useEscrow } from '@/hooks/useEscrow';
 import { useAuth } from '@/lib/useAuth';
 
 export default function ProjectWorkspace() {

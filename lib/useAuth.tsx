@@ -1,30 +1,55 @@
-import { ClerkProvider } from '@clerk/nextjs';
-import { Toaster } from '@/components/ui/sonner';
-import '@/styles/globals.css';
-import { Header } from '@/components/Header';
-import { AuthProvider } from '@/lib/useAuth';
-import DevRoleSwitcher from '@/components/DevRoleSwitcher';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 
-export const metadata = {
-  title: 'Adhok',
-  description: 'Next.js + Clerk App',
+type UserRole = 'admin' | 'client' | 'talent';
+
+interface AuthState {
+  userId: string | null;
+  username: string | null;
+  userRole: UserRole;
+  isAdmin: boolean;
+  loading: boolean;
+  isAuthenticated: boolean;
+  setDevRole: (role: UserRole) => void;
+}
+
+const defaultAuthState: AuthState = {
+  userId: null,
+  username: null,
+  userRole: 'talent',
+  isAdmin: false,
+  loading: true,
+  isAuthenticated: false,
+  setDevRole: () => {},
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-      <html lang="en">
-        <body>
-          <AuthProvider>
-            <Header />
-            {children}
-            <Toaster />
-            <DevRoleSwitcher />
-          </AuthProvider>
-        </body>
-      </html>
-    </ClerkProvider>
-  );
-}
+const AuthContext = createContext<AuthState>(defaultAuthState);
+
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user, isSignedIn, isLoaded } = useUser();
+  const [devRole, setDevRole] = useState<UserRole | null>(null);
+  const [state, setState] = useState(defaultAuthState);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    const actualRole = (user?.publicMetadata?.role as UserRole) || 'talent';
+    const role = devRole || actualRole;
+
+    setState({
+      userId: user?.id || null,
+      username: user?.username || null,
+      userRole: role,
+      isAdmin: role === 'admin',
+      isAuthenticated: !!user,
+      loading: false,
+      setDevRole,
+    });
+  }, [isLoaded, isSignedIn, user, devRole]);
+
+  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
+};

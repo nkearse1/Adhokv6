@@ -28,8 +28,8 @@ export default function DevRoleSwitcher() {
   if (process.env.NODE_ENV !== 'development') return null;
 
   return (
-    <div className="fixed bottom-4 left-4 bg-white border rounded-lg shadow p-2 z-50">
-      <p className="text-sm font-semibold mb-1">Dev Role:</p>
+    <div className="fixed bottom-4 left-4 bg-white border rounded-lg shadow p-4 z-50">
+      <p className="text-sm font-semibold mb-2 text-gray-700">Dev Role:</p>
       <div className="flex gap-2">
         {ROLES.map((r) => (
           <Button

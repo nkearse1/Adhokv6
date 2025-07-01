@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
 import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/useAuth';
-import DevRoleSwitcher from '@/components/DevRoleSwitcher';
+import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 
 export const dynamic = 'force-dynamic';
 
