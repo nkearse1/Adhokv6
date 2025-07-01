@@ -5,9 +5,10 @@ import { auth } from '@clerk/nextjs';
 
 export async function GET(_req: NextRequest) {
   const { userId, sessionClaims } = auth();
-  
+  const role = (sessionClaims as { metadata?: { role?: string } })?.metadata?.role;
+
   // Check if user is authenticated and has admin role
-  if (!userId || sessionClaims?.metadata?.role !== 'admin') {
+  if (!userId || role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

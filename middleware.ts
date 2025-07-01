@@ -1,8 +1,8 @@
 // middleware.ts
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { authMiddleware } from '@clerk/nextjs';
 import { NextResponse } from "next/server";
 
-export default clerkMiddleware((auth, req) => {
+export default authMiddleware((auth, req) => {
   const { userId, sessionClaims } = auth();
   const role = sessionClaims?.metadata?.role as string | undefined;
 
