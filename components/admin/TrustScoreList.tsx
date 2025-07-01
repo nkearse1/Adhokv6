@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, RefreshCw, ArrowUpDown, AlertTriangle, CheckCircle, XCircle, User, Shield } from 'lucide-react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 interface TalentTrustScore {
   id: string;
@@ -26,7 +26,7 @@ export default function TrustScoreList() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [updatingAll, setUpdatingAll] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     fetchTalentTrustScores();
@@ -120,7 +120,7 @@ export default function TrustScoreList() {
   };
 
   const viewTalentDetails = (talentId: string) => {
-    navigate(`/admin/talent/${talentId}`);
+    router.push(`/admin/talent/${talentId}`);
   };
 
   if (loading && talents.length === 0) {

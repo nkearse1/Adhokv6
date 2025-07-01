@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { UploadCloud, CalendarIcon, SendIcon, CreditCard } from 'lucide-react';
@@ -55,7 +55,9 @@ function DeliverableColumn({ status, deliverables, onDropDeliverable }) {
 }
 
 export default function ClientProjectWorkspace() {
-  const { id } = useParams();
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [deliverables, setDeliverables] = useState([
