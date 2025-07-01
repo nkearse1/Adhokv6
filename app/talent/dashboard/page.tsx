@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,7 +74,7 @@ interface Profile {
 }
 
 export default function TalentDashboard() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { userId, authUser, isAuthenticated, loading: authLoading } = useAuth();
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -179,7 +179,7 @@ export default function TalentDashboard() {
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6 px-2 md:px-0">
         <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
-        <Button onClick={() => navigate(`/talent/${username}/projects`)}>Browse Projects</Button>
+        <Button onClick={() => router.push(`/talent/${username}/projects`)}>Browse Projects</Button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">

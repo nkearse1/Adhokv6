@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,7 +46,7 @@ const projectPresets = {
 };
 
 export function ProjectUploadFlow() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
