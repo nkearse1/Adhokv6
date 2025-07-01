@@ -10,8 +10,8 @@ interface AuthState {
   username: string | null;
   userRole: UserRole;
   isAdmin: boolean;
-  isAuthenticated: boolean;
   loading: boolean;
+  isAuthenticated: boolean;
   setDevRole: (role: UserRole) => void;
 }
 
@@ -20,8 +20,8 @@ const defaultAuthState: AuthState = {
   username: null,
   userRole: 'talent',
   isAdmin: false,
-  isAuthenticated: false,
   loading: true,
+  isAuthenticated: false,
   setDevRole: () => {},
 };
 
@@ -31,7 +31,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, isSignedIn, isLoaded } = useUser();
-  const [state, setState] = useState<AuthState>(defaultAuthState);
+  const [state, setState] = useState(defaultAuthState);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -40,19 +40,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (devRole) {
         const mockUsers: Record<UserRole, Partial<AuthState>> = {
           admin: {
-            userId: 'mock-admin',
+            userId: 'admin-000',
             username: 'admin_demo',
             userRole: 'admin',
             isAdmin: true,
           },
           client: {
-            userId: 'mock-client',
+            userId: 'client-001',
             username: 'client_demo',
             userRole: 'client',
             isAdmin: false,
           },
           talent: {
-            userId: 'mock-talent',
+            userId: 'talent-001',
             username: 'talent_demo',
             userRole: 'talent',
             isAdmin: false,
@@ -61,11 +61,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         const mock = mockUsers[devRole];
         setState({
-          ...defaultAuthState,
-          ...mock,
+          userId: mock.userId || null,
+          username: mock.username || null,
+          userRole: mock.userRole || 'talent',
+          isAdmin: mock.isAdmin || false,
           isAuthenticated: true,
           loading: false,
-          setDevRole,
+          setDevRole: (role) => {
+            localStorage.setItem('dev_user_role', role);
+            window.location.reload();
+          },
         });
         return;
       }
@@ -81,18 +86,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           isAdmin: role === 'admin',
           isAuthenticated: true,
           loading: false,
-          setDevRole,
+          setDevRole: () => {},
         });
       } else {
-        setState({ ...defaultAuthState, loading: false, setDevRole });
+        setState({ ...defaultAuthState, loading: false });
       }
     }
   }, [isLoaded, isSignedIn, user]);
-
-  const setDevRole = (role: UserRole) => {
-    localStorage.setItem('dev_user_role', role);
-    window.location.reload();
-  };
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 };
