@@ -86,8 +86,13 @@ All mock users have the password: `password123`
 
 ## Project Structure
 
-- `/src` - Frontend React application
-- `/supabase` - Supabase migrations and functions
+- `/app` - Next.js application routes and pages
+- `/api` - Serverless API route handlers
+- `/components` - Shared React components
+- `/hooks` - Custom React hooks
+- `/lib` - Database access and utility functions
+- `/public` - Static assets
+- `/styles` - Global styles and Tailwind configuration
 - `/scripts` - Setup and utility scripts
 
 ## Features
