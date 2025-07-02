@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { flagTalent } from '@/lib/apiHandlers/talent';
 import { auth } from '@clerk/nextjs';
+import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const { userId, sessionClaims } = auth();
+  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role
-  if (!userId || sessionClaims?.metadata?.role !== 'admin') {
+  if (!userId || role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

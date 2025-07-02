@@ -1,10 +1,12 @@
 // middleware.ts
 import { authMiddleware } from '@clerk/nextjs';
 import { NextResponse } from "next/server";
+import type { SessionClaimsWithRole } from '@/lib/types';
 
 export default authMiddleware((auth, req) => {
   const { userId, sessionClaims } = auth();
-  const role = sessionClaims?.metadata?.role as string | undefined;
+  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role as
+    string | undefined;
 
   const pathname = req.nextUrl.pathname;
 
