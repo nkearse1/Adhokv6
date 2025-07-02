@@ -1,6 +1,5 @@
 'use client';
-import { ForgotPassword } from '@clerk/nextjs'; // or correct this import path
-// 🚫 Removed: import ForgotPasswordPage from './ForgotPasswordPage';
+import { ForgotPassword } from '@clerk/nextjs';
 
 export default function ForgotPasswordPage() {
   return (
