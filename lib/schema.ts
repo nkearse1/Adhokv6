@@ -181,13 +181,7 @@ export const waitlist = pgTable('waitlist', {
 });
 
 //PROFILE CREATION
-export const talentProfiles = pgTable('talent_profiles', {
-  id: uuid('id').primaryKey(),
-  email: text('email'),
-  fullName: text('full_name'),
-  expertise: text('expertise'),
-  experienceBadge: text('experience_badge'),
-  isQualified: boolean('is_qualified'),
+
 });
 
 export const clientProfiles = pgTable('client_profiles', {
