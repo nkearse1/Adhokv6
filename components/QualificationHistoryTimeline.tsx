@@ -3,7 +3,7 @@ import { Clock, UserPlus, FileText, Hand } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
-interface QualificationEntry {
+export interface QualificationEntry {
   reason: 'invited' | 'resume_match' | 'manual';
   timestamp: string;
 }
