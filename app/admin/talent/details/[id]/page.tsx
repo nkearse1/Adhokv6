@@ -9,7 +9,7 @@ import { AlertTriangle, CheckCircle, Flag, RefreshCw, User, Mail, MapPin, Briefc
 import { toast } from 'sonner';
 import TrustScoreCard from '@/components/admin/TrustScoreCard';
 import { useUser } from '@clerk/nextjs';
-import QualificationHistoryTimeline from '@/components/QualificationHistoryTimeline';
+import QualificationHistoryTimeline, { type QualificationEntry } from '@/components/QualificationHistoryTimeline';
 
 interface TalentProfile {
   id: string;
@@ -25,7 +25,7 @@ interface TalentProfile {
   experience_badge: string;
   is_qualified: boolean;
   qualification_reason?: string;
-  qualification_history?: { reason: string; timestamp: string }[];
+  qualification_history?: QualificationEntry[];
   trust_score?: number;
   trust_score_updated_at?: string;
   trust_score_factors?: {
@@ -36,6 +36,22 @@ interface TalentProfile {
     responseTime: number;
     clientRetention: number;
   };
+}
+
+const allowedReasons = ['manual', 'invited', 'resume_match'] as const;
+type AllowedReason = (typeof allowedReasons)[number];
+
+function sanitizeHistory(history: any): QualificationEntry[] {
+  try {
+    const parsed = typeof history === 'string' ? JSON.parse(history) : history;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((h: any) => ({
+      reason: allowedReasons.includes(h.reason) ? (h.reason as AllowedReason) : 'manual',
+      timestamp: h.timestamp,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export default function AdminTalentDetails() {
@@ -90,7 +106,9 @@ export default function AdminTalentDetails() {
             clientRetention: 3
           }
         };
-        
+
+        mockTalent.qualification_history = sanitizeHistory(mockTalent.qualification_history);
+
         setTalent(mockTalent);
         setLoading(false);
       }, 1000);
@@ -111,10 +129,10 @@ export default function AdminTalentDetails() {
         ...talent,
         is_qualified: qualified,
         qualification_reason: 'manual',
-        qualification_history: [
+        qualification_history: sanitizeHistory([
           ...(talent.qualification_history || []),
           { reason: 'manual', timestamp: new Date().toISOString() }
-        ]
+        ]),
       };
       
       setTalent(updatedTalent);
