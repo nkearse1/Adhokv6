@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 import { db } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { talentProfiles } from '@/lib/schema';
@@ -11,7 +13,7 @@ export async function updateTalentTrustScore(id: string) {
   // Example logic: increment trust score
   const result = await db
     .update(talentProfiles)
-    .set({ trustScore: Math.floor(Math.random() * 100), trustScoreUpdatedAt: new Date().toISOString() })
+    .set({ trustScore: Math.floor(Math.random() * 100), trustScoreUpdatedAt: new Date() })
     .where(eq(talentProfiles.id, id))
     .returning();
   return result[0];
