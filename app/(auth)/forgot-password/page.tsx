@@ -1,20 +1,29 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
-export default function ResetPasswordPage() {
-  useEffect(() => {
-    window.location.href = 'https://adhokpro.clerk.accounts.dev/forgot-password';
-  }, []);
-
+export default function ForgotPasswordPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-white p-4">
-      <div className="max-w-md w-full space-y-6 text-center">
-        <div className="flex justify-center items-center gap-2 mb-2">
-          <div className="h-8 w-8 text-[#2E3A8C] font-bold text-2xl">💼</div>
-          <h1 className="text-3xl font-bold text-[#2F2F2F]">Adhok</h1>
+      <div className="max-w-md w-full space-y-6">
+        {/* Brand Header */}
+        <div className="text-center">
+          <div className="flex justify-center items-center gap-2 mb-2">
+            <div className="h-8 w-8 text-[#2E3A8C] font-bold text-2xl">💼</div>
+            <h1 className="text-3xl font-bold text-[#2F2F2F]">Adhok</h1>
+          </div>
+          <p className="text-sm text-[#00A499] font-medium">Reset your password</p>
         </div>
-        <p className="text-sm text-[#00A499] font-medium">Redirecting to password reset...</p>
+
+        {/* Reset Link */}
+        <a
+          href="https://adhokpro.clerk.accounts.dev/forgot-password"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full text-center bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white py-2 rounded-md font-medium"
+        >
+          Go to Password Reset
+        </a>
       </div>
     </main>
   );
