@@ -3,9 +3,15 @@ import { db } from '@/lib/db';
 import { projects } from '@/lib/schema';
 import { auth } from '@clerk/nextjs';
 
+type SessionClaimsWithRole = {
+  metadata?: {
+    role?: string;
+  };
+};
+
 export async function GET(_req: NextRequest) {
   const { userId, sessionClaims } = auth();
-  const role = (sessionClaims as { metadata?: { role?: string } })?.metadata?.role;
+  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
   // Check if user is authenticated and has admin role
   if (!userId || role !== 'admin') {
