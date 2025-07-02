@@ -1,9 +1,11 @@
 import { getClientProjects } from '@/lib/apiHandlers/clients';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
+import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   const { userId, sessionClaims } = auth();
+  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated
   if (!userId) {
@@ -11,7 +13,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
   }
   
   // Check if user is admin or the client themselves
-  const isAdmin = sessionClaims?.metadata?.role === 'admin';
+  const isAdmin = role === 'admin';
   const isOwnProfile = userId === params.id;
   
   if (!isAdmin && !isOwnProfile) {
