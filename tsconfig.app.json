@@ -23,8 +23,16 @@
     /* for ShadCN and path resolution */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./*"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "app",
+    "components",
+    "lib",
+    "hooks",
+    "api",
+    "scripts",
+    "middleware.ts"
+  ]
 }
