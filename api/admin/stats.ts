@@ -1,13 +1,19 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+type SessionClaimsWithRole = {
+  metadata?: {
+    role?: string;
+  };
+};
+
 export const runtime = 'nodejs'; // ⛔ Clerk not supported on Edge runtime
 
 export async function GET() {
   const { userId, sessionClaims } = auth();
 
   // ✅ Safely extract role
-  const userRole = (sessionClaims?.metadata as { role?: string })?.role;
+  const userRole = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
   if (!userId || userRole !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
