@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import pdfParse from 'pdf-parse';
 
 async function extractTextFromPDF(url) {
