@@ -180,9 +180,6 @@ export const waitlist = pgTable('waitlist', {
   signedUpAt: timestamp('signed_up_at').defaultNow()
 });
 
-//PROFILE CREATION
-
-});
 
 export const clientProfiles = pgTable('client_profiles', {
   id: uuid('id').primaryKey(),
