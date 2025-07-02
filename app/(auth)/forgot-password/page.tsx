@@ -1,4 +1,6 @@
 'use client';
+import ForgotPasswordPage from './ForgotPasswordPage';
+
 
 export default function ForgotPasswordPage() {
   return (
