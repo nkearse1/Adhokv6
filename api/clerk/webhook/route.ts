@@ -3,12 +3,17 @@ import { Webhook } from 'svix';
 import { db } from '@/lib/db';
 import { users, talentProfiles, clientProfiles } from '@/lib/schema';
 
+interface ClerkWebhookEvent {
+  type: string;
+  data: any;
+}
+
 export async function POST(req: NextRequest) {
   const payload = await req.text();
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
 
   try {
-    const evt = wh.verify(payload, req.headers as any);
+    const evt = wh.verify(payload, req.headers as any) as ClerkWebhookEvent;
     console.log('Clerk webhook event', evt.type);
 
     if (evt.type === 'user.created') {
