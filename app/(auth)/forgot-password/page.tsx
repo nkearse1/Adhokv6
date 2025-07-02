@@ -1,10 +1,12 @@
 'use client';
-import { ForgotPassword } from '@clerk/nextjs';
+
+import React from 'react';
 
 export default function ForgotPasswordPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-white p-4">
       <div className="max-w-md w-full space-y-6">
+        {/* Brand Header */}
         <div className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
             <div className="h-8 w-8 text-[#2E3A8C] font-bold text-2xl">💼</div>
@@ -13,20 +15,15 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-[#00A499] font-medium">Reset your password</p>
         </div>
 
-        <ForgotPassword
-          appearance={{
-            elements: {
-              formButtonPrimary: "bg-[#2E3A8C] hover:bg-[#2E3A8C]/90",
-              card: "shadow-none",
-              headerTitle: "hidden",
-              headerSubtitle: "hidden",
-              formFieldLabel: "text-gray-700",
-              formFieldInput: "border border-gray-300 rounded-md",
-              footerActionLink: "text-[#2E3A8C] hover:text-[#2E3A8C]/90"
-            }
-          }}
-          redirectUrl="/sign-in"
-        />
+        {/* Reset Link */}
+        <a
+          href="https://adhokpro.clerk.accounts.dev/forgot-password"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full text-center bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white py-2 rounded-md font-medium"
+        >
+          Go to Password Reset
+        </a>
       </div>
     </main>
   );
