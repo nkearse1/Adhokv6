@@ -11,7 +11,7 @@ export async function updateTalentTrustScore(id: string) {
   // Example logic: increment trust score
   const result = await db
     .update(talentProfiles)
-    .set({ trust_score: Math.floor(Math.random() * 100), trust_score_updated_at: new Date().toISOString() })
+    .set({ trustScore: Math.floor(Math.random() * 100), trustScoreUpdatedAt: new Date().toISOString() })
     .where(eq(talentProfiles.id, id))
     .returning();
   return result[0];
