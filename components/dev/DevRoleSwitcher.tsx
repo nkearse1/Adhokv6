@@ -14,14 +14,14 @@ export default function DevRoleSwitcher() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('dev_user_role') as UserRole;
+      const stored = localStorage.getItem('devUserRole') as UserRole;
       if (stored) setRole(stored);
     }
   }, []);
 
   const switchRole = (newRole: UserRole) => {
     setRole(newRole);
-    localStorage.setItem('dev_user_role', newRole);
+    localStorage.setItem('devUserRole', newRole);
     router.refresh();
   };
 

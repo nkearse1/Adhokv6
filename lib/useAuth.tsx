@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      const devRole = localStorage.getItem('dev_user_role') as UserRole | null;
+      const devRole = localStorage.getItem('devUserRole') as UserRole | null;
 
       if (devRole) {
         const mockUsers: Record<UserRole, Partial<AuthState>> = {
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           isAuthenticated: true,
           loading: false,
           setDevRole: (role) => {
-            localStorage.setItem('dev_user_role', role);
+            localStorage.setItem('devUserRole', role);
             window.location.reload();
           },
         });
