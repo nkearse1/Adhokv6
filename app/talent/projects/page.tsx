@@ -25,13 +25,13 @@ const formatTimeRemaining = (end) => {
   return `${days}d ${hours}h ${minutes}m left`;
 };
 
-const expertiseOrder = {
+const expertiseOrder: Record<string, number> = {
   "Specialist": 1,
   "Pro Talent": 2,
   "Expert": 3,
 };
 
-const experienceBadgeMap = {
+const experienceBadgeMap: Record<string, string> = {
   "Entry Level": "Specialist",
   "Mid-Level": "Pro Talent",
   "Expert": "Expert",

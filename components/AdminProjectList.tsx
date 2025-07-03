@@ -16,9 +16,19 @@ import {
 import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 
+interface AdminProject {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  deadline: string;
+  project_budget?: number;
+  project_bids?: Array<{ count: number }>;
+}
+
 export default function AdminProjectList() {
   const router = useRouter();
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<AdminProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -41,7 +51,7 @@ export default function AdminProjectList() {
         throw new Error(json.error || 'Request failed');
       }
 
-      let data = json.data as any[];
+      let data = json.data as AdminProject[];
 
       let filteredData = data || [];
 
@@ -175,7 +185,7 @@ export default function AdminProjectList() {
                 </TableCell>
               </TableRow>
             ) : (
-              projects.map((project: any) => {
+              projects.map((project: AdminProject) => {
                 const budget = project.project_budget || 0;
                 const platformFee = budget * 0.1;
 

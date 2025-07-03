@@ -18,7 +18,7 @@ export default function InviteTalentForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           table: 'talent_profiles',
-          data: { email, join_method: 'invited', is_qualified: false }
+          data: { email, joinMethod: 'invited', isQualified: false }
         })
       });
       if (!res.ok) throw new Error('Insert failed')

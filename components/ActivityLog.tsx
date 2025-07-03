@@ -57,7 +57,7 @@ const ActivityLog: React.FC<ActivityLogProps> = ({ role, deliverables, activityL
 
       <div className="space-y-2">
         {/* PERMANENT: Activity log shows the same entries from centralized state */}
-        {activityLog.map((log, i) => (
+        {activityLog.map((log: string, i: number) => (
           <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
             <Clock className="w-4 h-4 text-gray-400" />
             <span>{log}</span>
@@ -69,7 +69,7 @@ const ActivityLog: React.FC<ActivityLogProps> = ({ role, deliverables, activityL
         <h4 className="text-sm font-semibold text-gray-800 mb-2">Deliverable Time Breakdown</h4>
         <div className="space-y-2">
           {/* PERMANENT: Shows the same deliverables from centralized state */}
-          {deliverables.map((d) => (
+          {deliverables.map((d: Deliverable) => (
             <div key={d.id} className="flex justify-between items-center border border-gray-100 p-3 rounded">
               <span className="text-sm font-medium text-gray-700">{d.title}</span>
               <Badge variant="secondary">

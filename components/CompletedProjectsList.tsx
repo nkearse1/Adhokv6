@@ -41,7 +41,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-4">
-      {projects.map((project) => (
+      {projects.map((project: CompletedProject) => (
         <Card
           key={project.id}
           className={`border ${project.id === expandedId ? "border-[#2E3A8C] border-2" : "border-gray-200"} hover:shadow-md transition cursor-pointer`}
@@ -69,7 +69,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
                   variant="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const updated = projects.map(p =>
+                    const updated = projects.map((p: CompletedProject) =>
                       p.id === project.id
                         ? { ...p, visibility: p.visibility === 'public' ? 'private' : 'public' }
                         : p
