@@ -10,7 +10,7 @@ interface CompletedProject {
   title: string;
   description: string;
   expertiseLevel: string;
-  completed_at: string; // ISO date
+  completedAt: string; // ISO date
   visibility: 'public' | 'private';
 }
 
@@ -24,7 +24,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
       const json = await res.json();
       if (res.ok) {
         const all = json.data || [];
-        setProjects(all.filter((p: any) => p.status === 'completed' && p.talent_id === userId));
+        setProjects(all.filter((p: any) => p.status === 'completed' && p.talentId === userId));
       }
     }
 
@@ -53,7 +53,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
                 <h3 className="text-lg font-semibold">{project.title}</h3>
                 <p className="text-sm text-muted-foreground">{project.description}</p>
                 <p className="text-xs text-gray-500">
-                  Completed on {format(new Date(project.completed_at), 'PPP')}
+                  Completed on {format(new Date(project.completedAt), 'PPP')}
                 </p>
                 {project.visibility === 'private' && (
                   <span className="text-xs text-orange-500">🔒 Private</span>
