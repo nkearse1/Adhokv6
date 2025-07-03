@@ -36,7 +36,7 @@ const ITEMS_PER_PAGE = 10;
 
 interface TalentProfile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   expertise: string;
   trustScore: number | null;
@@ -80,7 +80,7 @@ export default function AdminTalentList() {
 
       if (debouncedSearch) {
         data = data.filter((t: any) =>
-          t.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          t.fullName.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           t.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           t.expertise.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
@@ -319,7 +319,7 @@ export default function AdminTalentList() {
                       onChange={() => toggleSelect(talent.id)}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{talent.full_name}</TableCell>
+                  <TableCell className="font-medium">{talent.fullName}</TableCell>
                   <TableCell>{talent.email}</TableCell>
                   <TableCell>{talent.expertise}</TableCell>
                   <TableCell>{talent.location || 'N/A'}</TableCell>

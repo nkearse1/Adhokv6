@@ -23,7 +23,7 @@ interface AdminProject {
   status: string;
   deadline: string;
   projectBudget?: number;
-  project_bids?: Array<{ count: number }>;
+  projectBids?: Array<{ count: number }>;
 }
 
 export default function AdminProjectList() {
@@ -66,9 +66,9 @@ export default function AdminProjectList() {
       }
 
       if (bidFilter === "0") {
-        filteredData = filteredData.filter(p => !p.project_bids[0]?.count || p.project_bids[0].count === 0);
+        filteredData = filteredData.filter(p => !p.projectBids[0]?.count || p.projectBids[0].count === 0);
       } else if (bidFilter === "1+") {
-        filteredData = filteredData.filter(p => p.project_bids[0]?.count > 0);
+        filteredData = filteredData.filter(p => p.projectBids[0]?.count > 0);
       }
 
       if (revenueFilter === "low") {
@@ -195,7 +195,7 @@ export default function AdminProjectList() {
                     <TableCell>
                       <Badge variant="secondary">{project.status}</Badge>
                     </TableCell>
-                    <TableCell>{project.project_bids?.[0]?.count || 0}</TableCell>
+                    <TableCell>{project.projectBids?.[0]?.count || 0}</TableCell>
                     <TableCell>{new Date(project.deadline).toLocaleDateString()}</TableCell>
                     <TableCell className="max-w-[250px] truncate">{project.description}</TableCell>
                     <TableCell className="text-xs font-mono">{project.id}</TableCell>

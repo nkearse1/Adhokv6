@@ -19,11 +19,11 @@ export default function AdminClientDetails() {
       // For now, we'll use mock data
       const mockClient = {
         id,
-        full_name: 'Sarah Johnson',
+        fullName: 'Sarah Johnson',
         email: 'sarah.johnson@example.com',
-        company_id: '123',
+        companyId: '123',
         createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-        user_role: 'client',
+        userRole: 'client',
         company_profiles: {
           name: 'EcoShop Inc.'
         }
@@ -71,7 +71,7 @@ export default function AdminClientDetails() {
       <Card>
         <CardContent className="p-6 space-y-4">
           <div>
-            <strong>Name:</strong> {client.full_name}
+            <strong>Name:</strong> {client.fullName}
           </div>
           <div>
             <strong>Email:</strong> {client.email}
@@ -80,7 +80,7 @@ export default function AdminClientDetails() {
             <strong>Company:</strong> {client.company_profiles?.name || '—'}
           </div>
           <div>
-            <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
+            <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>
           </div>
           <div>
             <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}

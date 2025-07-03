@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 
 interface Client {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
-  company_id: string;
+  companyId: string;
   createdAt: string;
-  user_role: string;
+  userRole: string;
   company_profiles?: {
     name?: string;
   };
@@ -69,9 +69,9 @@ export default function AdminClientDetails() {
 
       <Card>
         <CardContent className="p-6 space-y-4">
-          <div>
-            <strong>Name:</strong> {client.full_name}
-          </div>
+        <div>
+          <strong>Name:</strong> {client.fullName}
+        </div>
           <div>
             <strong>Email:</strong> {client.email}
           </div>
@@ -79,7 +79,7 @@ export default function AdminClientDetails() {
             <strong>Company:</strong> {client.company_profiles?.name || '—'}
           </div>
           <div>
-            <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
+            <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>
           </div>
           <div>
             <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}

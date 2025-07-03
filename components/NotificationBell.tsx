@@ -13,7 +13,7 @@ const mockNotifications = [
     title: 'New Project Available',
     message: 'A new SEO project matching your skills is available',
     type: 'project_update',
-    is_read: false,
+    isRead: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
     metadata: { project_id: '123' }
   },
@@ -22,7 +22,7 @@ const mockNotifications = [
     title: 'Bid Accepted',
     message: 'Your bid for "Content Strategy" was accepted',
     type: 'bid_update',
-    is_read: true,
+    isRead: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     metadata: { project_id: '456' }
   }
@@ -30,18 +30,18 @@ const mockNotifications = [
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState(mockNotifications);
-  const [unreadCount, setUnreadCount] = useState(notifications.filter(n => !n.is_read).length);
+  const [unreadCount, setUnreadCount] = useState(notifications.filter(n => !n.isRead).length);
 
   const markAsRead = (id: string) => {
     setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, is_read: true } : n)
+      prev.map(n => n.id === id ? { ...n, isRead: true } : n)
     );
     setUnreadCount(prev => Math.max(0, prev - 1));
   };
 
   const markAllAsRead = () => {
     setNotifications(prev =>
-      prev.map(n => ({ ...n, is_read: true }))
+      prev.map(n => ({ ...n, isRead: true }))
     );
     setUnreadCount(0);
   };
@@ -88,9 +88,9 @@ export default function NotificationBell() {
                 <div
                   key={notification.id}
                   className={`p-4 transition-colors cursor-pointer hover:bg-gray-50 ${
-                    !notification.is_read ? 'bg-blue-50' : ''
+                    !notification.isRead ? 'bg-blue-50' : ''
                   }`}
-                  onClick={() => !notification.is_read && markAsRead(notification.id)}
+                  onClick={() => !notification.isRead && markAsRead(notification.id)}
                 >
                   <div className="flex justify-between items-start mb-1">
                     <h5 className="font-medium text-sm">{notification.title}</h5>
