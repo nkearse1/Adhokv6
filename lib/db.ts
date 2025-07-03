@@ -8,4 +8,6 @@ if (!connectionString) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
-export const db = drizzle(neon(connectionString), { schema });
+const sql = neon(connectionString);
+
+export const db = drizzle(sql, { schema });
