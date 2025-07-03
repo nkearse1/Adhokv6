@@ -89,7 +89,7 @@ export default function AdminProjectDetail() {
           linkedin: 'https://linkedin.com/in/alexrivera',
           portfolio: 'https://alexrivera.dev',
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
-          is_qualified: true,
+          isQualified: true,
           created_at: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
           total_projects: 12,
           success_rate: 95,

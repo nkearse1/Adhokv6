@@ -232,7 +232,7 @@ const DeliverablesPanel: React.FC<DeliverablesPanelProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Key Performance Indicators (KPIs) *</label>
                 <div className="space-y-2">
-                  {newDeliverable.kpis.map((kpi, index) => (
+                  {newDeliverable.kpis.map((kpi: string, index: number) => (
                     <div key={index} className="flex gap-2">
                       <Input
                         value={kpi}
@@ -322,7 +322,7 @@ const DeliverablesPanel: React.FC<DeliverablesPanelProps> = ({
                             <span className="text-xs font-medium text-green-800">KPIs</span>
                           </div>
                           <ul className="text-xs text-green-700 space-y-0.5">
-                            {deliverable.kpis.map((kpi, index) => (
+                            {deliverable.kpis.map((kpi: string, index: number) => (
                               <li key={index} className="flex items-start gap-1">
                                 <span className="text-green-500 mt-0.5">•</span>
                                 <span>{kpi}</span>
