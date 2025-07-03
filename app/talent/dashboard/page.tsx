@@ -65,7 +65,7 @@ interface Profile {
   location?: string;
   rate?: number;
   linkedin_url?: string;
-  is_qualified: boolean;
+  isQualified: boolean;
   metadata?: {
     marketing?: {
       expertiseLevel?: string;
@@ -99,7 +99,7 @@ export default function TalentDashboard() {
         location: "Tampa, FL",
         rate: 75,
         linkedin_url: "https://linkedin.com/in/mocktalent",
-        is_qualified: true,
+        isQualified: true,
         metadata: { marketing: { expertiseLevel: "Pro Talent" } },
       });
       const mockProjects = [

@@ -77,8 +77,8 @@ export default function RevenuePanel() {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || project.status === statusFilter;
     const matchesBids = bidFilter === "all" ||
-      (bidFilter === "0" && (project.project_bids?.length || 0) === 0) ||
-      (bidFilter === "1+" && (project.project_bids?.length || 0) > 0);
+      (bidFilter === "0" && (project.projectBids?.length || 0) === 0) ||
+      (bidFilter === "1+" && (project.projectBids?.length || 0) > 0);
     const budget = project.metadata?.marketing?.budget || 0;
     const matchesRevenue = revenueFilter === "all" ||
       (revenueFilter === "low" && budget < 2000) ||
@@ -124,7 +124,7 @@ export default function RevenuePanel() {
                 {filteredProjects.map((project) => (
                   <TableRow key={project.id}>
                     <TableCell className="font-medium">{project.title}</TableCell>
-                    <TableCell>{project.category_id}</TableCell>
+                    <TableCell>{project.categoryId}</TableCell>
                     <TableCell>
                       <Badge variant={project.status === 'completed' ? 'default' : 'secondary'}>
                         {project.status}
@@ -168,16 +168,16 @@ export default function RevenuePanel() {
               <TableBody>
                 {filteredEscrow.map((e) => (
                   <TableRow key={e.id}>
-                    <TableCell className="font-medium">{getProjectTitle(e.project_id)}</TableCell>
+                    <TableCell className="font-medium">{getProjectTitle(e.projectId)}</TableCell>
                     <TableCell>
                       <Badge variant={e.status === 'approved' ? 'default' : e.status === 'requested' ? 'secondary' : 'outline'}>
                         {e.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{new Date(e.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>{e.released_at ? new Date(e.released_at).toLocaleDateString() : '—'}</TableCell>
+                    <TableCell>{new Date(e.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{e.releasedAt ? new Date(e.releasedAt).toLocaleDateString() : '—'}</TableCell>
                     <TableCell>
-                      <Button size="sm" variant="outline" onClick={() => router.push(`/admin/projects/${e.project_id}`)}>
+                      <Button size="sm" variant="outline" onClick={() => router.push(`/admin/projects/${e.projectId}`)}>
                         Manage
                       </Button>
                     </TableCell>

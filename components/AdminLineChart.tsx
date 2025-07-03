@@ -89,18 +89,18 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
         }
 
         projects?.forEach(p => {
-          const m = new Date(p.created_at).toLocaleString('default', { month: 'short' });
+          const m = new Date(p.createdAt).toLocaleString('default', { month: 'short' });
           const bucket = months[m];
           if (!bucket) return;
           bucket.totalProjects += 1;
-          bucket.estRevenue += p.project_budget || 0;
+          bucket.estRevenue += p.projectBudget || 0;
           if (p.flagged) bucket.flaggedProjects += 1;
         });
 
         const talentMonths: Record<string, Set<string>> = {};
         talents?.forEach(t => {
           if (!t.isQualified) return;
-          const m = new Date(t.created_at).toLocaleString('default', { month: 'short' });
+          const m = new Date(t.createdAt).toLocaleString('default', { month: 'short' });
           if (!talentMonths[m]) talentMonths[m] = new Set();
           talentMonths[m].add(t.id);
         });
@@ -110,7 +110,7 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
 
         reviews?.forEach(r => {
           if (r.rating < 3) {
-            const m = new Date(r.created_at).toLocaleString('default', { month: 'short' });
+            const m = new Date(r.createdAt).toLocaleString('default', { month: 'short' });
             if (months[m]) months[m].negativeReviews += 1;
           }
         });
