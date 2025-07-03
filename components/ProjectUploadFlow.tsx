@@ -168,7 +168,6 @@ export function ProjectUploadFlow() {
                   </>
                 );
               })()}
-              </p>
               <p>
                 Entered Budget: <strong>${form.budget}</strong>
               </p>

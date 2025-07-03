@@ -59,12 +59,12 @@ interface Project {
 
 interface Profile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   expertise: string;
   location?: string;
   rate?: number;
-  linkedin_url?: string;
+  linkedinUrl?: string;
   isQualified: boolean;
   metadata?: {
     marketing?: {
@@ -93,12 +93,12 @@ export default function TalentDashboard() {
     if (USE_MOCK_SESSION) {
       setProfile({
         id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
-        full_name: "Mock Talent",
+        fullName: "Mock Talent",
         email: "talent@adhok.dev",
         expertise: "SEO",
         location: "Tampa, FL",
         rate: 75,
-        linkedin_url: "https://linkedin.com/in/mocktalent",
+        linkedinUrl: "https://linkedin.com/in/mocktalent",
         isQualified: true,
         metadata: { marketing: { expertiseLevel: "Pro Talent" } },
       });
