@@ -81,7 +81,7 @@ export default function AdminClientList() {
     }
   };
 
-  const getJoinBadge = (method) => {
+  const getJoinBadge = (method: string) => {
     return method === 'invited' ? (
       <Badge variant="secondary">Invited</Badge>
     ) : (
@@ -89,7 +89,7 @@ export default function AdminClientList() {
     );
   };
 
-  const getTrustBadge = (score) => {
+  const getTrustBadge = (score: number | null | undefined) => {
     if (score === null || score === undefined) return <span className="text-gray-400">—</span>;
     if (score >= 80) return <Badge className="bg-green-100 text-green-800">Excellent</Badge>;
     if (score >= 60) return <Badge className="bg-blue-100 text-blue-800">Good</Badge>;

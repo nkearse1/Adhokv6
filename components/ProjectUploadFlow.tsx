@@ -155,11 +155,19 @@ export function ProjectUploadFlow() {
               <p>
                 Based on <strong>{form.expertiseLevel}</strong> at <strong>${expertiseRates[form.expertiseLevel]}/hr</strong>
               </p>
-              <p>
-                Estimated Hours: <strong>{getEstimatedHours()} hrs</strong>
-              </p>
-              <p>
-                Estimated Project Cost: <strong>${expertiseRates[form.expertiseLevel] * getEstimatedHours()}</strong>
+              {(() => {
+                const hours = getEstimatedHours() ?? 0;
+                return (
+                  <>
+                    <p>
+                      Estimated Hours: <strong>{hours} hrs</strong>
+                    </p>
+                    <p>
+                      Estimated Project Cost: <strong>${expertiseRates[form.expertiseLevel] * hours}</strong>
+                    </p>
+                  </>
+                );
+              })()}
               </p>
               <p>
                 Entered Budget: <strong>${form.budget}</strong>
@@ -285,13 +293,18 @@ export function ProjectUploadFlow() {
                   <Input
                     type="number"
                     value={form.budget}
-                    onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setForm({ ...form, budget: e.target.value })
+                    }
                   />
-                  {getEstimatedHours() && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      Estimated Hours: {getEstimatedHours()} hrs
-                    </p>
-                  )}
+                  {(() => {
+                    const hours = getEstimatedHours();
+                    return hours ? (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Estimated Hours: {hours} hrs
+                      </p>
+                    ) : null;
+                  })()}
                 </div>
                 <Textarea
                   placeholder="Target Audience"

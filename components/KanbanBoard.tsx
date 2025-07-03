@@ -239,13 +239,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <span className="text-xs font-medium text-green-800">KPIs</span>
                         </div>
                         <ul className="text-xs text-green-700 space-y-0.5">
-                          {enhanced.kpis.slice(0, 2).map((kpi, index) => (
+                          {enhanced.kpis?.slice(0, 2).map((kpi: string, index: number) => (
                             <li key={index} className="flex items-start gap-1">
                               <span className="text-green-500 mt-0.5">•</span>
                               <span className="line-clamp-1">{kpi}</span>
                             </li>
                           ))}
-                          {enhanced.kpis.length > 2 && (
+                          {enhanced.kpis && enhanced.kpis.length > 2 && (
                             <li className="text-green-600 font-medium">
                               +{enhanced.kpis.length - 2} more
                             </li>

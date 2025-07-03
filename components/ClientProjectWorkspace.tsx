@@ -27,7 +27,12 @@ interface Message {
   timestamp: Date;
 }
 
-function DeliverableCard({ deliverable, onDrop }) {
+interface DeliverableCardProps {
+  deliverable: Deliverable;
+  onDrop?: (id: string) => void;
+}
+
+function DeliverableCard({ deliverable, onDrop }: DeliverableCardProps) {
   const [, drag] = useDrag({
     type: ItemTypes.DELIVERABLE,
     item: { id: deliverable.id },
@@ -48,10 +53,16 @@ function DeliverableCard({ deliverable, onDrop }) {
   );
 }
 
-function DeliverableColumn({ status, deliverables, onDropDeliverable }) {
+interface DeliverableColumnProps {
+  status: string;
+  deliverables: Deliverable[];
+  onDropDeliverable: (id: string, newStatus: string) => void;
+}
+
+function DeliverableColumn({ status, deliverables, onDropDeliverable }: DeliverableColumnProps) {
   const [, drop] = useDrop({
     accept: ItemTypes.DELIVERABLE,
-    drop: (item) => onDropDeliverable(item.id, status),
+    drop: (item: { id: string }) => onDropDeliverable(item.id, status),
   });
 
   return (
@@ -165,7 +176,9 @@ export default function ClientProjectWorkspace() {
               <div className="flex gap-2 mt-4">
                 <Input
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setMessage(e.target.value)
+                  }
                   placeholder="Send a message..."
                 />
                 <Button onClick={handleSend} className="bg-[#2E3A8C] text-white">

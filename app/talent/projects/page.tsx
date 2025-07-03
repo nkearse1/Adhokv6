@@ -132,9 +132,14 @@ export default function ProjectsPage() {
     }
   };
 
-  const activeBids = projects.filter(p => p.status === 'open');
-  const popularActiveBids = activeBids.filter(p => (p.bidCount ?? 0) > 0).sort((a, b) => (b.bidCount ?? 0) - (a.bidCount ?? 0)).slice(0, 3);
-  const otherActiveBids = activeBids.filter(p => !popularActiveBids.some(pop => pop.id === p.id));
+  const activeBids = projects.filter((p: Project) => p.status === 'open');
+  const popularActiveBids = activeBids
+    .filter((p: Project) => (p.bidCount ?? 0) > 0)
+    .sort((a: Project, b: Project) => (b.bidCount ?? 0) - (a.bidCount ?? 0))
+    .slice(0, 3);
+  const otherActiveBids = activeBids.filter((p: Project) =>
+    !popularActiveBids.some((pop) => pop.id === p.id)
+  );
 
   const sortedOtherActiveBids = useMemo(() => {
     let baseSorted = [...otherActiveBids];
@@ -149,9 +154,11 @@ export default function ProjectsPage() {
   }, [otherActiveBids, sortKey]);
 
   const displayActiveBids = [...popularActiveBids, ...sortedOtherActiveBids];
-  const filteredProjects = displayActiveBids.filter(p => selectedCategory === 'All' || p.category === selectedCategory);
+  const filteredProjects = displayActiveBids.filter(
+    (p: Project) => selectedCategory === 'All' || p.category === selectedCategory
+  );
 
-  const formatExpertise = (exp) => experienceBadgeMap[exp] ?? exp;
+  const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
   const formatDueDate = (isoDate) => format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
   const timeRemaining = (isoDate) => formatDistanceToNow(new Date(isoDate), { addSuffix: true });
 
@@ -186,7 +193,9 @@ export default function ProjectsPage() {
             <div className="flex flex-wrap gap-2">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSelectedCategory(e.target.value)
+                }
                 className="border rounded p-2 text-sm"
               >
                 <option value="All">All Categories</option>
@@ -197,7 +206,9 @@ export default function ProjectsPage() {
               </select>
               <select
                 value={sortKey}
-                onChange={(e) => setSortKey(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSortKey(e.target.value)
+                }
                 className="border rounded p-2 text-sm"
               >
                 <option value="bid">Sort by Budget (High to Low)</option>
@@ -281,7 +292,9 @@ export default function ProjectsPage() {
                   placeholder="Your hourly rate"
                   className="flex-1 border border-gray-300 rounded px-3 py-2"
                   value={bidAmount}
-                  onChange={(e) => setBidAmount(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setBidAmount(e.target.value)
+                  }
                   min={0}
                 />
                 <Button 

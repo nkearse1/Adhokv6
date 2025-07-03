@@ -36,14 +36,14 @@ const ITEMS_PER_PAGE = 10;
 
 interface TalentProfile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   expertise: string;
-  trust_score: number | null;
+  trustScore: number | null;
   isQualified: boolean;
   joinMethod?: string;
-  qualification_reason?: string;
-  qualification_history?: string[];
+  qualificationReason?: string;
+  qualificationHistory?: string[];
 }
 
 export default function AdminTalentList() {
@@ -80,7 +80,7 @@ export default function AdminTalentList() {
 
       if (debouncedSearch) {
         data = data.filter((t: any) =>
-          t.full_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          t.fullName.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           t.email.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           t.expertise.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
@@ -92,7 +92,7 @@ export default function AdminTalentList() {
 
       if (trustScoreFilter !== 'all') {
         data = data.filter((t: any) => {
-          const s = t.trust_score ?? 0;
+          const s = t.trustScore ?? 0;
           if (trustScoreFilter === 'high') return s >= 80;
           if (trustScoreFilter === 'medium') return s >= 60 && s < 80;
           if (trustScoreFilter === 'low') return s >= 40 && s < 60;
@@ -319,7 +319,7 @@ export default function AdminTalentList() {
                       onChange={() => toggleSelect(talent.id)}
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{talent.full_name}</TableCell>
+                  <TableCell className="font-medium">{talent.fullName}</TableCell>
                   <TableCell>{talent.email}</TableCell>
                   <TableCell>{talent.expertise}</TableCell>
                   <TableCell>{talent.location || 'N/A'}</TableCell>
@@ -330,18 +330,18 @@ export default function AdminTalentList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {talent.trust_score !== null && talent.trust_score !== undefined ? (
+                      {talent.trustScore !== null && talent.trustScore !== undefined ? (
                         <>
                           <span className={`font-bold ${
-                            talent.trust_score >= 80 ? 'text-green-600' : 
-                            talent.trust_score >= 60 ? 'text-blue-600' : 
-                            talent.trust_score >= 40 ? 'text-yellow-600' : 
+                            talent.trustScore >= 80 ? 'text-green-600' :
+                            talent.trustScore >= 60 ? 'text-blue-600' :
+                            talent.trustScore >= 40 ? 'text-yellow-600' :
                             'text-red-600'
                           }`}>
-                            {talent.trust_score.toFixed(1)}
+                            {talent.trustScore.toFixed(1)}
                           </span>
-                          {getTrustScoreBadge(talent.trust_score)}
-                          {talent.trust_score < 40 && (
+                          {getTrustScoreBadge(talent.trustScore)}
+                          {talent.trustScore < 40 && (
                             <AlertTriangle className="h-4 w-4 text-red-500" title="Performance Improvement Plan Required" />
                           )}
                         </>
@@ -358,9 +358,9 @@ export default function AdminTalentList() {
                         <RefreshCw className={`h-4 w-4 ${updatingTrustScore === talent.id ? 'animate-spin' : ''}`} />
                       </Button>
                     </div>
-                    {talent.trust_score_updated_at && (
+                    {talent.trustScoreUpdatedAt && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Updated: {new Date(talent.trust_score_updated_at).toLocaleDateString()}
+                        Updated: {new Date(talent.trustScoreUpdatedAt).toLocaleDateString()}
                       </p>
                     )}
                   </TableCell>
