@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -6,7 +6,7 @@ import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function POST(
-  _req: Request,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const { userId, sessionClaims } = auth();

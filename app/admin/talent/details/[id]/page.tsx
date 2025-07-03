@@ -23,7 +23,7 @@ interface TalentProfile {
   bio: string;
   expertise: string;
   experience_badge: string;
-  is_qualified: boolean;
+  isQualified: boolean;
   qualification_reason?: string;
   qualification_history?: QualificationEntry[];
   trust_score?: number;
@@ -89,7 +89,7 @@ export default function AdminTalentDetails() {
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
           expertise: 'SEO & Content Strategy',
           experience_badge: 'Expert Talent',
-          is_qualified: true,
+          isQualified: true,
           qualification_reason: 'manual',
           qualification_history: [
             { reason: 'invited', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString() },
@@ -127,7 +127,7 @@ export default function AdminTalentDetails() {
       // For now, we'll just update the local state
       const updatedTalent = {
         ...talent,
-        is_qualified: qualified,
+        isQualified: qualified,
         qualification_reason: 'manual',
         qualification_history: sanitizeHistory([
           ...(talent.qualification_history || []),
@@ -227,9 +227,9 @@ export default function AdminTalentDetails() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.full_name}</h1>
         <div className="space-x-2">
-          {talent.is_qualified ? (
-            <Button 
-              variant="destructive" 
+          {talent.isQualified ? (
+            <Button
+              variant="destructive"
               onClick={() => handleQualifyTalent(false)}
             >
               Disqualify
@@ -333,8 +333,8 @@ export default function AdminTalentDetails() {
                 <div>
                   <h3 className="font-semibold mb-2">Qualification Status</h3>
                   <div className="flex items-center gap-2 mb-4">
-                    <Badge variant={talent.is_qualified ? "default" : "secondary"}>
-                      {talent.is_qualified ? "Qualified" : "Unqualified"}
+                    <Badge variant={talent.isQualified ? "default" : "secondary"}>
+                      {talent.isQualified ? "Qualified" : "Unqualified"}
                     </Badge>
                     <Badge variant="outline">{talent.experience_badge}</Badge>
                   </div>

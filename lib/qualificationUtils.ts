@@ -1,7 +1,7 @@
 // This file contains utility functions for talent qualification
 
 export function applyAutoQualification(talent: any) {
-  const invited = talent.join_method === 'invited';
+  const invited = talent.joinMethod === 'invited';
   const hasKeywords = talent.bio?.toLowerCase().includes('seo') || talent.expertise?.toLowerCase().includes('seo');
 
   const newHistoryEntry = {
@@ -11,7 +11,7 @@ export function applyAutoQualification(talent: any) {
 
   return {
     ...talent,
-    is_qualified: invited || hasKeywords,
+    isQualified: invited || hasKeywords,
     qualification_reason: newHistoryEntry.reason,
     qualification_history: [...(talent.qualification_history || []), newHistoryEntry],
   };
@@ -46,7 +46,7 @@ export function getUpdatedTalentsWithQualification(talents: any[], shouldQualify
     };
     return {
       ...talent,
-      is_qualified: shouldQualify,
+      isQualified: shouldQualify,
       qualification_reason: reason,
       qualification_history: [...(talent.qualification_history || []), historyEntry],
     };

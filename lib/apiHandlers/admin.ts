@@ -9,7 +9,7 @@ export async function getAdminStats() {
   return {
     talentCount: talents.length,
     projectCount: projectsData.length,
-    qualifiedTalent: talents.filter(t => t.is_qualified).length
+    qualifiedTalent: talents.filter(t => t.isQualified).length
   };
 }
 

@@ -40,7 +40,8 @@ interface TalentProfile {
   email: string;
   expertise: string;
   trust_score: number | null;
-  is_qualified: boolean;
+  isQualified: boolean;
+  joinMethod?: string;
   qualification_reason?: string;
   qualification_history?: string[];
 }
@@ -86,7 +87,7 @@ export default function AdminTalentList() {
       }
 
       if (qualificationFilter !== 'all') {
-        data = data.filter((t: any) => t.is_qualified === (qualificationFilter === 'qualified'));
+        data = data.filter((t: any) => t.isQualified === (qualificationFilter === 'qualified'));
       }
 
       if (trustScoreFilter !== 'all') {
@@ -323,8 +324,8 @@ export default function AdminTalentList() {
                   <TableCell>{talent.expertise}</TableCell>
                   <TableCell>{talent.location || 'N/A'}</TableCell>
                   <TableCell>
-                    <Badge variant={talent.join_method === 'invited' ? 'secondary' : 'outline'}>
-                      {talent.join_method === 'invited' ? 'Invited' : 'Applied'}
+                    <Badge variant={talent.joinMethod === 'invited' ? 'secondary' : 'outline'}>
+                      {talent.joinMethod === 'invited' ? 'Invited' : 'Applied'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -364,13 +365,13 @@ export default function AdminTalentList() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={talent.is_qualified ? "default" : "secondary"}>
-                      {talent.is_qualified ? "Qualified" : "Unqualified"}
+                    <Badge variant={talent.isQualified ? "default" : "secondary"}>
+                      {talent.isQualified ? "Qualified" : "Unqualified"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      {!talent.is_qualified ? (
+                      {!talent.isQualified ? (
                         <Button
                           size="sm"
                           onClick={() => handleQualifyTalent(talent.id, true)}
