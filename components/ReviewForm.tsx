@@ -37,7 +37,7 @@ export default function ReviewForm({ projectId, onReviewSubmitted }: ReviewFormP
         body: JSON.stringify({
           table: 'project_reviews',
           data: {
-            project_id: projectId,
+            projectId: projectId,
             rating,
             comment,
             add_to_portfolio: addToPortfolio

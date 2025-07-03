@@ -11,9 +11,9 @@ interface Template {
   category: string;
   title: string;
   description: string;
-  suggested_level: 'entry' | 'mid' | 'expert';
-  estimated_hours: number;
-  suggested_budget: number;
+  suggestedLevel: 'entry' | 'mid' | 'expert';
+  estimatedHours: number;
+  suggestedBudget: number;
 }
 
 interface TemplatePickerProps {
@@ -71,15 +71,15 @@ export default function TemplatePicker({ templates, onApplyTemplate }: TemplateP
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <span className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    {template.estimated_hours} hours
+                    {template.estimatedHours} hours
                   </span>
                   <span className="flex items-center gap-1">
                     <DollarSign className="h-4 w-4" />
-                    {formatCurrency(template.suggested_budget)}
+                    {formatCurrency(template.suggestedBudget)}
                   </span>
                   <span className="flex items-center gap-1">
                     <Briefcase className="h-4 w-4" />
-                    {levelLabels[template.suggested_level]}
+                    {levelLabels[template.suggestedLevel]}
                   </span>
                 </div>
               </CardContent>

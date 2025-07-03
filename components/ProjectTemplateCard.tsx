@@ -11,9 +11,9 @@ interface ProjectTemplate {
   category: string;
   title: string;
   description: string;
-  suggested_level: 'entry' | 'mid' | 'expert';
-  estimated_hours: number;
-  suggested_budget: number;
+  suggestedLevel: 'entry' | 'mid' | 'expert';
+  estimatedHours: number;
+  suggestedBudget: number;
 }
 
 interface ProjectTemplateCardProps {
@@ -43,7 +43,7 @@ export default function ProjectTemplateCard({ template, onSelect }: ProjectTempl
             </Badge>
             <h3 className="text-lg font-semibold mt-2">{template.title}</h3>
           </div>
-          <ExperienceBadge level={template.suggested_level} />
+          <ExperienceBadge level={template.suggestedLevel} />
         </div>
 
         <p className="text-sm text-gray-600 mb-4">{template.description}</p>
@@ -52,11 +52,11 @@ export default function ProjectTemplateCard({ template, onSelect }: ProjectTempl
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              {template.estimated_hours}h
+              {template.estimatedHours}h
             </span>
             <span className="flex items-center gap-1">
               <DollarSign className="h-4 w-4" />
-              {formatCurrency(template.suggested_budget)}
+              {formatCurrency(template.suggestedBudget)}
             </span>
           </div>
           <Button

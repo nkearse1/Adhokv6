@@ -100,7 +100,7 @@ const useEscrow = (projectId: string) => {
 export default function ProjectWorkspace() {
   const params = useParams();
   const router = useRouter();
-  const project_id = params.project_id as string;
+  const projectId = params.projectId as string;
   const { user } = useUser();
   const [projectName] = useState("SEO Optimization");
   const [projectDeadline] = useState(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
@@ -122,7 +122,7 @@ export default function ProjectWorkspace() {
     canAccess,
     statusReady,
     getApprovalProgress
-  } = useProjectStatus(project_id);
+  } = useProjectStatus(projectId);
 
   const {
     escrowStatus,
@@ -130,7 +130,7 @@ export default function ProjectWorkspace() {
     approveEscrowRelease,
     rejectEscrowRelease,
     overrideEscrow
-  } = useEscrow(project_id);
+  } = useEscrow(projectId);
 
   useEffect(() => {
     if (projectStatus === 'Picked Up') {
@@ -141,9 +141,9 @@ export default function ProjectWorkspace() {
   useEffect(() => {
     if (!loading && !canAccess) {
       const username = user?.username || user?.id;
-      router.push(`/talent/projects/details/${project_id}`);
+      router.push(`/talent/projects/details/${projectId}`);
     }
-  }, [loading, canAccess, router, project_id, user]);
+  }, [loading, canAccess, router, projectId, user]);
 
   if (loading || !statusReady) {
     return (
@@ -171,7 +171,7 @@ export default function ProjectWorkspace() {
               </p>
             </AlertDescription>
           </Alert>
-          <Button onClick={() => router.push(`/talent/projects/details/${project_id}`)} className="mt-4 w-full sm:w-auto">
+          <Button onClick={() => router.push(`/talent/projects/details/${projectId}`)} className="mt-4 w-full sm:w-auto">
             View Project Details
           </Button>
         </div>
@@ -190,7 +190,7 @@ export default function ProjectWorkspace() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#2E3A8C] break-words">{projectName}</h1>
           <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href={`/talent/projects/details/${project_id}`} className="flex items-center gap-2">
+            <Link href={`/talent/projects/details/${projectId}`} className="flex items-center gap-2">
               <ExternalLink className="h-4 w-4" />
               Project Details
             </Link>
@@ -325,7 +325,7 @@ export default function ProjectWorkspace() {
           <TabsContent value="chat">
             <ChatPanel 
               role="talent"
-              projectId={project_id}
+              projectId={projectId}
               partnerTypingLabel="Client is typing..."
               deliverables={deliverables}
               projectStatus={projectStatus}
@@ -349,7 +349,7 @@ export default function ProjectWorkspace() {
 
           <TabsContent value="upload">
             <FileUpload
-              projectId={project_id}
+              projectId={projectId}
               onUploadComplete={(file) => addActivityLogEntry(`Uploaded file: ${file.name}`)}
             />
           </TabsContent>

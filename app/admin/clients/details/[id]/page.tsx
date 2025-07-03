@@ -24,7 +24,7 @@ export default function AdminClientDetails() {
         companyId: '123',
         createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
         userRole: 'client',
-        company_profiles: {
+        companyProfiles: {
           name: 'EcoShop Inc.'
         }
       };
@@ -77,7 +77,7 @@ export default function AdminClientDetails() {
             <strong>Email:</strong> {client.email}
           </div>
           <div>
-            <strong>Company:</strong> {client.company_profiles?.name || '—'}
+            <strong>Company:</strong> {client.companyProfiles?.name || '—'}
           </div>
           <div>
             <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>

@@ -64,7 +64,7 @@ interface Profile {
   expertise: string;
   location?: string;
   rate?: number;
-  linkedin_url?: string;
+  linkedinUrl?: string;
   isQualified: boolean;
   metadata?: {
     marketing?: {
@@ -98,7 +98,7 @@ export default function TalentDashboard() {
         expertise: "SEO",
         location: "Tampa, FL",
         rate: 75,
-        linkedin_url: "https://linkedin.com/in/mocktalent",
+        linkedinUrl: "https://linkedin.com/in/mocktalent",
         isQualified: true,
         metadata: { marketing: { expertiseLevel: "Pro Talent" } },
       });

@@ -38,18 +38,18 @@ export default function AdminProjectDetail() {
           status: 'in_progress',
           category: 'SEO',
           deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          estimated_hours: 40,
-          hourly_rate: 75,
+          estimatedHours: 40,
+          hourlyRate: 75,
           flagged: false,
           metadata: {
             marketing: {
               problem: 'Low organic search visibility and poor technical SEO performance affecting customer acquisition',
               deliverables: 'Technical SEO audit, keyword strategy, content optimization plan, performance tracking setup',
-              target_audience: 'E-commerce shoppers interested in sustainable products',
+              targetAudience: 'E-commerce shoppers interested in sustainable products',
               platforms: 'Shopify, Google Search Console, Google Analytics 4',
-              preferred_tools: 'Ahrefs, Screaming Frog, Surfer SEO',
-              brand_voice: 'Professional yet approachable, sustainability-focused',
-              inspiration_links: 'https://patagonia.com, https://allbirds.com'
+              preferredTools: 'Ahrefs, Screaming Frog, Surfer SEO',
+              brandVoice: 'Professional yet approachable, sustainability-focused',
+              inspirationLinks: 'https://patagonia.com, https://allbirds.com'
             },
             requestor: {
               name: 'Sarah Johnson',
@@ -58,7 +58,7 @@ export default function AdminProjectDetail() {
               phone: '+1 (555) 111-2222'
             }
           },
-          minimum_badge: 'Expert Talent'
+          minimumBadge: 'Expert Talent'
         };
         
         setProject(mockProject);
@@ -96,7 +96,7 @@ export default function AdminProjectDetail() {
           averageRating: 4.9,
           responseTime: '2h',
           totalEarnings: 45000,
-          hourly_rate: 75
+          hourlyRate: 75
         };
         
         setTalent(mockTalent);
@@ -109,7 +109,7 @@ export default function AdminProjectDetail() {
             comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
             createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
             reviewer: { fullName: 'Michael Chen' },
-            project_title: 'B2B SaaS SEO Strategy'
+            projectTitle: 'B2B SaaS SEO Strategy'
           },
           {
             id: 'review2',
@@ -117,7 +117,7 @@ export default function AdminProjectDetail() {
             comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
             createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
             reviewer: { fullName: 'Emily Rodriguez' },
-            project_title: 'E-commerce Technical SEO'
+            projectTitle: 'E-commerce Technical SEO'
           }
         ];
         
@@ -184,7 +184,7 @@ export default function AdminProjectDetail() {
     );
   }
 
-  const totalBudget = project.estimated_hours * project.hourly_rate;
+  const totalBudget = project.estimatedHours * project.hourlyRate;
   const talentEarnings = totalBudget * 0.85; // 85% to talent
   const platformFee = totalBudget * 0.15; // 15% platform fee
   const m = project.metadata?.marketing || {};
@@ -253,14 +253,14 @@ export default function AdminProjectDetail() {
                 <p><strong>Description:</strong> {project.description}</p>
                 <p><strong>Problem Statement:</strong> {m.problem}</p>
                 <p><strong>Deliverables:</strong> {m.deliverables}</p>
-                <p><strong>Target Audience:</strong> {m.target_audience}</p>
+                <p><strong>Target Audience:</strong> {m.targetAudience}</p>
                 <p><strong>Platforms:</strong> {m.platforms}</p>
-                <p><strong>Preferred Tools:</strong> {m.preferred_tools}</p>
-                <p><strong>Brand Voice:</strong> {m.brand_voice}</p>
-                {project.brief_url && (
+                <p><strong>Preferred Tools:</strong> {m.preferredTools}</p>
+                <p><strong>Brand Voice:</strong> {m.brandVoice}</p>
+                {project.briefUrl && (
                   <p>
                     <a
-                      href={project.brief_url}
+                      href={project.briefUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-blue-600 hover:underline"
@@ -277,11 +277,11 @@ export default function AdminProjectDetail() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span>Hourly Rate:</span>
-                  <span className="font-medium">${project.hourly_rate}/hr</span>
+                  <span className="font-medium">${project.hourlyRate}/hr</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Hours:</span>
-                  <span className="font-medium">{project.estimated_hours}h</span>
+                  <span className="font-medium">{project.estimatedHours}h</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Total Budget:</span>
@@ -298,7 +298,7 @@ export default function AdminProjectDetail() {
                 <div className="pt-2 border-t">
                   <div className="flex justify-between">
                     <span>Minimum Badge:</span>
-                    <ExperienceBadge level={project.minimum_badge} />
+                    <ExperienceBadge level={project.minimumBadge} />
                   </div>
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function AdminProjectDetail() {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Hourly Rate:</span>
-                            <span className="font-medium">${talent.hourly_rate || 0}/hr</span>
+                            <span className="font-medium">${talent.hourlyRate || 0}/hr</span>
                           </div>
                         </div>
                       </div>
@@ -631,7 +631,7 @@ export default function AdminProjectDetail() {
                             />
                           ))}
                           <span className="text-sm text-gray-600 ml-2">
-                            {review.project_title}
+                            {review.projectTitle}
                           </span>
                         </div>
                       </div>

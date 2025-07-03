@@ -24,7 +24,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
       const json = await res.json();
       if (res.ok) {
         const all = json.data || [];
-        setProjects(all.filter((p: any) => p.status === 'completed' && p.talent_id === userId));
+        setProjects(all.filter((p: any) => p.status === 'completed' && p.talentId === userId));
       }
     }
 

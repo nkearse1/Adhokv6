@@ -12,7 +12,7 @@ interface Client {
   companyId: string;
   createdAt: string;
   userRole: string;
-  company_profiles?: {
+  companyProfiles?: {
     name?: string;
   };
 }
@@ -76,7 +76,7 @@ export default function AdminClientDetails() {
             <strong>Email:</strong> {client.email}
           </div>
           <div>
-            <strong>Company:</strong> {client.company_profiles?.name || '—'}
+            <strong>Company:</strong> {client.companyProfiles?.name || '—'}
           </div>
           <div>
             <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>

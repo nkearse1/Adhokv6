@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 export default function TalentProjectDetail() {
   const params = useParams();
   const router = useRouter();
-  const project_id = params.project_id as string;
+  const projectId = params.projectId as string;
   const [project, setProject] = useState<any>(null);
   const [talentProfile, setTalentProfile] = useState<any>(null);
   const { user, isLoaded } = useUser();
@@ -21,23 +21,23 @@ export default function TalentProjectDetail() {
       // This would be replaced with a fetch to your API
       // For now, we'll use mock data
       const mockProject = {
-        id: project_id,
+        id: projectId,
         title: 'SEO Optimization Campaign',
         description: 'Improve search rankings for e-commerce website',
         status: 'in_progress',
         deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
         category: 'SEO',
-        estimated_hours: 40,
-        hourly_rate: 75,
+        estimatedHours: 40,
+        hourlyRate: 75,
         metadata: {
           marketing: {
             problem: 'Low organic search visibility affecting customer acquisition',
             deliverables: 'Technical SEO audit, keyword strategy, content optimization plan',
-            target_audience: 'E-commerce shoppers interested in sustainable products',
+            targetAudience: 'E-commerce shoppers interested in sustainable products',
             platforms: 'Shopify, Google Search Console, Google Analytics 4',
-            preferred_tools: 'Ahrefs, Screaming Frog, Surfer SEO',
-            brand_voice: 'Professional yet approachable, sustainability-focused',
-            inspiration_links: 'https://patagonia.com, https://allbirds.com'
+            preferredTools: 'Ahrefs, Screaming Frog, Surfer SEO',
+            brandVoice: 'Professional yet approachable, sustainability-focused',
+            inspirationLinks: 'https://patagonia.com, https://allbirds.com'
           },
           requestor: {
             name: 'Sarah Johnson',
@@ -46,7 +46,7 @@ export default function TalentProjectDetail() {
             phone: '+1 (555) 111-2222'
           }
         },
-        talent_id: user?.id
+        talentId: user?.id
       };
 
       setProject(mockProject);
@@ -64,7 +64,7 @@ export default function TalentProjectDetail() {
     if (isLoaded && user) {
       fetchProject();
     }
-  }, [project_id, isLoaded, user]);
+  }, [projectId, isLoaded, user]);
 
   const getBadgeStyle = (badge: string) => {
     switch (badge) {
@@ -83,7 +83,7 @@ export default function TalentProjectDetail() {
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
   // Calculate talent earnings (85% of total)
-  const talentEarnings = project.estimated_hours * project.hourly_rate * 0.85;
+  const talentEarnings = project.estimatedHours * project.hourlyRate * 0.85;
   const m = project.metadata?.marketing || {};
   const r = project.metadata?.requestor || {};
   const username = user?.username || user?.id;
@@ -109,7 +109,7 @@ export default function TalentProjectDetail() {
         </div>
         <div className="text-right">
           <div className="text-sm text-gray-600">
-            {project.estimated_hours}h @ ${project.hourly_rate}/hr
+            {project.estimatedHours}h @ ${project.hourlyRate}/hr
           </div>
           <div className="text-sm font-medium text-[#2E3A8C]">
             Your Earnings: ${talentEarnings.toLocaleString()}
@@ -134,10 +134,10 @@ export default function TalentProjectDetail() {
                   <strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString()}
                 </p>
               )}
-              {project.brief_url && (
+              {project.briefUrl && (
                 <p>
                   <a
-                    href={project.brief_url}
+                    href={project.briefUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-blue-600 hover:underline"
@@ -156,15 +156,15 @@ export default function TalentProjectDetail() {
               Target Audience & Channels
             </h3>
             <div className="space-y-3 text-sm">
-              <p><strong>Target Audience:</strong> {m.target_audience}</p>
+              <p><strong>Target Audience:</strong> {m.targetAudience}</p>
               <p><strong>Platforms:</strong> {m.platforms}</p>
-              <p><strong>Preferred Tools:</strong> {m.preferred_tools}</p>
-              <p><strong>Brand Voice:</strong> {m.brand_voice}</p>
-              {m.inspiration_links && (
+              <p><strong>Preferred Tools:</strong> {m.preferredTools}</p>
+              <p><strong>Brand Voice:</strong> {m.brandVoice}</p>
+              {m.inspirationLinks && (
                 <div>
                   <strong>Inspiration:</strong>
                   <div className="mt-1">
-                    {m.inspiration_links.split(',').map((link: string, i: number) => (
+                    {m.inspirationLinks.split(',').map((link: string, i: number) => (
                       <a
                         key={i}
                         href={link.trim()}
@@ -229,21 +229,21 @@ export default function TalentProjectDetail() {
         </CardContent>
       </Card>
 
-      {project.client_review && (
+      {project.clientReview && (
         <Card>
           <CardContent className="p-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Client Review
             </h3>
-            <p className="text-gray-800">{project.client_review}</p>
+            <p className="text-gray-800">{project.clientReview}</p>
           </CardContent>
         </Card>
       )}
 
       <div className="flex gap-3">
         <Button
-          onClick={() => router.push(`/talent/projects/workspace/${project_id}`)}
+          onClick={() => router.push(`/talent/projects/workspace/${projectId}`)}
           className="bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white"
         >
           Go to Workspace

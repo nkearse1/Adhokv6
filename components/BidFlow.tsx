@@ -44,7 +44,7 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
         const bidsJson = await bidsRes.json();
 
         setProject(projectData);
-        const bidList = (bidsJson.data || []).filter((b: any) => b.project_id === projectId);
+        const bidList = (bidsJson.data || []).filter((b: any) => b.projectId === projectId);
 
         setBids(
           bidList.map((bid: any) => ({
@@ -78,7 +78,7 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
           id: project?.id,
           data: {
             winning_bid_id: professionalId,
-            talent_id: professionalId,
+            talentId: professionalId,
             status: 'in_progress',
           },
         }),

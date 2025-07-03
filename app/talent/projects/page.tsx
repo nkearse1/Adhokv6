@@ -71,11 +71,11 @@ export default function ProjectsPage() {
         bidCount: 0,
         overview: project.metadata?.marketing?.problem || project.description,
         deliverables: project.metadata?.marketing?.deliverables || 'To be defined',
-        target_audience: project.metadata?.marketing?.target_audience || 'General audience',
+        targetAudience: project.metadata?.marketing?.targetAudience || 'General audience',
         platforms: project.metadata?.marketing?.platforms || 'Various platforms',
-        preferred_tools: project.metadata?.marketing?.preferred_tools || 'Standard tools',
-        brand_voice: project.metadata?.marketing?.brand_voice || 'Professional',
-        inspiration_links: project.metadata?.marketing?.inspiration_links || ''
+        preferredTools: project.metadata?.marketing?.preferredTools || 'Standard tools',
+        brandVoice: project.metadata?.marketing?.brandVoice || 'Professional',
+        inspirationLinks: project.metadata?.marketing?.inspirationLinks || ''
       })) || [];
 
       setProjects(formattedProjects);
@@ -108,9 +108,9 @@ export default function ProjectsPage() {
         body: JSON.stringify({
           table: 'project_bids',
           data: {
-            project_id: selectedProject.id,
-            professional_id: userId,
-            rate_per_hour: ratePerHour
+            projectId: selectedProject.id,
+            professionalId: userId,
+            ratePerHour: ratePerHour
           }
         })
       });
@@ -296,11 +296,11 @@ export default function ProjectsPage() {
             <div className="text-sm space-y-2">
               {selectedProject.overview && <p><strong>Overview:</strong> {selectedProject.overview}</p>}
               {selectedProject.deliverables && <p><strong>Deliverables:</strong> {selectedProject.deliverables}</p>}
-              {selectedProject.target_audience && <p><strong>Target Audience:</strong> {selectedProject.target_audience}</p>}
+              {selectedProject.targetAudience && <p><strong>Target Audience:</strong> {selectedProject.targetAudience}</p>}
               {selectedProject.platforms && <p><strong>Platforms:</strong> {selectedProject.platforms}</p>}
-              {selectedProject.preferred_tools && <p><strong>Preferred Tools:</strong> {selectedProject.preferred_tools}</p>}
-              {selectedProject.brand_voice && <p><strong>Brand Voice:</strong> {selectedProject.brand_voice}</p>}
-              {selectedProject.inspiration_links && <p><strong>Inspiration:</strong> {selectedProject.inspiration_links}</p>}
+              {selectedProject.preferredTools && <p><strong>Preferred Tools:</strong> {selectedProject.preferredTools}</p>}
+              {selectedProject.brandVoice && <p><strong>Brand Voice:</strong> {selectedProject.brandVoice}</p>}
+              {selectedProject.inspirationLinks && <p><strong>Inspiration:</strong> {selectedProject.inspirationLinks}</p>}
             </div>
           </div>
         )}

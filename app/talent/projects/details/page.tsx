@@ -11,26 +11,26 @@ import { Button } from '@/components/ui/button';
 function TalentProjectDetail() {
   const params = useParams();
   const router = useRouter();
-  const project_id = params.project_id;
+  const projectId = params.projectId;
   const [project, setProject] = useState<any>(null);
   const [talentProfile, setTalentProfile] = useState<any>(null);
   const { userRole, authUser, loading } = useAuth();
 
   useEffect(() => {
     const fetchProject = async () => {
-       const res = await fetch(`/api/db?table=projects&id=${project_id}`);
+       const res = await fetch(`/api/db?table=projects&id=${projectId}`);
       const json = await res.json();
       
       if (res.ok && json.data[0]) {
         const data = json.data[0];
        
         setProject(data);
-        if (data?.talent_id) {
+        if (data?.talentId) {
           
           const tRes = await fetch('/api/db?table=talent_profiles');
           const tJson = await tRes.json();
           if (tRes.ok) {
-            const talent = (tJson.data || []).find((p: any) => p.id === data.talent_id);
+            const talent = (tJson.data || []).find((p: any) => p.id === data.talentId);
             if (talent) setTalentProfile(talent);
           }
         }
@@ -38,7 +38,7 @@ function TalentProjectDetail() {
     };
 
     fetchProject();
-  }, [project_id]);
+  }, [projectId]);
 
   const getBadgeStyle = (badge: string) => {
     switch (badge) {
@@ -58,7 +58,7 @@ function TalentProjectDetail() {
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
   // Calculate talent earnings (85% of total)
-  const talentEarnings = project.estimated_hours * project.hourly_rate * 0.85;
+  const talentEarnings = project.estimatedHours * project.hourlyRate * 0.85;
   const m = project.metadata?.marketing || {};
   const r = project.metadata?.requestor || {};
   const username = authUser?.user_metadata?.username || authUser?.id;
@@ -84,7 +84,7 @@ function TalentProjectDetail() {
         </div>
         <div className="text-right">
           <div className="text-sm text-gray-600">
-            {project.estimated_hours}h @ ${project.hourly_rate}/hr
+            {project.estimatedHours}h @ ${project.hourlyRate}/hr
           </div>
           <div className="text-sm font-medium text-[#2E3A8C]">
             Your Earnings: ${talentEarnings.toLocaleString()}
@@ -109,10 +109,10 @@ function TalentProjectDetail() {
                   <strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString()}
                 </p>
               )}
-              {project.brief_url && (
+              {project.briefUrl && (
                 <p>
                   <a
-                    href={project.brief_url}
+                    href={project.briefUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-blue-600 hover:underline"
@@ -131,15 +131,15 @@ function TalentProjectDetail() {
               Target Audience & Channels
             </h3>
             <div className="space-y-3 text-sm">
-              <p><strong>Target Audience:</strong> {m.target_audience}</p>
+              <p><strong>Target Audience:</strong> {m.targetAudience}</p>
               <p><strong>Platforms:</strong> {m.platforms}</p>
-              <p><strong>Preferred Tools:</strong> {m.preferred_tools}</p>
-              <p><strong>Brand Voice:</strong> {m.brand_voice}</p>
-              {m.inspiration_links && (
+              <p><strong>Preferred Tools:</strong> {m.preferredTools}</p>
+              <p><strong>Brand Voice:</strong> {m.brandVoice}</p>
+              {m.inspirationLinks && (
                 <div>
                   <strong>Inspiration:</strong>
                   <div className="mt-1">
-                    {m.inspiration_links.split(',').map((link: string, i: number) => (
+                    {m.inspirationLinks.split(',').map((link: string, i: number) => (
                       <a
                         key={i}
                         href={link.trim()}
@@ -204,21 +204,21 @@ function TalentProjectDetail() {
         </CardContent>
       </Card>
 
-      {project.client_review && (
+      {project.clientReview && (
         <Card>
           <CardContent className="p-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Client Review
             </h3>
-            <p className="text-gray-800">{project.client_review}</p>
+            <p className="text-gray-800">{project.clientReview}</p>
           </CardContent>
         </Card>
       )}
 
       <div className="flex gap-3">
         <Button
-          onClick={() => router.push(`/talent/${username}/projects/${project_id}/workspace`)}
+          onClick={() => router.push(`/talent/${username}/projects/${projectId}/workspace`)}
           className="bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white"
         >
           Go to Workspace

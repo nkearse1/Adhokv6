@@ -53,11 +53,11 @@ interface Project {
   status?: string;
   overview?: string;
   deliverables?: string;
-  target_audience?: string;
+  targetAudience?: string;
   platforms?: string;
-  preferred_tools?: string;
-  brand_voice?: string;
-  inspiration_links?: string;
+  preferredTools?: string;
+  brandVoice?: string;
+  inspirationLinks?: string;
 }
 
 const TEAL_HIGHLIGHT = "#00A499";
@@ -78,11 +78,11 @@ export default function ProjectsPage() {
       status: 'open',
       overview: 'Help an e-comm brand rank for new seasonal collections.',
       deliverables: '3-5 keyword-optimized landing pages',
-      target_audience: 'DTC Gen Z consumers',
+      targetAudience: 'DTC Gen Z consumers',
       platforms: 'Shopify + Google Search Console',
-      preferred_tools: 'SEMRush + Jasper',
-      brand_voice: 'Trendy but concise',
-      inspiration_links: 'https://glossier.com | https://alo.com'
+      preferredTools: 'SEMRush + Jasper',
+      brandVoice: 'Trendy but concise',
+      inspirationLinks: 'https://glossier.com | https://alo.com'
     },
     {
       id: 2,
@@ -94,11 +94,11 @@ export default function ProjectsPage() {
       status: 'open',
       overview: 'Create a viral playbook for product launch.',
       deliverables: '15 content ideas, 7 draft captions, 1 calendar',
-      target_audience: 'Beauty creators + skincare lovers',
+      targetAudience: 'Beauty creators + skincare lovers',
       platforms: 'Instagram, TikTok',
-      preferred_tools: 'Canva, Meta Planner',
-      brand_voice: 'Bold, Gen Z, cheeky',
-      inspiration_links: 'https://starface.world | https://topicals.com'
+      preferredTools: 'Canva, Meta Planner',
+      brandVoice: 'Bold, Gen Z, cheeky',
+      inspirationLinks: 'https://starface.world | https://topicals.com'
     },
     {
       id: 3,
@@ -110,11 +110,11 @@ export default function ProjectsPage() {
       status: 'open',
       overview: 'Support organic visibility by establishing topic clusters.',
       deliverables: '1 blog strategy, 10 topic outlines',
-      target_audience: 'Small business owners + startup founders',
+      targetAudience: 'Small business owners + startup founders',
       platforms: 'WordPress, Notion',
-      preferred_tools: 'Ahrefs, SurferSEO',
-      brand_voice: 'Helpful and professional',
-      inspiration_links: 'https://zapier.com/blog | https://buffer.com/resources'
+      preferredTools: 'Ahrefs, SurferSEO',
+      brandVoice: 'Helpful and professional',
+      inspirationLinks: 'https://zapier.com/blog | https://buffer.com/resources'
     }
   ];
 
@@ -254,11 +254,11 @@ export default function ProjectsPage() {
             <div className="text-sm space-y-1">
               {selectedProject.overview && <p><strong>Overview:</strong> {selectedProject.overview}</p>}
               {selectedProject.deliverables && <p><strong>Deliverables:</strong> {selectedProject.deliverables}</p>}
-              {selectedProject.target_audience && <p><strong>Target Audience:</strong> {selectedProject.target_audience}</p>}
+              {selectedProject.targetAudience && <p><strong>Target Audience:</strong> {selectedProject.targetAudience}</p>}
               {selectedProject.platforms && <p><strong>Platforms:</strong> {selectedProject.platforms}</p>}
-              {selectedProject.preferred_tools && <p><strong>Preferred Tools:</strong> {selectedProject.preferred_tools}</p>}
-              {selectedProject.brand_voice && <p><strong>Brand Voice:</strong> {selectedProject.brand_voice}</p>}
-              {selectedProject.inspiration_links && <p><strong>Inspiration:</strong> {selectedProject.inspiration_links}</p>}
+              {selectedProject.preferredTools && <p><strong>Preferred Tools:</strong> {selectedProject.preferredTools}</p>}
+              {selectedProject.brandVoice && <p><strong>Brand Voice:</strong> {selectedProject.brandVoice}</p>}
+              {selectedProject.inspirationLinks && <p><strong>Inspiration:</strong> {selectedProject.inspirationLinks}</p>}
             </div>
           </div>
         )}

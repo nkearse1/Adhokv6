@@ -5,7 +5,7 @@ import ExperienceBadge from '@/components/ExperienceBadge';
 
 export default function TalentPortfolioPage() {
   const params = useParams();
-  const username = params.user_id as string;
+  const username = params.userId as string;
   const [profile, setProfile] = useState<any>(null);
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +24,8 @@ export default function TalentPortfolioPage() {
           expertise: 'SEO & Content Strategy',
           location: 'Austin, TX',
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
-          avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-          linkedin_url: 'https://linkedin.com/in/example',
+          avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          linkedinUrl: 'https://linkedin.com/in/example',
           metadata: {
             marketing: {
               experienceBadge: 'Expert Talent'
@@ -86,7 +86,7 @@ export default function TalentPortfolioPage() {
       <div className="flex flex-col md:flex-row items-center bg-white p-6 rounded-lg shadow mb-6 border">
         <div className="flex-shrink-0 mr-6 mb-4 md:mb-0">
           <img
-            src={profile.avatar_url || '/default-avatar.png'}
+            src={profile.avatarUrl || '/default-avatar.png'}
             alt={profile.fullName}
             className="w-24 h-24 rounded-full object-cover border"
           />
@@ -101,9 +101,9 @@ export default function TalentPortfolioPage() {
             <p className="text-sm text-gray-500">@{profile.username}</p>
           )}
           {profile.location && <p className="text-sm text-gray-600">📍 {profile.location}</p>}
-          {profile.linkedin_url && (
+          {profile.linkedinUrl && (
             <a
-              href={profile.linkedin_url}
+              href={profile.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-[#2E3A8C] underline hover:text-[#1B276F]"

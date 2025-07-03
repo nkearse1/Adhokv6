@@ -15,7 +15,7 @@ const mockNotifications = [
     type: 'project_update',
     isRead: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-    metadata: { project_id: '123' }
+    metadata: { projectId: '123' }
   },
   {
     id: '2',
@@ -24,7 +24,7 @@ const mockNotifications = [
     type: 'bid_update',
     isRead: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-    metadata: { project_id: '456' }
+    metadata: { projectId: '456' }
   }
 ];
 

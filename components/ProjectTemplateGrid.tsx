@@ -7,9 +7,9 @@ interface ProjectTemplate {
   category: string;
   title: string;
   description: string;
-  suggested_level: 'entry' | 'mid' | 'expert';
-  estimated_hours: number;
-  suggested_budget: number;
+  suggestedLevel: 'entry' | 'mid' | 'expert';
+  estimatedHours: number;
+  suggestedBudget: number;
 }
 
 interface ProjectTemplateGridProps {
