@@ -12,8 +12,8 @@ export function applyAutoQualification(talent: any) {
   return {
     ...talent,
     isQualified: invited || hasKeywords,
-    qualification_reason: newHistoryEntry.reason,
-    qualification_history: [...(talent.qualification_history || []), newHistoryEntry],
+    qualificationReason: newHistoryEntry.reason,
+    qualificationHistory: [...(talent.qualificationHistory || []), newHistoryEntry],
   };
 }
 
@@ -47,8 +47,8 @@ export function getUpdatedTalentsWithQualification(talents: any[], shouldQualify
     return {
       ...talent,
       isQualified: shouldQualify,
-      qualification_reason: reason,
-      qualification_history: [...(talent.qualification_history || []), historyEntry],
+      qualificationReason: reason,
+      qualificationHistory: [...(talent.qualificationHistory || []), historyEntry],
     };
   });
 }

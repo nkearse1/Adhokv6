@@ -13,7 +13,7 @@ import QualificationHistoryTimeline, { type QualificationEntry } from '@/compone
 
 interface TalentProfile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   username: string;
   phone: string;
@@ -22,13 +22,13 @@ interface TalentProfile {
   portfolio: string;
   bio: string;
   expertise: string;
-  experience_badge: string;
+  experienceBadge: string;
   isQualified: boolean;
-  qualification_reason?: string;
-  qualification_history?: QualificationEntry[];
-  trust_score?: number;
+  qualificationReason?: string;
+  qualificationHistory?: QualificationEntry[];
+  trustScore?: number;
   trustScoreUpdatedAt?: string;
-  trust_score_factors?: {
+  trustScoreFactors?: {
     completedProjects: number;
     adminComplaints: number;
     missedDeadlines: number;
@@ -79,7 +79,7 @@ export default function AdminTalentDetails() {
       setTimeout(() => {
         const mockTalent: TalentProfile = {
           id,
-          full_name: 'Alex Rivera',
+          fullName: 'Alex Rivera',
           email: 'alex.rivera@example.com',
           username: 'alex_rivera',
           phone: '+1 (555) 123-4567',
@@ -88,16 +88,16 @@ export default function AdminTalentDetails() {
           portfolio: 'https://alexrivera.dev',
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
           expertise: 'SEO & Content Strategy',
-          experience_badge: 'Expert Talent',
+          experienceBadge: 'Expert Talent',
           isQualified: true,
-          qualification_reason: 'manual',
-          qualification_history: [
+          qualificationReason: 'manual',
+          qualificationHistory: [
             { reason: 'invited', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString() },
             { reason: 'manual', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString() }
           ],
-          trust_score: 85,
+          trustScore: 85,
           trustScoreUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-          trust_score_factors: {
+          trustScoreFactors: {
             completedProjects: 12,
             adminComplaints: 0,
             missedDeadlines: 1,
@@ -107,7 +107,7 @@ export default function AdminTalentDetails() {
           }
         };
 
-        mockTalent.qualification_history = sanitizeHistory(mockTalent.qualification_history);
+        mockTalent.qualificationHistory = sanitizeHistory(mockTalent.qualificationHistory);
 
         setTalent(mockTalent);
         setLoading(false);
@@ -128,9 +128,9 @@ export default function AdminTalentDetails() {
       const updatedTalent = {
         ...talent,
         isQualified: qualified,
-        qualification_reason: 'manual',
-        qualification_history: sanitizeHistory([
-          ...(talent.qualification_history || []),
+        qualificationReason: 'manual',
+        qualificationHistory: sanitizeHistory([
+          ...(talent.qualificationHistory || []),
           { reason: 'manual', timestamp: new Date().toISOString() }
         ]),
       };
@@ -169,11 +169,11 @@ export default function AdminTalentDetails() {
       setTimeout(() => {
         const updatedTalent = {
           ...talent,
-          trust_score: Math.min(100, talent.trust_score! + 2),
+          trustScore: Math.min(100, talent.trustScore! + 2),
           trustScoreUpdatedAt: new Date().toISOString(),
-          trust_score_factors: {
-            ...talent.trust_score_factors!,
-            completedProjects: talent.trust_score_factors!.completedProjects + 1
+          trustScoreFactors: {
+            ...talent.trustScoreFactors!,
+            completedProjects: talent.trustScoreFactors!.completedProjects + 1
           }
         };
         
@@ -225,7 +225,7 @@ export default function AdminTalentDetails() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.full_name}</h1>
+        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.fullName}</h1>
         <div className="space-x-2">
           {talent.isQualified ? (
             <Button
@@ -268,7 +268,7 @@ export default function AdminTalentDetails() {
                       <User className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium">{talent.full_name}</p>
+                      <p className="font-medium">{talent.fullName}</p>
                       <p className="text-sm text-gray-600">@{talent.username}</p>
                     </div>
                   </div>
@@ -336,7 +336,7 @@ export default function AdminTalentDetails() {
                     <Badge variant={talent.isQualified ? "default" : "secondary"}>
                       {talent.isQualified ? "Qualified" : "Unqualified"}
                     </Badge>
-                    <Badge variant="outline">{talent.experience_badge}</Badge>
+                    <Badge variant="outline">{talent.experienceBadge}</Badge>
                   </div>
                   
                   <h3 className="font-semibold mb-2">Bio</h3>
@@ -361,9 +361,9 @@ export default function AdminTalentDetails() {
             </Button>
           </div>
           
-          <TrustScoreCard 
-            score={talent.trust_score ?? 50}
-            factors={talent.trust_score_factors ?? {
+          <TrustScoreCard
+            score={talent.trustScore ?? 50}
+            factors={talent.trustScoreFactors ?? {
               completedProjects: 0,
               adminComplaints: 0,
               missedDeadlines: 0,
@@ -413,8 +413,8 @@ export default function AdminTalentDetails() {
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-               {talent?.qualification_history ? (
-                <QualificationHistoryTimeline history={talent.qualification_history} />
+               {talent?.qualificationHistory ? (
+                <QualificationHistoryTimeline history={talent.qualificationHistory} />
               ) : (
                 <p className="text-sm text-gray-500">No qualification history available.</p>
               )}

@@ -44,7 +44,7 @@ interface Project {
   description: string;
   status: string;
   deadline: string;
-  project_budget: number;
+  projectBudget: number;
   rate_per_hour?: number;
   bidCount?: number;
   lastBid?: number;
@@ -109,7 +109,7 @@ export default function TalentDashboard() {
           description: "Audit a small business website",
           status: "open",
           deadline: new Date().toISOString(),
-          project_budget: 500,
+          projectBudget: 500,
           bidCount: 4,
           lastBid: 72,
           metadata: { marketing: { expertiseLevel: "Pro Talent" } },
@@ -120,7 +120,7 @@ export default function TalentDashboard() {
           description: "Develop comprehensive social media plan",
           status: "completed",
           deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-          project_budget: 1500,
+          projectBudget: 1500,
           bidCount: 1,
           lastBid: 140,
           deliverables: [
