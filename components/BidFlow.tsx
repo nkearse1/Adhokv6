@@ -44,15 +44,14 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
         const bidsJson = await bidsRes.json();
 
         if (projectData) {
-          const { minimum_badge, ...rest } = projectData;
-          setProject({ ...rest, minimumBadge: minimum_badge });
+          setProject(projectData);
         }
         const bidList = (bidsJson.data || []).filter((b: any) => b.projectId === projectId);
 
         setBids(
           bidList.map((bid: any) => ({
             id: bid.id,
-            ratePerHour: bid.rate_per_hour,
+            ratePerHour: bid.ratePerHour,
             name: bid.professionalId,
             badge: '',
             professionalId: bid.professionalId,
