@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
 // Get the database connection string from environment variables
-const connectionString: string = process.env.DATABASE_URL as string;
+const connectionString = process.env.DATABASE_URL;
 
 // Check if the connection string is defined
 if (!connectionString) {
