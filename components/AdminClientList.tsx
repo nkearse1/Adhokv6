@@ -143,14 +143,14 @@ export default function AdminClientList() {
                     <TableCell className="font-medium">{client.full_name}</TableCell>
                     <TableCell>{client.email}</TableCell>
                     <TableCell>{client.company}</TableCell>
-                    <TableCell>{new Date(client.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(client.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Badge variant="outline">Active</Badge>
                     </TableCell>
                     <TableCell>{getJoinBadge(client.joinMethod)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {getTrustBadge(client.trust_score)}
+                        {getTrustBadge(client.trustScore)}
                         <Button
                           size="sm"
                           variant="ghost"

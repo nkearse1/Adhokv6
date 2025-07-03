@@ -10,7 +10,7 @@ interface Client {
   full_name: string;
   email: string;
   company_id: string;
-  created_at: string;
+  createdAt: string;
   user_role: string;
   company_profiles?: {
     name?: string;
@@ -41,7 +41,7 @@ export default function AdminClientDetails() {
     };
 
     const fetchProjects = async () => {
-      const res = await fetch(`/api/projects?client_id=${id}`);
+      const res = await fetch(`/api/projects?clientId=${id}`);
       if (!res.ok) throw new Error('Failed to fetch projects');
       const json = await res.json();
       setProjects(json.data);
@@ -82,7 +82,7 @@ export default function AdminClientDetails() {
             <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
           </div>
           <div>
-            <strong>Joined:</strong> {new Date(client.created_at).toLocaleDateString()}
+            <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}
           </div>
         </CardContent>
       </Card>

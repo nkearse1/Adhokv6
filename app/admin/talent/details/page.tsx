@@ -24,11 +24,11 @@ interface TalentProfile {
   expertise: string;
   experience_badge: string;
   isQualified: boolean;
-  qualification_reason?: string;
-  qualification_history?: QualificationEntry[];
-  trust_score?: number;
-  trust_score_updated_at?: string;
-  trust_score_factors?: {
+  qualificationReason?: string;
+  qualificationHistory?: QualificationEntry[];
+  trustScore?: number;
+  trustScoreUpdatedAt?: string;
+  trustScoreFactors?: {
     completedProjects: number;
     adminComplaints: number;
     missedDeadlines: number;
@@ -75,7 +75,7 @@ export default function AdminTalentDetails() {
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
       const data = json.data;
       if (data) {
-        data.qualification_history = sanitizeHistory(data.qualification_history);
+        data.qualificationHistory = sanitizeHistory(data.qualificationHistory);
       }
       setTalent(data);
     } catch (error) {
@@ -264,8 +264,8 @@ export default function AdminTalentDetails() {
             </Button>
           </div>
           <TrustScoreCard
-            score={talent.trust_score ?? 50}
-            factors={talent.trust_score_factors ?? {
+            score={talent.trustScore ?? 50}
+            factors={talent.trustScoreFactors ?? {
               completedProjects: 0,
               adminComplaints: 0,
               missedDeadlines: 0,
@@ -273,15 +273,15 @@ export default function AdminTalentDetails() {
               responseTime: 0,
               clientRetention: 0
             }}
-            lastUpdated={talent.trust_score_updated_at ?? 'N/A'}
+            lastUpdated={talent.trustScoreUpdatedAt ?? 'N/A'}
           />
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-              {talent?.qualification_history?.length ? (
-                <QualificationHistoryTimeline history={talent.qualification_history} />
+              {talent?.qualificationHistory?.length ? (
+                <QualificationHistoryTimeline history={talent.qualificationHistory} />
               ) : (
                 <p className="text-sm text-gray-500">No qualification history available.</p>
               )}

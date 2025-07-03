@@ -11,7 +11,7 @@ interface Project {
   title: string;
   status: string;
   deadline: string;
-  project_budget: number;
+  projectBudget: number;
   bids?: number;
 }
 
@@ -39,7 +39,7 @@ export default function ClientDashboard() {
           title: 'SEO Optimization Campaign',
           status: 'open',
           deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          project_budget: 3500,
+          projectBudget: 3500,
           bids: 3
         },
         {
@@ -47,7 +47,7 @@ export default function ClientDashboard() {
           title: 'Social Media Strategy',
           status: 'in_progress',
           deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-          project_budget: 2800,
+          projectBudget: 2800,
           bids: 5
         }
       ];
@@ -147,7 +147,7 @@ export default function ClientDashboard() {
                 <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold truncate">{proj.title}</h2>
                   <p className="text-sm text-gray-500">Deadline: {formatDate(proj.deadline)}</p>
-                  <p className="text-sm text-gray-500">Budget: ${proj.project_budget?.toLocaleString()}</p>
+                  <p className="text-sm text-gray-500">Budget: ${proj.projectBudget?.toLocaleString()}</p>
                 </div>
                 <Button 
                   onClick={() => router.push(getProjectUrl(proj))}

@@ -25,14 +25,14 @@ interface User {
   full_name: string;
   email: string;
   status: string;
-  created_at: string;
+  createdAt: string;
 }
 
 interface Project {
   id: string;
   title: string;
   status: string;
-  created_at: string;
+  createdAt: string;
   deadline: string;
 }
 
@@ -75,14 +75,14 @@ export default function AdminPanel() {
           full_name: 'Alex Rivera',
           email: 'alex.rivera@example.com',
           status: 'approved',
-          created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+          createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2',
           full_name: 'Jessica Park',
           email: 'jessica.park@example.com',
           status: 'pending',
-          created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
         }
       ];
       
@@ -93,14 +93,14 @@ export default function AdminPanel() {
           id: '1',
           title: 'E-commerce SEO Optimization',
           status: 'open',
-          created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
           deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2',
           title: 'Content Marketing Strategy',
           status: 'in_progress',
-          created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
           deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
         }
       ];
@@ -223,7 +223,7 @@ export default function AdminPanel() {
                           {user.status}
                         </Badge>
                         <span className="text-sm text-gray-500">
-                          Joined {formatDistanceToNow(new Date(user.created_at), { addSuffix: true })}
+                          Joined {formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })}
                         </span>
                       </div>
                     </div>
@@ -272,7 +272,7 @@ export default function AdminPanel() {
                           {project.status}
                         </Badge>
                         <span className="text-sm text-gray-500">
-                          Created {formatDistanceToNow(new Date(project.created_at), { addSuffix: true })}
+                          Created {formatDistanceToNow(new Date(project.createdAt), { addSuffix: true })}
                         </span>
                         <span className="text-sm text-gray-500 flex items-center gap-1">
                           <Clock className="h-4 w-4" />
