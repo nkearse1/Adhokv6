@@ -35,7 +35,7 @@ export default function AdminAlerts() {
             id: n.id,
             type: n.type as AlertItem['type'],
             message: n.message,
-            timestamp: n.created_at,
+            timestamp: n.createdAt,
           }))
         );
       } else {

@@ -19,16 +19,16 @@ export default function TalentPortfolioPage() {
         // For now, we'll use mock data
         const mockProfile = {
           id: '123',
-          full_name: 'Alex Rivera',
+          fullName: 'Alex Rivera',
           username: username,
           expertise: 'SEO & Content Strategy',
           location: 'Austin, TX',
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
-          avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-          linkedin_url: 'https://linkedin.com/in/example',
+          avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+          linkedinUrl: 'https://linkedin.com/in/example',
           metadata: {
             marketing: {
-              experience_badge: 'Expert Talent'
+              experienceBadge: 'Expert Talent'
             }
           }
         };
@@ -86,16 +86,16 @@ export default function TalentPortfolioPage() {
       <div className="flex flex-col md:flex-row items-center bg-white p-6 rounded-lg shadow mb-6 border">
         <div className="flex-shrink-0 mr-6 mb-4 md:mb-0">
           <img
-            src={profile.avatar_url || '/default-avatar.png'}
-            alt={profile.full_name}
+            src={profile.avatarUrl || '/default-avatar.png'}
+            alt={profile.fullName}
             className="w-24 h-24 rounded-full object-cover border"
           />
         </div>
         <div className="flex-1 space-y-1">
-          <h1 className="text-2xl font-bold text-[#2E3A8C]">{profile.full_name}</h1>
+          <h1 className="text-2xl font-bold text-[#2E3A8C]">{profile.fullName}</h1>
           <p className="text-gray-700 text-sm">{profile.expertise}</p>
-          {profile?.metadata?.marketing?.experience_badge && (
-            <ExperienceBadge badge={profile.metadata.marketing.experience_badge} showTooltip />
+          {profile?.metadata?.marketing?.experienceBadge && (
+            <ExperienceBadge badge={profile.metadata.marketing.experienceBadge} showTooltip />
           )}
           {profile.username && (
             <p className="text-sm text-gray-500">@{profile.username}</p>
