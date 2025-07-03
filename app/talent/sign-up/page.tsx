@@ -30,9 +30,6 @@ export default function TalentSignUpPage() {
           }}
           signInUrl="/sign-in"
           redirectUrl="/talent/dashboard"
-          initialValues={{
-            role: "talent"
-          }}
         />
       </div>
     </main>
