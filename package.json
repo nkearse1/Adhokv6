@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "start": "next start",
     "db:push": "drizzle-kit push:pg",
+    "db:generate": "drizzle-kit generate:pg",
     "db:studio": "drizzle-kit studio",
     "seed-auth": "node --import dotenv/config scripts/seed-auth-users.js",
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
