@@ -41,7 +41,7 @@ export default function AdminClientDetails() {
     };
 
     const fetchProjects = async () => {
-      const res = await fetch(`/api/projects?client_id=${id}`);
+      const res = await fetch(`/api/projects?clientId=${id}`);
       if (!res.ok) throw new Error('Failed to fetch projects');
       const json = await res.json();
       setProjects(json.data);

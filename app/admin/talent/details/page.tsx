@@ -13,7 +13,7 @@ import QualificationHistoryTimeline, { type QualificationEntry } from '@/compone
 
 interface TalentProfile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   username: string;
   phone: string;
@@ -22,13 +22,13 @@ interface TalentProfile {
   portfolio: string;
   bio: string;
   expertise: string;
-  experience_badge: string;
+  experienceBadge: string;
   isQualified: boolean;
-  qualification_reason?: string;
-  qualification_history?: QualificationEntry[];
-  trust_score?: number;
+  qualificationReason?: string;
+  qualificationHistory?: QualificationEntry[];
+  trustScore?: number;
   trustScoreUpdatedAt?: string;
-  trust_score_factors?: {
+  trustScoreFactors?: {
     completedProjects: number;
     adminComplaints: number;
     missedDeadlines: number;
@@ -75,7 +75,7 @@ export default function AdminTalentDetails() {
       if (!res.ok) throw new Error(json.error || 'Failed to fetch');
       const data = json.data;
       if (data) {
-        data.qualification_history = sanitizeHistory(data.qualification_history);
+        data.qualificationHistory = sanitizeHistory(data.qualificationHistory);
       }
       setTalent(data);
     } catch (error) {
@@ -154,7 +154,7 @@ export default function AdminTalentDetails() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.full_name}</h1>
+        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.fullName}</h1>
         <div className="space-x-2">
           {talent.isQualified ? (
             <Button variant="destructive" onClick={() => handleQualifyTalent(false)}>Disqualify</Button>
@@ -185,7 +185,7 @@ export default function AdminTalentDetails() {
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <p className="font-medium">{talent.full_name}</p>
+              <p className="font-medium">{talent.fullName}</p>
               <p className="text-sm text-gray-600">@{talent.username}</p>
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function AdminTalentDetails() {
             <Badge variant={talent.isQualified ? 'default' : 'secondary'}>
               {talent.isQualified ? 'Qualified' : 'Unqualified'}
             </Badge>
-            <Badge variant="outline">{talent.experience_badge}</Badge>
+            <Badge variant="outline">{talent.experienceBadge}</Badge>
           </div>
 
           <h3 className="font-semibold mb-2">Bio</h3>
@@ -264,8 +264,8 @@ export default function AdminTalentDetails() {
             </Button>
           </div>
           <TrustScoreCard
-            score={talent.trust_score ?? 50}
-            factors={talent.trust_score_factors ?? {
+            score={talent.trustScore ?? 50}
+            factors={talent.trustScoreFactors ?? {
               completedProjects: 0,
               adminComplaints: 0,
               missedDeadlines: 0,
@@ -280,8 +280,8 @@ export default function AdminTalentDetails() {
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-              {talent?.qualification_history?.length ? (
-                <QualificationHistoryTimeline history={talent.qualification_history} />
+              {talent?.qualificationHistory?.length ? (
+                <QualificationHistoryTimeline history={talent.qualificationHistory} />
               ) : (
                 <p className="text-sm text-gray-500">No qualification history available.</p>
               )}
