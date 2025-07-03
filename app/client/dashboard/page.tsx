@@ -76,7 +76,7 @@ export default function ClientDashboard() {
   };
 
   const getStatusDisplay = (status: string) => {
-    const statusMap = {
+    const statusMap: { [key: string]: string } = {
       draft: 'Draft',
       open: 'Open',
       picked_up: 'Picked Up',

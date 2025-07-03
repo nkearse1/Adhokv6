@@ -8,13 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Package } from 'lucide-react';
 
-const expertiseRates = {
+const expertiseRates: { [key: string]: number } = {
   'Specialist': 50,
   'Pro Talent': 100,
   'Expert Talent': 150,
 };
 
-const projectPresets = {
+const projectPresets: { [key: string]: Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }> } = {
   SEO: [
     {
       title: 'Technical SEO Audit',
@@ -49,7 +49,23 @@ export function ProjectUploadFlow() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    briefFile: File | null;
+    title: string;
+    expertType: string;
+    description: string;
+    budget: string;
+    clientName: string;
+    company: string;
+    email: string;
+    phone: string;
+    password: string;
+    expertiseLevel: string;
+    targetAudience: string;
+    deliverables: string;
+    preferredTools: string;
+    brandVoice: string;
+  }>({
     briefFile: null as File | null,
     title: '',
     expertType: '',

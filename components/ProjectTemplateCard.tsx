@@ -21,13 +21,13 @@ interface ProjectTemplateCardProps {
   onSelect: (template: ProjectTemplate) => void;
 }
 
-const categoryColors = {
+const categoryColors: { [key: string]: string } = {
   'SEO': 'bg-blue-100 text-blue-800',
   'Web Design': 'bg-purple-100 text-purple-800',
   'Copywriting': 'bg-green-100 text-green-800',
   'Paid Ads': 'bg-orange-100 text-orange-800',
   'Social Media': 'bg-pink-100 text-pink-800'
-} as const;
+};
 
 export default function ProjectTemplateCard({ template, onSelect }: ProjectTemplateCardProps) {
   return (

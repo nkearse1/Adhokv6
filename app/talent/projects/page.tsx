@@ -40,10 +40,10 @@ const experienceBadgeMap = {
 const TEAL_HIGHLIGHT = "#00A499";
 
 export default function ProjectsPage() {
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [sortKey, setSortKey] = useState('bid');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [bidAmount, setBidAmount] = useState('');
   const [submittingBid, setSubmittingBid] = useState(false);
@@ -161,7 +161,7 @@ export default function ProjectsPage() {
 
       {popularActiveBids.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-          {popularActiveBids.map((project) => (
+          {popularActiveBids.map((project: any) => (
             <div
               key={project.id}
               className={`border-2 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all ${selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'}`}
@@ -207,7 +207,7 @@ export default function ProjectsPage() {
             </div>
           </div>
 
-          {filteredProjects.map((project) => (
+          {filteredProjects.map((project: any) => (
             <div
               key={project.id}
               className={`border-2 rounded-lg p-4 mb-4 cursor-pointer hover:shadow-md transition-all ${selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'}`}
