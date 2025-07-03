@@ -139,7 +139,7 @@ export default function ProjectsPage() {
   const sortedOtherActiveBids = useMemo(() => {
     let baseSorted = [...otherActiveBids];
     if (sortKey === 'bid') {
-      baseSorted.sort((a, b) => (b.project_budget || 0) - (a.project_budget || 0));
+      baseSorted.sort((a, b) => (b.projectBudget || 0) - (a.projectBudget || 0));
     } else if (sortKey === 'expertise') {
       baseSorted.sort((a, b) => (expertiseOrder[experienceBadgeMap[b.expertiseLevel] ?? b.expertiseLevel] ?? 0) - (expertiseOrder[experienceBadgeMap[a.expertiseLevel] ?? a.expertiseLevel] ?? 0));
     } else if (sortKey === 'deadline') {
@@ -171,7 +171,7 @@ export default function ProjectsPage() {
               <h3 className="text-lg font-semibold mb-2 break-words">{project.title}</h3>
               <p className="text-gray-600 text-sm mb-2">{project.description}</p>
               <div className="mt-2 text-xs text-gray-500">
-                <span>{project.bidCount} bids</span> &middot; <span>Budget: ${project.project_budget?.toLocaleString()}</span> &middot; <span>{timeRemaining(project.deadline)}</span>
+                <span>{project.bidCount} bids</span> &middot; <span>Budget: ${project.projectBudget?.toLocaleString()}</span> &middot; <span>{timeRemaining(project.deadline)}</span>
               </div>
               <Badge variant="outline" className="text-xs mt-2">{project.category}</Badge>
             </div>
@@ -240,7 +240,7 @@ export default function ProjectsPage() {
                 </div>
               </div>
               <div className="mt-2 text-xs text-gray-500">
-                <span>{project.bidCount} bids</span> &middot; <span>Budget: ${project.project_budget?.toLocaleString()}</span>
+                <span>{project.bidCount} bids</span> &middot; <span>Budget: ${project.projectBudget?.toLocaleString()}</span>
               </div>
             </div>
           ))}
@@ -273,7 +273,7 @@ export default function ProjectsPage() {
             </div>
             <div className="flex flex-col gap-4 mb-4">
               <span className="text-sm text-gray-700">
-                Project Budget: ${selectedProject.project_budget?.toLocaleString()}
+                Project Budget: ${selectedProject.projectBudget?.toLocaleString()}
               </span>
               <div className="flex flex-col sm:flex-row gap-2">
                 <input

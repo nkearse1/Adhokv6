@@ -22,7 +22,7 @@ export default function AdminClientDetails() {
         full_name: 'Sarah Johnson',
         email: 'sarah.johnson@example.com',
         company_id: '123',
-        created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+        createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
         user_role: 'client',
         company_profiles: {
           name: 'EcoShop Inc.'
@@ -83,7 +83,7 @@ export default function AdminClientDetails() {
             <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
           </div>
           <div>
-            <strong>Joined:</strong> {new Date(client.created_at).toLocaleDateString()}
+            <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}
           </div>
         </CardContent>
       </Card>

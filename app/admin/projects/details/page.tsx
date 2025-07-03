@@ -69,7 +69,7 @@ export default function AdminProjectDetail() {
           full_name: 'Sarah Johnson',
           email: 'sarah.johnson@example.com',
           company: 'EcoShop Inc.',
-          created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
           total_projects: 3,
           total_spent: 8500,
           average_rating: 4.8,
@@ -89,8 +89,8 @@ export default function AdminProjectDetail() {
           linkedin: 'https://linkedin.com/in/alexrivera',
           portfolio: 'https://alexrivera.dev',
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
-          is_qualified: true,
-          created_at: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
+          isQualified: true,
+          createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
           total_projects: 12,
           success_rate: 95,
           average_rating: 4.9,
@@ -107,7 +107,7 @@ export default function AdminProjectDetail() {
             id: 'review1',
             rating: 5,
             comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
-            created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
             reviewer: { full_name: 'Michael Chen' },
             project_title: 'B2B SaaS SEO Strategy'
           },
@@ -115,7 +115,7 @@ export default function AdminProjectDetail() {
             id: 'review2',
             rating: 4,
             comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
-            created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
             reviewer: { full_name: 'Emily Rodriguez' },
             project_title: 'E-commerce Technical SEO'
           }
@@ -558,9 +558,9 @@ export default function AdminProjectDetail() {
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Member Since</p>
-                          <p className="font-medium">
-                            {new Date(client.created_at).toLocaleDateString()}
-                          </p>
+                            <p className="font-medium">
+                              {new Date(client.createdAt).toLocaleDateString()}
+                            </p>
                         </div>
                       </div>
                     </div>
@@ -616,7 +616,7 @@ export default function AdminProjectDetail() {
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium">{review.reviewer.full_name}</h4>
                           <span className="text-sm text-gray-500">
-                            {new Date(review.created_at).toLocaleDateString()}
+                              {new Date(review.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex items-center gap-1 mb-2">

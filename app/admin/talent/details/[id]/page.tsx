@@ -24,11 +24,11 @@ interface TalentProfile {
   expertise: string;
   experience_badge: string;
   isQualified: boolean;
-  qualification_reason?: string;
-  qualification_history?: QualificationEntry[];
-  trust_score?: number;
-  trust_score_updated_at?: string;
-  trust_score_factors?: {
+  qualificationReason?: string;
+  qualificationHistory?: QualificationEntry[];
+  trustScore?: number;
+  trustScoreUpdatedAt?: string;
+  trustScoreFactors?: {
     completedProjects: number;
     adminComplaints: number;
     missedDeadlines: number;
@@ -90,14 +90,14 @@ export default function AdminTalentDetails() {
           expertise: 'SEO & Content Strategy',
           experience_badge: 'Expert Talent',
           isQualified: true,
-          qualification_reason: 'manual',
-          qualification_history: [
+          qualificationReason: 'manual',
+          qualificationHistory: [
             { reason: 'invited', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString() },
             { reason: 'manual', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString() }
           ],
-          trust_score: 85,
-          trust_score_updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-          trust_score_factors: {
+          trustScore: 85,
+          trustScoreUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+          trustScoreFactors: {
             completedProjects: 12,
             adminComplaints: 0,
             missedDeadlines: 1,
@@ -107,7 +107,7 @@ export default function AdminTalentDetails() {
           }
         };
 
-        mockTalent.qualification_history = sanitizeHistory(mockTalent.qualification_history);
+        mockTalent.qualificationHistory = sanitizeHistory(mockTalent.qualificationHistory);
 
         setTalent(mockTalent);
         setLoading(false);
@@ -128,9 +128,9 @@ export default function AdminTalentDetails() {
       const updatedTalent = {
         ...talent,
         isQualified: qualified,
-        qualification_reason: 'manual',
-        qualification_history: sanitizeHistory([
-          ...(talent.qualification_history || []),
+        qualificationReason: 'manual',
+        qualificationHistory: sanitizeHistory([
+          ...(talent.qualificationHistory || []),
           { reason: 'manual', timestamp: new Date().toISOString() }
         ]),
       };
@@ -169,11 +169,11 @@ export default function AdminTalentDetails() {
       setTimeout(() => {
         const updatedTalent = {
           ...talent,
-          trust_score: Math.min(100, talent.trust_score! + 2),
-          trust_score_updated_at: new Date().toISOString(),
-          trust_score_factors: {
-            ...talent.trust_score_factors!,
-            completedProjects: talent.trust_score_factors!.completedProjects + 1
+          trustScore: Math.min(100, talent.trustScore! + 2),
+          trustScoreUpdatedAt: new Date().toISOString(),
+          trustScoreFactors: {
+            ...talent.trustScoreFactors!,
+            completedProjects: talent.trustScoreFactors!.completedProjects + 1
           }
         };
         
@@ -361,9 +361,9 @@ export default function AdminTalentDetails() {
             </Button>
           </div>
           
-          <TrustScoreCard 
-            score={talent.trust_score ?? 50}
-            factors={talent.trust_score_factors ?? {
+          <TrustScoreCard
+            score={talent.trustScore ?? 50}
+            factors={talent.trustScoreFactors ?? {
               completedProjects: 0,
               adminComplaints: 0,
               missedDeadlines: 0,
@@ -371,7 +371,7 @@ export default function AdminTalentDetails() {
               responseTime: 0,
               clientRetention: 0
             }}
-            lastUpdated={talent.trust_score_updated_at ?? 'N/A'}
+            lastUpdated={talent.trustScoreUpdatedAt ?? 'N/A'}
           />
           
           <Card>
@@ -413,8 +413,8 @@ export default function AdminTalentDetails() {
         <TabsContent value="activity" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-               {talent?.qualification_history ? (
-                <QualificationHistoryTimeline history={talent.qualification_history} />
+               {talent?.qualificationHistory ? (
+                <QualificationHistoryTimeline history={talent.qualificationHistory} />
               ) : (
                 <p className="text-sm text-gray-500">No qualification history available.</p>
               )}

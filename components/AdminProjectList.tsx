@@ -22,7 +22,7 @@ interface AdminProject {
   description: string;
   status: string;
   deadline: string;
-  project_budget?: number;
+  projectBudget?: number;
   project_bids?: Array<{ count: number }>;
 }
 
@@ -72,11 +72,11 @@ export default function AdminProjectList() {
       }
 
       if (revenueFilter === "low") {
-        filteredData = filteredData.filter(p => (p.project_budget || 0) < 2000);
+        filteredData = filteredData.filter(p => (p.projectBudget || 0) < 2000);
       } else if (revenueFilter === "med") {
-        filteredData = filteredData.filter(p => (p.project_budget || 0) >= 2000 && (p.project_budget || 0) <= 4000);
+        filteredData = filteredData.filter(p => (p.projectBudget || 0) >= 2000 && (p.projectBudget || 0) <= 4000);
       } else if (revenueFilter === "high") {
-        filteredData = filteredData.filter(p => (p.project_budget || 0) > 4000);
+        filteredData = filteredData.filter(p => (p.projectBudget || 0) > 4000);
       }
 
       if (searchQuery) {
@@ -186,7 +186,7 @@ export default function AdminProjectList() {
               </TableRow>
             ) : (
               projects.map((project: AdminProject) => {
-                const budget = project.project_budget || 0;
+                const budget = project.projectBudget || 0;
                 const platformFee = budget * 0.1;
 
                 return (

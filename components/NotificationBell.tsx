@@ -14,7 +14,7 @@ const mockNotifications = [
     message: 'A new SEO project matching your skills is available',
     type: 'project_update',
     is_read: false,
-    created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
     metadata: { project_id: '123' }
   },
   {
@@ -23,7 +23,7 @@ const mockNotifications = [
     message: 'Your bid for "Content Strategy" was accepted',
     type: 'bid_update',
     is_read: true,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     metadata: { project_id: '456' }
   }
 ];
@@ -95,7 +95,7 @@ export default function NotificationBell() {
                   <div className="flex justify-between items-start mb-1">
                     <h5 className="font-medium text-sm">{notification.title}</h5>
                     <span className="text-xs text-gray-500">
-                      {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600">{notification.message}</p>

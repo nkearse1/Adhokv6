@@ -174,8 +174,8 @@ export default function RevenuePanel() {
                         {e.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{new Date(e.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>{e.released_at ? new Date(e.released_at).toLocaleDateString() : '—'}</TableCell>
+                    <TableCell>{new Date(e.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{e.released_at ? new Date(e.releasedAt).toLocaleDateString() : '—'}</TableCell>
                     <TableCell>
                       <Button size="sm" variant="outline" onClick={() => router.push(`/admin/projects/${e.project_id}`)}>
                         Manage
