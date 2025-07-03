@@ -22,14 +22,14 @@ interface TemplatePickerProps {
 }
 
 export default function TemplatePicker({ templates, onApplyTemplate }: TemplatePickerProps) {
-  const categoryColors = {
+  const categoryColors: { [key: string]: string } = {
     social_media: 'bg-blue-100 text-blue-800',
     content: 'bg-green-100 text-green-800',
     email: 'bg-purple-100 text-purple-800',
     advertising: 'bg-orange-100 text-orange-800'
   };
 
-  const levelLabels = {
+  const levelLabels: { [key: string]: string } = {
     entry: 'Entry Level',
     mid: 'Professional',
     expert: 'Expert'
@@ -44,7 +44,7 @@ export default function TemplatePicker({ templates, onApplyTemplate }: TemplateP
 
       <ScrollArea className="h-[300px] pr-4">
         <div className="space-y-4">
-          {templates.map((template) => (
+          {templates.map((template: Template) => (
             <Card key={template.id} className="hover:border-brand-primary transition-colors">
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">

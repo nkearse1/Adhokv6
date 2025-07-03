@@ -37,7 +37,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const metricConfig = {
+const metricConfig: {
+  [key: string]: { stroke: string; name: string; strokeWidth: number; isDashed: boolean };
+} = {
   totalProjects: { stroke: '#2E3A8C', name: 'Total Projects', strokeWidth: 2, isDashed: false },
   estRevenue: { stroke: '#00A499', name: 'Estimated Revenue ($)', strokeWidth: 2, isDashed: false },
   activeTalent: { stroke: '#10B981', name: 'Active Talent', strokeWidth: 2, isDashed: false },

@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 export default function AdminProjectList() {
   const router = useRouter();
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -175,7 +175,7 @@ export default function AdminProjectList() {
                 </TableCell>
               </TableRow>
             ) : (
-              projects.map((project) => {
+              projects.map((project: any) => {
                 const budget = project.project_budget || 0;
                 const platformFee = budget * 0.1;
 

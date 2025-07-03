@@ -15,6 +15,6 @@ export async function getClientProjects(id: string) {
   const result = await db
     .select()
     .from(projects)
-    .where(eq(projects.client_id, id));
+    .where(eq(projects.clientId, id));
   return result;
 }

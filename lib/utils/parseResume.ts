@@ -37,7 +37,7 @@ export function parseResume(text: string): { years: number; level: ExperienceLev
 }
 
 // Example company tier mapping (can be moved to constants.js)
-const COMPANY_TIERS = {
+const COMPANY_TIERS: { [key: string]: number } = {
   Google: 5,
   Microsoft: 5,
   Meta: 4.5,
@@ -45,7 +45,7 @@ const COMPANY_TIERS = {
   Shopify: 4,
   Freelancer: 2,
   Unknown: 1
-}
+};
 
 function getCompanyRating(companyName: string) {
   return COMPANY_TIERS[companyName] || 2.5 // Default to mid-tier if unknown
