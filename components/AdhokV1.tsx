@@ -9,10 +9,10 @@ import { toast } from "sonner";
 import { Briefcase } from "lucide-react";
 
 export default function AdhokV1() {
-  const [projects, setProjects] = useState([]);
-  const [bids, setBids] = useState({});
-  const [bidErrors, setBidErrors] = useState({});
-  const [newProject, setNewProject] = useState({ title: "", description: "", deadline: "", minHours: "" });
+  const [projects, setProjects] = useState<any[]>([]);
+  const [bids, setBids] = useState<Record<string, any>>({});
+  const [bidErrors, setBidErrors] = useState<Record<string, any>>({});
+  const [newProject, setNewProject] = useState<{ title: string; description: string; deadline: string; minHours: string }>({ title: "", description: "", deadline: "", minHours: "" });
   const [filter, setFilter] = useState("");
   const [authUser, setAuthUser] = useState("");
 

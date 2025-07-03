@@ -13,6 +13,20 @@ const ItemTypes = {
   DELIVERABLE: 'deliverable',
 };
 
+interface Deliverable {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+}
+
+interface Message {
+  id: number;
+  sender: string;
+  text: string;
+  timestamp: Date;
+}
+
 function DeliverableCard({ deliverable, onDrop }) {
   const [, drag] = useDrag({
     type: ItemTypes.DELIVERABLE,
@@ -46,8 +60,8 @@ function DeliverableColumn({ status, deliverables, onDropDeliverable }) {
         {status === 'approved' ? 'Approved' : 'Recommended'}
       </h4>
       {deliverables
-        .filter((d) => d.status === status)
-        .map((d) => (
+        .filter((d: Deliverable) => d.status === status)
+        .map((d: Deliverable) => (
           <DeliverableCard key={d.id} deliverable={d} />
         ))}
     </div>
@@ -58,9 +72,9 @@ export default function ClientProjectWorkspace() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
-  const [deliverables, setDeliverables] = useState([
+  const [deliverables, setDeliverables] = useState<Deliverable[]>([
     {
       id: '1',
       title: 'SEO Audit',
@@ -86,7 +100,7 @@ export default function ClientProjectWorkspace() {
       status: 'pending',
     },
   ]);
-  const [activityLog, setActivityLog] = useState([]);
+  const [activityLog, setActivityLog] = useState<string[]>([]);
 
   useEffect(() => {
     setMessages([
@@ -115,9 +129,9 @@ export default function ClientProjectWorkspace() {
     alert('🛠️ Request for optimization sent.');
   };
 
-  const handleDropDeliverable = (id, newStatus) => {
+  const handleDropDeliverable = (id: string, newStatus: string) => {
     setDeliverables((prev) =>
-      prev.map((d) =>
+      prev.map((d: Deliverable) =>
         d.id === id ? { ...d, status: newStatus } : d
       )
     );
@@ -141,7 +155,7 @@ export default function ClientProjectWorkspace() {
           <TabsContent value="chat">
             <div className="bg-white border border-[#2E3A8C] rounded-lg p-4 shadow-sm">
               <div className="max-h-60 overflow-y-auto space-y-2">
-                {messages.map((msg) => (
+                {messages.map((msg: Message) => (
                   <div key={msg.id} className="text-sm">
                     <strong>{msg.sender}:</strong> {msg.text}{' '}
                     <span className="text-gray-400 text-xs">({format(msg.timestamp, 'p')})</span>
@@ -190,7 +204,7 @@ export default function ClientProjectWorkspace() {
           <TabsContent value="activity">
             <div className="bg-white border border-[#2E3A8C] rounded-lg p-4 shadow-sm">
               <ul className="text-sm list-disc ml-5 text-gray-700">
-                {activityLog.map((log, i) => (
+                {activityLog.map((log: string, i: number) => (
                   <li key={i}>{log}</li>
                 ))}
               </ul>

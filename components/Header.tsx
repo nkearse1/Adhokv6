@@ -24,7 +24,7 @@ export function Header() {
     
     const userId = user?.id;
     
-    const dashboardPaths = {
+    const dashboardPaths: { [key: string]: string } = {
       client: `/client/dashboard`,
       talent: `/talent/dashboard`,
       admin: `/admin/dashboard`

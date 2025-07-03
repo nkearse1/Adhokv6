@@ -17,7 +17,7 @@ import FileUpload from '@/components/FileUpload';
 
 // Mock hooks to replace the ones that used Supabase
 const useProjectStatus = (projectId: string) => {
-  const [deliverables, setDeliverables] = useState([
+  const [deliverables, setDeliverables] = useState<any[]>([
     {
       id: '1',
       title: 'Technical SEO Audit',
@@ -42,7 +42,7 @@ const useProjectStatus = (projectId: string) => {
     }
   ]);
   
-  const [activityLog, setActivityLog] = useState([
+  const [activityLog, setActivityLog] = useState<string[]>([
     'Project started',
     'Initial deliverables proposed',
     'Technical SEO audit started'

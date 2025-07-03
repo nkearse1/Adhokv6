@@ -21,9 +21,9 @@ import {
 import { toast } from 'sonner';
 
 export default function AdminClientList() {
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredClients, setFilteredClients] = useState([]);
+  const [filteredClients, setFilteredClients] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -138,7 +138,7 @@ export default function AdminClientList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedClients.map((client) => (
+                {paginatedClients.map((client: any) => (
                   <TableRow key={client.id}>
                     <TableCell className="font-medium">{client.full_name}</TableCell>
                     <TableCell>{client.email}</TableCell>

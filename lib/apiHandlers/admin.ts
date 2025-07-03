@@ -1,9 +1,9 @@
 import { db } from '@/lib/db';
-import { talent_profiles, projects } from '@/lib/schema';
+import { talentProfiles, projects } from '@/lib/schema';
 
 export async function getAdminStats() {
   const [talents, projectsData] = await Promise.all([
-    db.select().from(talent_profiles),
+    db.select().from(talentProfiles),
     db.select().from(projects)
   ]);
   return {
