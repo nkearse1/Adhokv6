@@ -8,13 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Package } from 'lucide-react';
 
-const expertiseRates = {
+const expertiseRates: Record<string, number> = {
   'Specialist': 50,
   'Pro Talent': 100,
   'Expert Talent': 150,
 };
 
-const projectPresets = {
+const projectPresets: Record<string, Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }>> = {
   SEO: [
     {
       title: 'Technical SEO Audit',
@@ -140,15 +140,15 @@ export default function ProjectUploadFlow() {
                 Based on <strong>{form.expertiseLevel}</strong> at <strong>${expertiseRates[form.expertiseLevel]}/hr</strong>
               </p>
               <p>
-                Estimated Hours: <strong>{getEstimatedHours()} hrs</strong>
+                Estimated Hours: <strong>{getEstimatedHours() ?? 0} hrs</strong>
               </p>
               <p>
-                Estimated Project Cost: <strong>${expertiseRates[form.expertiseLevel] * getEstimatedHours()}</strong>
+                Estimated Project Cost: <strong>${expertiseRates[form.expertiseLevel] * (getEstimatedHours() ?? 0)}</strong>
               </p>
               <p>
                 Entered Budget: <strong>${form.budget}</strong>
               </p>
-              {expertiseRates[form.expertiseLevel] * getEstimatedHours() > parseFloat(form.budget) && (
+              {expertiseRates[form.expertiseLevel] * (getEstimatedHours() ?? 0) > parseFloat(form.budget) && (
                 <div className="text-red-600 pt-2">
                   ⚠ Your budget may be too low for this talent level. Consider increasing your budget or selecting a lower tier.
                 </div>
@@ -173,7 +173,7 @@ export default function ProjectUploadFlow() {
                     className="w-full border px-3 py-2 rounded"
                   >
                     <option value="">Choose a Category</option>
-                    {Object.keys(projectPresets).map((cat) => (
+                    {Object.keys(projectPresets).map((cat: string) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
@@ -183,7 +183,7 @@ export default function ProjectUploadFlow() {
                   <div>
                     <p className="font-medium">Suggested Projects:</p>
                     <ul className="space-y-2">
-                      {projectPresets[form.expertType].map((preset, i) => (
+                      {projectPresets[form.expertType].map((preset: { title: string; description: string; deliverables: string; expertiseLevel: string }, i: number) => (
                         <li
                           key={i}
                           className="border rounded p-2 cursor-pointer hover:border-blue-500"
@@ -205,7 +205,7 @@ export default function ProjectUploadFlow() {
                       const newTitle = e.target.value;
                       const updatedForm = { ...form, title: newTitle };
 
-                      const matched = Object.values(projectPresets).flat().find(preset =>
+                      const matched = Object.values(projectPresets).flat().find((preset: { title: string; description: string; deliverables: string; expertiseLevel: string }) =>
                         newTitle.toLowerCase().includes(preset.title.toLowerCase().split(' ')[0])
                       );
 
@@ -271,7 +271,7 @@ export default function ProjectUploadFlow() {
                     value={form.budget}
                     onChange={(e) => setForm({ ...form, budget: e.target.value })}
                   />
-                  {getEstimatedHours() && (
+                  {getEstimatedHours() !== null && (
                     <p className="text-sm text-gray-600 mt-1">
                       Estimated Hours: {getEstimatedHours()} hrs
                     </p>

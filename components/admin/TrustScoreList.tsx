@@ -15,7 +15,7 @@ interface TalentTrustScore {
   username: string;
   trust_score: number | null;
   trust_score_updated_at: string | null;
-  is_qualified: boolean;
+  isQualified: boolean;
 }
 
 export default function TrustScoreList() {
@@ -240,7 +240,7 @@ export default function TrustScoreList() {
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      {talent.is_qualified ? (
+                      {talent.isQualified ? (
                         <Badge className="bg-green-100 text-green-800 border-green-200 flex items-center gap-1">
                           <CheckCircle className="h-3 w-3" />
                           Qualified

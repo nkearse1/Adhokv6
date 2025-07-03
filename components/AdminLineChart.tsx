@@ -99,12 +99,12 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
 
         const talentMonths: Record<string, Set<string>> = {};
         talents?.forEach(t => {
-          if (!t.is_qualified) return;
+          if (!t.isQualified) return;
           const m = new Date(t.created_at).toLocaleString('default', { month: 'short' });
           if (!talentMonths[m]) talentMonths[m] = new Set();
           talentMonths[m].add(t.id);
         });
-        Object.entries(talentMonths).forEach(([m, ids]) => {
+        Object.entries(talentMonths).forEach(([m, ids]: [string, Set<string>]) => {
           if (months[m]) months[m].activeTalent = ids.size;
         });
 

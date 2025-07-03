@@ -147,7 +147,7 @@ export default function AdminClientList() {
                     <TableCell>
                       <Badge variant="outline">Active</Badge>
                     </TableCell>
-                    <TableCell>{getJoinBadge(client.join_method)}</TableCell>
+                    <TableCell>{getJoinBadge(client.joinMethod)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getTrustBadge(client.trust_score)}

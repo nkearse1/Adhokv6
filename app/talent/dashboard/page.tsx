@@ -152,14 +152,14 @@ export default function TalentDashboard() {
     toast.success("Case study saved!");
   };
 
-  const statLabelMap = {
+  const statLabelMap: Record<string, string> = {
     activeBids: "Active Bids",
     wonProjects: "Won Projects",
     earnings: "Total Earnings",
     portfolio: "Completed Projects",
   };
 
-  const statValueMap = {
+  const statValueMap: Record<string, number | string> = {
     activeBids: stats.activeBids,
     wonProjects: stats.completedProjects,
     earnings: stats.totalEarnings.toLocaleString(),

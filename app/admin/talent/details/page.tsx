@@ -23,7 +23,7 @@ interface TalentProfile {
   bio: string;
   expertise: string;
   experience_badge: string;
-  is_qualified: boolean;
+  isQualified: boolean;
   qualification_reason?: string;
   qualification_history?: QualificationEntry[];
   trust_score?: number;
@@ -156,7 +156,7 @@ export default function AdminTalentDetails() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.full_name}</h1>
         <div className="space-x-2">
-          {talent.is_qualified ? (
+          {talent.isQualified ? (
             <Button variant="destructive" onClick={() => handleQualifyTalent(false)}>Disqualify</Button>
           ) : (
             <Button className="bg-green-600 hover:bg-green-700" onClick={() => handleQualifyTalent(true)}>
@@ -240,8 +240,8 @@ export default function AdminTalentDetails() {
         <div>
           <h3 className="font-semibold mb-2">Qualification Status</h3>
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant={talent.is_qualified ? 'default' : 'secondary'}>
-              {talent.is_qualified ? 'Qualified' : 'Unqualified'}
+            <Badge variant={talent.isQualified ? 'default' : 'secondary'}>
+              {talent.isQualified ? 'Qualified' : 'Unqualified'}
             </Badge>
             <Badge variant="outline">{talent.experience_badge}</Badge>
           </div>
