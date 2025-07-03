@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint .",
+  "lint": "eslint .",
+  "test": "node --test",
     "start": "next start",
     "db:push": "node --import dotenv/config node_modules/.bin/drizzle-kit push:pg",
     "db:generate": "node --import dotenv/config node_modules/.bin/drizzle-kit generate:pg",
@@ -17,7 +18,8 @@
     "seed-auth": "node --import dotenv/config scripts/seed-auth-users.js",
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
     "recalculate-trust-scores": "node --import dotenv/config scripts/recalculateTrustScores.js",
-    "process-brief": "node scripts/processBrief.js"
+    "process-brief": "node scripts/processBrief.js",
+    "setup:dev": "./scripts/install-dev-deps.sh"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
@@ -87,8 +89,13 @@
     "autoprefixer": "^10.4.17",
     "dotenv": "^16.4.1",
     "drizzle-kit": "^0.21.2",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "14.1.0",
+  "eslint": "^8.56.0",
+  "@eslint/js": "^9.1.0",
+  "globals": "^15.2.0",
+  "eslint-plugin-react-hooks": "^4.6.0",
+  "eslint-plugin-react-refresh": "^0.4.1",
+  "typescript-eslint": "^7.6.0",
+  "eslint-config-next": "14.1.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",

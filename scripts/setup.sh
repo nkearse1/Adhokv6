@@ -10,6 +10,9 @@ else
   npm install
 fi
 
+# Install additional dev dependencies needed for linting and testing
+./scripts/install-dev-deps.sh
+
 if [ -f .env.example ] && [ ! -f .env ]; then
   cp .env.example .env
   echo "Copied .env.example to .env"

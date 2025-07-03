@@ -21,12 +21,18 @@ npm install
 yarn install
 ```
 
-3. Set up environment variables:
+3. Install dev dependencies for linting and testing:
+```bash
+npm run setup:dev
+```
+
+
+4. Set up environment variables:
    - Copy `.env.example` to `.env`
    - Connect to Supabase using the "Connect to Supabase" button in the top right
    - Add your `SUPABASE_SERVICE_ROLE_KEY` from the Supabase dashboard
 
-4. Set up mock data (optional):
+5. Set up mock data (optional):
 
 ```bash
 npm run setup-mock-data
@@ -34,7 +40,7 @@ npm run setup-mock-data
 yarn setup-mock-data
 ```
 
-5. Start the development server:
+6. Start the development server:
 
 ```bash
 npm run dev
@@ -94,6 +100,11 @@ All mock users have the password: `password123`
 - `/public` - Static assets
 - `/styles` - Global styles and Tailwind configuration
 - `/scripts` - Setup and utility scripts
+
+## Linting and Tests
+
+Run `npm run lint` to check code style and `npm test` to run the Node.js test suite. Ensure dev dependencies are installed using `npm run setup:dev` before running these commands.
+
 
 ## Features
 
