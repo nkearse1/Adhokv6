@@ -27,7 +27,7 @@ interface TalentProfile {
   qualification_reason?: string;
   qualification_history?: QualificationEntry[];
   trust_score?: number;
-  trust_score_updated_at?: string;
+  trustScoreUpdatedAt?: string;
   trust_score_factors?: {
     completedProjects: number;
     adminComplaints: number;
@@ -96,7 +96,7 @@ export default function AdminTalentDetails() {
             { reason: 'manual', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString() }
           ],
           trust_score: 85,
-          trust_score_updated_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+          trustScoreUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
           trust_score_factors: {
             completedProjects: 12,
             adminComplaints: 0,
@@ -170,7 +170,7 @@ export default function AdminTalentDetails() {
         const updatedTalent = {
           ...talent,
           trust_score: Math.min(100, talent.trust_score! + 2),
-          trust_score_updated_at: new Date().toISOString(),
+          trustScoreUpdatedAt: new Date().toISOString(),
           trust_score_factors: {
             ...talent.trust_score_factors!,
             completedProjects: talent.trust_score_factors!.completedProjects + 1
@@ -371,7 +371,7 @@ export default function AdminTalentDetails() {
               responseTime: 0,
               clientRetention: 0
             }}
-            lastUpdated={talent.trust_score_updated_at ?? 'N/A'}
+            lastUpdated={talent.trustScoreUpdatedAt ?? 'N/A'}
           />
           
           <Card>
