@@ -40,7 +40,7 @@ export default function ReviewForm({ projectId, onReviewSubmitted }: ReviewFormP
             projectId: projectId,
             rating,
             comment,
-            add_to_portfolio: addToPortfolio
+            addToPortfolio
           }
         })
       });

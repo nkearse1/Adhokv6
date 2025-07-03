@@ -45,7 +45,7 @@ interface Project {
   status: string;
   deadline: string;
   projectBudget: number;
-  rate_per_hour?: number;
+  ratePerHour?: number;
   bidCount?: number;
   lastBid?: number;
   deliverables?: Deliverable[];

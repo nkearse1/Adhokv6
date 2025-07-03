@@ -3,7 +3,7 @@ export async function getProjectById(id: string) {
   return {
     id,
     title: 'Mock Project',
-    minimum_badge: 'Pro Talent',
+    minimumBadge: 'Pro Talent',
     status: 'open',
   };
 }
@@ -11,8 +11,8 @@ export async function getProjectById(id: string) {
 export async function getProjectBids(projectId: string) {
   // Replace with real DB query
   return [
-    { id: 'b1', professional_id: 'p1', rate_per_hour: 45 },
-    { id: 'b2', professional_id: 'p2', rate_per_hour: 60 }
+    { id: 'b1', professionalId: 'p1', ratePerHour: 45 },
+    { id: 'b2', professionalId: 'p2', ratePerHour: 60 }
   ];
 }
 

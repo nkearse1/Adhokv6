@@ -43,7 +43,7 @@ const experienceBadgeMap: Record<string, string> = {
 };
 
 interface Project {
-  auction_end?: string;
+  auctionEnd?: string;
   id: number;
   title: string;
   description: string;

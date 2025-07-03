@@ -14,7 +14,7 @@ const badgeRank: Record<string, number> = {
 interface Project {
   id: string;
   title: string;
-  minimum_badge?: string;
+  minimumBadge?: string;
 }
 
 interface Bid {
@@ -22,7 +22,7 @@ interface Bid {
   ratePerHour: number;
   name: string;
   badge: string;
-  professional_id: string;
+  professionalId: string;
 }
 
 export default function BidFlow({ projectId, isAdmin = false }: { projectId: string; isAdmin?: boolean }) {
@@ -43,16 +43,19 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
         const bidsRes = await fetch('/api/db?table=project_bids');
         const bidsJson = await bidsRes.json();
 
-        setProject(projectData);
+        if (projectData) {
+          const { minimum_badge, ...rest } = projectData;
+          setProject({ ...rest, minimumBadge: minimum_badge });
+        }
         const bidList = (bidsJson.data || []).filter((b: any) => b.projectId === projectId);
 
         setBids(
           bidList.map((bid: any) => ({
             id: bid.id,
             ratePerHour: bid.rate_per_hour,
-            name: bid.professional_id,
+            name: bid.professionalId,
             badge: '',
-            professional_id: bid.professional_id,
+            professionalId: bid.professionalId,
           }))
         );
       } catch (error) {
@@ -77,7 +80,7 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
           table: 'projects',
           id: project?.id,
           data: {
-            winning_bid_id: professionalId,
+            winningBidId: professionalId,
             talentId: professionalId,
             status: 'in_progress',
           },
@@ -106,7 +109,7 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
   const filteredBids = showAllBids
     ? bids
     : bids.filter(
-        (bid) => badgeRank[bid.badge] >= badgeRank[project.minimum_badge || 'Specialist']
+        (bid) => badgeRank[bid.badge] >= badgeRank[project.minimumBadge || 'Specialist']
       );
 
   return (
@@ -131,7 +134,7 @@ export default function BidFlow({ projectId, isAdmin = false }: { projectId: str
             <div className="font-bold text-lg">${bid.ratePerHour}/hr</div>
           </div>
           {isAdmin && (
-            <Button onClick={() => handlePickWinner(bid.professional_id)}>
+            <Button onClick={() => handlePickWinner(bid.professionalId)}>
               Pick Winner
             </Button>
           )}
