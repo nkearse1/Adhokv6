@@ -19,7 +19,7 @@ export default function TalentPortfolioPage() {
         // For now, we'll use mock data
         const mockProfile = {
           id: '123',
-          full_name: 'Alex Rivera',
+          fullName: 'Alex Rivera',
           username: username,
           expertise: 'SEO & Content Strategy',
           location: 'Austin, TX',
@@ -28,7 +28,7 @@ export default function TalentPortfolioPage() {
           linkedin_url: 'https://linkedin.com/in/example',
           metadata: {
             marketing: {
-              experience_badge: 'Expert Talent'
+              experienceBadge: 'Expert Talent'
             }
           }
         };
@@ -87,15 +87,15 @@ export default function TalentPortfolioPage() {
         <div className="flex-shrink-0 mr-6 mb-4 md:mb-0">
           <img
             src={profile.avatar_url || '/default-avatar.png'}
-            alt={profile.full_name}
+            alt={profile.fullName}
             className="w-24 h-24 rounded-full object-cover border"
           />
         </div>
         <div className="flex-1 space-y-1">
-          <h1 className="text-2xl font-bold text-[#2E3A8C]">{profile.full_name}</h1>
+          <h1 className="text-2xl font-bold text-[#2E3A8C]">{profile.fullName}</h1>
           <p className="text-gray-700 text-sm">{profile.expertise}</p>
-          {profile?.metadata?.marketing?.experience_badge && (
-            <ExperienceBadge badge={profile.metadata.marketing.experience_badge} showTooltip />
+          {profile?.metadata?.marketing?.experienceBadge && (
+            <ExperienceBadge badge={profile.metadata.marketing.experienceBadge} showTooltip />
           )}
           {profile.username && (
             <p className="text-sm text-gray-500">@{profile.username}</p>

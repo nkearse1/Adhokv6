@@ -22,7 +22,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface User {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   status: string;
   createdAt: string;
@@ -72,14 +72,14 @@ export default function AdminPanel() {
       const mockUsers = [
         {
           id: '1',
-          full_name: 'Alex Rivera',
+          fullName: 'Alex Rivera',
           email: 'alex.rivera@example.com',
           status: 'approved',
           createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
         },
         {
           id: '2',
-          full_name: 'Jessica Park',
+          fullName: 'Jessica Park',
           email: 'jessica.park@example.com',
           status: 'pending',
           createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -166,8 +166,8 @@ export default function AdminPanel() {
     );
   }
 
-  const filteredUsers = users.filter(user => 
-    user.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredUsers = users.filter(user =>
+    user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -216,7 +216,7 @@ export default function AdminPanel() {
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-semibold">{user.full_name}</h3>
+                      <h3 className="text-lg font-semibold">{user.fullName}</h3>
                       <p className="text-gray-600">{user.email}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant={user.status === 'approved' ? 'success' : 'secondary'}>

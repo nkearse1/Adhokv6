@@ -9,7 +9,7 @@ interface Review {
   comment: string;
   createdAt: string;
   reviewer: {
-    full_name: string;
+    fullName: string;
   };
 }
 
@@ -36,7 +36,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
             <div className="flex justify-between items-start mb-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-medium">{review.reviewer.full_name}</h4>
+                  <h4 className="font-medium">{review.reviewer.fullName}</h4>
                   <span className="text-sm text-gray-500">
                     {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
                   </span>

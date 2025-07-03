@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 interface TalentTrustScore {
   id: string;
-  full_name: string;
+  fullName: string;
   username: string;
   trustScore: number | null;
   trustScoreUpdatedAt: string | null;
@@ -22,7 +22,7 @@ export default function TrustScoreList() {
   const [talents, setTalents] = useState<TalentTrustScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<'trustScore' | 'full_name' | 'updatedAt'>('trustScore');
+  const [sortField, setSortField] = useState<'trustScore' | 'fullName' | 'updatedAt'>('trustScore');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [updatingAll, setUpdatingAll] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export default function TrustScoreList() {
 
       if (searchQuery) {
         data = data.filter((t: any) =>
-          t.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (t.username || '').toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
@@ -52,8 +52,8 @@ export default function TrustScoreList() {
         if (sortField === 'updatedAt') {
           return (new Date(a.trustScoreUpdatedAt).getTime() - new Date(b.trustScoreUpdatedAt).getTime()) * dir;
         }
-        if (sortField === 'full_name') {
-          return a.full_name.localeCompare(b.full_name) * dir;
+        if (sortField === 'fullName') {
+          return a.fullName.localeCompare(b.fullName) * dir;
         }
         return ((a.trustScore ?? 0) - (b.trustScore ?? 0)) * dir;
       });
@@ -71,7 +71,7 @@ export default function TrustScoreList() {
     fetchTalentTrustScores();
   };
 
-  const handleSort = (field: 'trustScore' | 'full_name' | 'updatedAt') => {
+  const handleSort = (field: 'trustScore' | 'fullName' | 'updatedAt') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -176,7 +176,7 @@ export default function TrustScoreList() {
               <TableRow>
                 <TableHead 
                   className="cursor-pointer hover:text-[#2E3A8C]"
-                  onClick={() => handleSort('full_name')}
+                  onClick={() => handleSort('fullName')}
                 >
                   <div className="flex items-center gap-1">
                     Talent
@@ -214,7 +214,7 @@ export default function TrustScoreList() {
                         <User className="h-4 w-4 text-gray-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{talent.full_name}</p>
+                        <p className="font-medium">{talent.fullName}</p>
                         <p className="text-sm text-gray-500">@{talent.username}</p>
                       </div>
                     </div>

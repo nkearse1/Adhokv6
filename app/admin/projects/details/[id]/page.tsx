@@ -66,13 +66,13 @@ export default function AdminProjectDetail() {
         // Mock client data
         const mockClient = {
           id: 'client123',
-          full_name: 'Sarah Johnson',
+          fullName: 'Sarah Johnson',
           email: 'sarah.johnson@example.com',
           company: 'EcoShop Inc.',
           createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 3,
-          total_spent: 8500,
-          average_rating: 4.8,
+          totalProjects: 3,
+          totalSpent: 8500,
+          averageRating: 4.8,
           verified: true
         };
         
@@ -80,9 +80,9 @@ export default function AdminProjectDetail() {
         
         // Mock talent data
         const mockTalent = {
-          full_name: 'Alex Rivera',
+          fullName: 'Alex Rivera',
           email: 'alex.rivera@example.com',
-          experience_badge: 'Expert Talent',
+          experienceBadge: 'Expert Talent',
           expertise: 'SEO & Content Strategy',
           location: 'Austin, TX',
           phone: '+1 (555) 123-4567',
@@ -91,11 +91,11 @@ export default function AdminProjectDetail() {
           bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
           isQualified: true,
           createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 12,
-          success_rate: 95,
-          average_rating: 4.9,
-          response_time: '2h',
-          total_earnings: 45000,
+          totalProjects: 12,
+          successRate: 95,
+          averageRating: 4.9,
+          responseTime: '2h',
+          totalEarnings: 45000,
           hourly_rate: 75
         };
         
@@ -108,7 +108,7 @@ export default function AdminProjectDetail() {
             rating: 5,
             comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
             createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Michael Chen' },
+            reviewer: { fullName: 'Michael Chen' },
             project_title: 'B2B SaaS SEO Strategy'
           },
           {
@@ -116,7 +116,7 @@ export default function AdminProjectDetail() {
             rating: 4,
             comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
             createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Emily Rodriguez' },
+            reviewer: { fullName: 'Emily Rodriguez' },
             project_title: 'E-commerce Technical SEO'
           }
         ];
@@ -332,7 +332,7 @@ export default function AdminProjectDetail() {
                         <User className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{client.full_name}</p>
+                        <p className="font-medium">{client.fullName}</p>
                         <p className="text-sm text-gray-600">{client.company}</p>
                       </div>
                     </div>
@@ -360,11 +360,11 @@ export default function AdminProjectDetail() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-600">Total Projects</p>
-                          <p className="font-medium">{client.total_projects || 'N/A'}</p>
+                          <p className="font-medium">{client.totalProjects || 'N/A'}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Total Spent</p>
-                          <p className="font-medium">${(client.total_spent || 0).toLocaleString()}</p>
+                          <p className="font-medium">${(client.totalSpent || 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -389,8 +389,8 @@ export default function AdminProjectDetail() {
                         <Users className="w-6 h-6 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{talent.full_name}</p>
-                        <ExperienceBadge level={talent.experience_badge} />
+                        <p className="font-medium">{talent.fullName}</p>
+                        <ExperienceBadge level={talent.experienceBadge} />
                       </div>
                     </div>
                     <div className="space-y-2 text-sm">
@@ -415,13 +415,13 @@ export default function AdminProjectDetail() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-600">Success Rate</p>
-                          <p className="font-medium">{talent.success_rate || 'N/A'}%</p>
+                          <p className="font-medium">{talent.successRate || 'N/A'}%</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Avg Rating</p>
                           <p className="font-medium flex items-center gap-1">
                             <Star className="w-3 h-3 text-yellow-500" />
-                            {talent.average_rating || 'N/A'}
+                            {talent.averageRating || 'N/A'}
                           </p>
                         </div>
                       </div>
@@ -483,29 +483,29 @@ export default function AdminProjectDetail() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-600">Total Projects</p>
-                          <p className="font-medium text-lg">{talent.total_projects || 0}</p>
+                          <p className="font-medium text-lg">{talent.totalProjects || 0}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Success Rate</p>
-                          <p className="font-medium text-lg text-green-600">{talent.success_rate || 0}%</p>
+                          <p className="font-medium text-lg text-green-600">{talent.successRate || 0}%</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Avg Rating</p>
                           <p className="font-medium text-lg flex items-center gap-1">
                             <Star className="w-4 h-4 text-yellow-500" />
-                            {talent.average_rating || 0}
+                            {talent.averageRating || 0}
                           </p>
                         </div>
                         <div>
                           <p className="text-gray-600">Response Time</p>
-                          <p className="font-medium text-lg">{talent.response_time || 'N/A'}</p>
+                          <p className="font-medium text-lg">{talent.responseTime || 'N/A'}</p>
                         </div>
                       </div>
                       <div className="pt-4 border-t">
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Total Earnings:</span>
-                            <span className="font-medium">${(talent.total_earnings || 0).toLocaleString()}</span>
+                            <span className="font-medium">${(talent.totalEarnings || 0).toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span>Hourly Rate:</span>
@@ -538,7 +538,7 @@ export default function AdminProjectDetail() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <p className="text-sm text-gray-600">Full Name</p>
-                          <p className="font-medium">{client.full_name}</p>
+                          <p className="font-medium">{client.fullName}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-600">Company</p>
@@ -571,17 +571,17 @@ export default function AdminProjectDetail() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-600">Total Projects</p>
-                          <p className="font-medium text-lg">{client.total_projects || 0}</p>
+                          <p className="font-medium text-lg">{client.totalProjects || 0}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Total Spent</p>
-                          <p className="font-medium text-lg">${(client.total_spent || 0).toLocaleString()}</p>
+                          <p className="font-medium text-lg">${(client.totalSpent || 0).toLocaleString()}</p>
                         </div>
                         <div>
                           <p className="text-gray-600">Avg Rating Given</p>
                           <p className="font-medium text-lg flex items-center gap-1">
                             <Star className="w-4 h-4 text-yellow-500" />
-                            {client.average_rating || 'N/A'}
+                            {client.averageRating || 'N/A'}
                           </p>
                         </div>
                         <div>
@@ -614,7 +614,7 @@ export default function AdminProjectDetail() {
                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{review.reviewer.full_name}</h4>
+                          <h4 className="font-medium">{review.reviewer.fullName}</h4>
                           <span className="text-sm text-gray-500">
                               {new Date(review.createdAt).toLocaleDateString()}
                           </span>

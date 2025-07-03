@@ -13,7 +13,7 @@ import QualificationHistoryTimeline, { type QualificationEntry } from '@/compone
 
 interface TalentProfile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   username: string;
   phone: string;
@@ -22,7 +22,7 @@ interface TalentProfile {
   portfolio: string;
   bio: string;
   expertise: string;
-  experience_badge: string;
+  experienceBadge: string;
   isQualified: boolean;
   qualificationReason?: string;
   qualificationHistory?: QualificationEntry[];
@@ -154,7 +154,7 @@ export default function AdminTalentDetails() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.full_name}</h1>
+        <h1 className="text-2xl font-bold text-[#2E3A8C]">{talent.fullName}</h1>
         <div className="space-x-2">
           {talent.isQualified ? (
             <Button variant="destructive" onClick={() => handleQualifyTalent(false)}>Disqualify</Button>
@@ -185,7 +185,7 @@ export default function AdminTalentDetails() {
               <User className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <p className="font-medium">{talent.full_name}</p>
+              <p className="font-medium">{talent.fullName}</p>
               <p className="text-sm text-gray-600">@{talent.username}</p>
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function AdminTalentDetails() {
             <Badge variant={talent.isQualified ? 'default' : 'secondary'}>
               {talent.isQualified ? 'Qualified' : 'Unqualified'}
             </Badge>
-            <Badge variant="outline">{talent.experience_badge}</Badge>
+            <Badge variant="outline">{talent.experienceBadge}</Badge>
           </div>
 
           <h3 className="font-semibold mb-2">Bio</h3>

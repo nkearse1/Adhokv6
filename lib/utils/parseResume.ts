@@ -81,6 +81,6 @@ export function parseResumeAndAssignBadge(parsedJobs: {
   return {
     total_experience_years: parseFloat(totalYears.toFixed(1)),
     avg_company_rating: parseFloat(avgRating.toFixed(1)),
-    experience_badge: badge
+    experienceBadge: badge
   }
 }

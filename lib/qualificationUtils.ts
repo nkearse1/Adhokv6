@@ -18,7 +18,7 @@ export function applyAutoQualification(talent: any) {
 }
 
 export function validateCSVHeaders(headers: string[]) {
-  const required = ['full_name', 'email', 'expertise'];
+  const required = ['fullName', 'email', 'expertise'];
   const missing = required.filter((h) => !headers.includes(h));
   return missing;
 }

@@ -55,7 +55,7 @@ export default function AdminClientList() {
       setFilteredClients(clients);
     } else {
       const filtered = clients.filter((client) =>
-        client.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         client.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         client.email?.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -140,7 +140,7 @@ export default function AdminClientList() {
               <TableBody>
                 {paginatedClients.map((client: any) => (
                   <TableRow key={client.id}>
-                    <TableCell className="font-medium">{client.full_name}</TableCell>
+                    <TableCell className="font-medium">{client.fullName}</TableCell>
                     <TableCell>{client.email}</TableCell>
                     <TableCell>{client.company}</TableCell>
                     <TableCell>{new Date(client.createdAt).toLocaleDateString()}</TableCell>

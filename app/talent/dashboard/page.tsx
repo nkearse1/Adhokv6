@@ -59,7 +59,7 @@ interface Project {
 
 interface Profile {
   id: string;
-  full_name: string;
+  fullName: string;
   email: string;
   expertise: string;
   location?: string;
@@ -93,7 +93,7 @@ export default function TalentDashboard() {
     if (USE_MOCK_SESSION) {
       setProfile({
         id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
-        full_name: "Mock Talent",
+        fullName: "Mock Talent",
         email: "talent@adhok.dev",
         expertise: "SEO",
         location: "Tampa, FL",
