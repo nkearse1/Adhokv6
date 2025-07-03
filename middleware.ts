@@ -1,10 +1,14 @@
 // middleware.ts
-import { authMiddleware } from '@clerk/nextjs';
-import { NextResponse, NextRequest } from "next/server";
+import { withClerkMiddleware, getAuth } from '@clerk/nextjs/server';
+import { NextResponse, type NextRequest } from "next/server";
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export default authMiddleware((auth, req: NextRequest) => {
-  const { userId, sessionClaims } = auth();
+export default withClerkMiddleware((req: NextRequest) => {
+  const { userId, sessionClaims } = getAuth(req);
+
+  if (!userId) {
+    return NextResponse.redirect(new URL('/sign-in', req.url));
+  }
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role as
     string | undefined;
 

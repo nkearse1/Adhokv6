@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
+    "@clerk/types": "^3.65.5",
     "@hookform/resolvers": "^3.3.4",
     "@neondatabase/serverless": "^0.9.0",
     "@netlify/plugin-nextjs": "^5.8.0",
