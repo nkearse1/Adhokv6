@@ -62,7 +62,10 @@ export async function updateUserStatus(userId: string, newStatus: string) {
 }
 
 // Function to add a mock notification (for testing)
-export function addMockNotification(userId: string, notification: Omit<Notification, 'id' | 'createdAt' | 'isRead'>) {
+export function addMockNotification(
+  userId: string,
+  notification: Omit<Notification, 'id' | 'createdAt' | 'isRead' | 'userId'>
+) {
   if (!mockNotifications[userId]) {
     mockNotifications[userId] = [];
   }
