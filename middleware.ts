@@ -1,5 +1,5 @@
 // middleware.ts
-import { clerkMiddleware, getAuth } from '@clerk/nextjs/server';
+import { withClerkMiddleware, getAuth } from '@clerk/nextjs/server';
 import { NextResponse, type NextRequest } from "next/server";
 import type { SessionClaimsWithRole } from '@/lib/types';
 
@@ -30,7 +30,7 @@ const handleClerkAuth = (req: NextRequest): NextResponse => {
   return NextResponse.next();
 };
 
-export default clerkMiddleware(handleClerkAuth);
+export default withClerkMiddleware(handleClerkAuth);
 
 export const config = {
   matcher: [
