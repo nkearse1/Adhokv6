@@ -179,7 +179,6 @@ export function ProjectUploadFlow() {
             </div>
           </div>
         )}
-
         <Card className="max-w-xl mx-auto">
           <CardContent className="p-6">
             {step === 1 && (
