@@ -3,7 +3,7 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "18.18.2"
+  NODE_VERSION = "18.20.8"
 
 # Optional: keep this if you're using Netlify CLI locally
 [dev]
