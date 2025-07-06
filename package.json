@@ -59,7 +59,7 @@
     "input-otp": "1.4.2",
     "lucide-react": "0.344.0",
     "next": "14.2.25",
-    "pdfjs-dist": "5.3.31",
+    "pdfjs-dist": "^3.11.174",
     "pdf-parse": "1.1.1",
     "pg": "8.11.3",
     "react": "18.2.0",
