@@ -3,7 +3,10 @@ import { NextResponse, NextRequest } from 'next/server';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function GET(_req: NextRequest, ctx: RouteContext) {
+  const { id } = await ctx.params;
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
@@ -14,14 +17,14 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   
   // Check if user is admin or the client themselves
   const isAdmin = role === 'admin';
-  const isOwnProfile = userId === params.id;
+  const isOwnProfile = userId === id;
   
   if (!isAdmin && !isOwnProfile) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   
   try {
-    const projects = await getClientProjects(params.id);
+    const projects = await getClientProjects(id);
     return NextResponse.json({ projects });
   } catch (error) {
     console.error('Error fetching client projects:', error);
