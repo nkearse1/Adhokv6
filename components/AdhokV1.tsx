@@ -13,7 +13,9 @@ export default function AdhokV1() {
     id: number;
     title: string;
     description: string;
-    deadline: string;
+    deadline: Date;
+    minHours: number;
+    bids: any[];
   }
 
   const [projects, setProjects] = useState<V1Project[]>([]);
