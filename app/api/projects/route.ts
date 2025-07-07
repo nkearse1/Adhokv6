@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(_req: NextRequest, _ctx: { params: {} }) {
   const { userId, sessionClaims } = auth();
 
   // Cast to ensure TypeScript knows the shape of sessionClaims.metadata

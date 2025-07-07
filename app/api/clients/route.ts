@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function GET() {
+export async function GET(_req: NextRequest, _ctx: { params: {} }) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 

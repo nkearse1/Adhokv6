@@ -1,5 +1,5 @@
 import { recalculateAllTrustScores } from '@/lib/apiHandlers/admin';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 
 type SessionClaimsWithRole = {
@@ -8,7 +8,7 @@ type SessionClaimsWithRole = {
   };
 };
 
-export async function POST() {
+export async function POST(_req: NextRequest, _ctx: { params: {} }) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
