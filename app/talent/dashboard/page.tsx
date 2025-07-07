@@ -38,6 +38,26 @@ interface CaseStudy {
   deliverableId?: string;
 }
 
+interface CaseStudyData {
+  title: string;
+  problem: string;
+  solution: string;
+  kpis: string;
+  results: string;
+  showOnPortfolio: boolean;
+}
+
+function toCaseStudyData(cs: CaseStudy): CaseStudyData {
+  return {
+    title: cs.summary ?? '',
+    problem: cs.summary ?? '',
+    solution: cs.outcome ?? '',
+    kpis: '',
+    results: cs.outcome ?? '',
+    showOnPortfolio: false,
+  };
+}
+
 interface Project {
   id: string;
   title: string;
@@ -226,9 +246,14 @@ export default function TalentDashboard() {
                   open={true}
                   onClose={() => setEditingProjectId(null)}
                   deliverables={project.deliverables || []}
-                  initialData={project.caseStudy}
+                  initialData={project.caseStudy ? toCaseStudyData(project.caseStudy) : undefined}
                   onSubmit={(newData) => {
-                    handleSaveCaseStudy(project.id, newData);
+                    handleSaveCaseStudy(project.id, {
+                      id: project.caseStudy?.id || '',
+                      summary: newData.problem || newData.title,
+                      outcome: newData.results || newData.solution,
+                      deliverableId: project.caseStudy?.deliverableId,
+                    });
                     setEditingProjectId(null);
                   }}
                 />
