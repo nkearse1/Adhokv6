@@ -144,7 +144,7 @@ const DeliverablesPanel: React.FC<DeliverablesPanelProps> = ({
     }
 
     // Simulated file upload - in production, this would upload to your storage
-    const newFiles = Array.from(files).map(file => ({
+    const newFiles = Array.from(files as FileList).map(file => ({
       id: Date.now().toString(),
       name: file.name,
       url: URL.createObjectURL(file),

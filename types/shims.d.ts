@@ -71,3 +71,23 @@ declare module 'class-variance-authority' {
   export function cva(...args: any[]): any;
   export type VariantProps<T> = any;
 }
+
+declare module 'embla-carousel-react';
+declare module 'recharts';
+declare module 'recharts/types/component/DefaultTooltipContent';
+declare module 'cmdk';
+declare module 'vaul';
+declare module 'react-hook-form';
+declare module 'input-otp';
+declare module 'react-resizable-panels';
+declare module 'drizzle-kit';
+declare module 'dotenv';
+declare module 'drizzle-orm/neon-http';
+declare module 'drizzle-orm/pg-core';
+declare module 'tailwind-merge' {
+  export function twMerge(...inputs: any[]): string;
+}
+declare module 'clsx' {
+  export type ClassValue = any;
+  export default function clsx(...inputs: ClassValue[]): string;
+}
