@@ -6,7 +6,7 @@ import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function POST(
-  _req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const { userId, sessionClaims } = auth();
