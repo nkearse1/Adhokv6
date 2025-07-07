@@ -1,5 +1,6 @@
 "use client";
-import { useState } from 'react';
+import React, { useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,7 +88,7 @@ export function ProjectUploadFlow() {
     return Math.floor(budget / rate);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       setForm({ ...form, briefFile: e.target.files[0] });
     }
