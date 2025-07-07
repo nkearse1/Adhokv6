@@ -8,12 +8,31 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 
-const isAuctionExpired = (end) => {
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  deadline: string;
+  expertiseLevel: string;
+  bidCount?: number;
+  status?: string;
+  category?: string;
+  projectBudget?: number;
+  overview?: string;
+  deliverables?: string;
+  target_audience?: string;
+  platforms?: string;
+  preferred_tools?: string;
+  brand_voice?: string;
+  inspiration_links?: string;
+}
+
+const isAuctionExpired = (end: string | undefined) => {
   if (!end) return false;
   return new Date(end) < new Date();
 };
 
-const formatTimeRemaining = (end) => {
+const formatTimeRemaining = (end: string | undefined) => {
   if (!end) return "Unknown";
   const now = new Date();
   const endDate = new Date(end);
@@ -40,10 +59,10 @@ const experienceBadgeMap: Record<string, string> = {
 const TEAL_HIGHLIGHT = "#00A499";
 
 export default function ProjectsPage() {
-  const [selectedProject, setSelectedProject] = useState<any | null>(null);
-  const [sortKey, setSortKey] = useState('bid');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [sortKey, setSortKey] = useState<'bid' | 'expertise' | 'deadline'>('bid');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [bidAmount, setBidAmount] = useState('');
   const [submittingBid, setSubmittingBid] = useState(false);
@@ -65,18 +84,20 @@ export default function ProjectsPage() {
         return;
       }
 
-      let formattedProjects = (json.data || []).filter(p => p.status === 'open').map(project => ({
-        ...project,
-        expertiseLevel: project.metadata?.marketing?.expertiseLevel || 'Mid-Level',
-        bidCount: 0,
-        overview: project.metadata?.marketing?.problem || project.description,
-        deliverables: project.metadata?.marketing?.deliverables || 'To be defined',
-        target_audience: project.metadata?.marketing?.target_audience || 'General audience',
-        platforms: project.metadata?.marketing?.platforms || 'Various platforms',
-        preferred_tools: project.metadata?.marketing?.preferred_tools || 'Standard tools',
-        brand_voice: project.metadata?.marketing?.brand_voice || 'Professional',
-        inspiration_links: project.metadata?.marketing?.inspiration_links || ''
-      })) || [];
+      let formattedProjects: Project[] = (json.data || [])
+        .filter((p: any) => p.status === 'open')
+        .map((project: any) => ({
+          ...project,
+          expertiseLevel: project.metadata?.marketing?.expertiseLevel || 'Mid-Level',
+          bidCount: 0,
+          overview: project.metadata?.marketing?.problem || project.description,
+          deliverables: project.metadata?.marketing?.deliverables || 'To be defined',
+          target_audience: project.metadata?.marketing?.target_audience || 'General audience',
+          platforms: project.metadata?.marketing?.platforms || 'Various platforms',
+          preferred_tools: project.metadata?.marketing?.preferred_tools || 'Standard tools',
+          brand_voice: project.metadata?.marketing?.brand_voice || 'Professional',
+          inspiration_links: project.metadata?.marketing?.inspiration_links || ''
+        })) || [];
 
       setProjects(formattedProjects);
     } catch (error) {
@@ -159,8 +180,10 @@ export default function ProjectsPage() {
   );
 
   const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
-  const formatDueDate = (isoDate) => format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
-  const timeRemaining = (isoDate) => formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  const formatDueDate = (isoDate: string) =>
+    format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
+  const timeRemaining = (isoDate: string) =>
+    formatDistanceToNow(new Date(isoDate), { addSuffix: true });
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -168,7 +191,7 @@ export default function ProjectsPage() {
 
       {popularActiveBids.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-          {popularActiveBids.map((project: any) => (
+          {popularActiveBids.map((project: Project) => (
             <div
               key={project.id}
               className={`border-2 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all ${selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'}`}
@@ -207,7 +230,7 @@ export default function ProjectsPage() {
               <select
                 value={sortKey}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  setSortKey(e.target.value)
+                  setSortKey(e.target.value as 'bid' | 'expertise' | 'deadline')
                 }
                 className="border rounded p-2 text-sm"
               >
@@ -218,7 +241,7 @@ export default function ProjectsPage() {
             </div>
           </div>
 
-          {filteredProjects.map((project: any) => (
+          {filteredProjects.map((project: Project) => (
             <div
               key={project.id}
               className={`border-2 rounded-lg p-4 mb-4 cursor-pointer hover:shadow-md transition-all ${selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'}`}
