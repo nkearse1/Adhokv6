@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function GET(request: NextRequest, _ctx: { params: {} }) {
+export async function GET(request: NextRequest) {
   const { userId } = auth();
   
   // Check if user is authenticated
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest, _ctx: { params: {} }) {
   }
 }
 
-export async function POST(request: NextRequest, _ctx: { params: {} }) {
+export async function POST(request: NextRequest) {
   const { userId } = auth();
   
   // Check if user is authenticated
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest, _ctx: { params: {} }) {
   }
 }
 
-export async function PUT(request: NextRequest, _ctx: { params: {} }) {
+export async function PUT(request: NextRequest) {
   const { userId } = auth();
   
   // Check if user is authenticated
@@ -142,7 +142,7 @@ export async function PUT(request: NextRequest, _ctx: { params: {} }) {
   }
 }
 
-export async function DELETE(request: NextRequest, _ctx: { params: {} }) {
+export async function DELETE(request: NextRequest) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
