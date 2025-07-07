@@ -9,7 +9,7 @@ type SessionClaimsWithRole = {
   };
 };
 
-export async function GET(_req: NextRequest) {
+export async function GET(_req: NextRequest, _ctx: { params: {} }) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
