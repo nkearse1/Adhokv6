@@ -1,10 +1,11 @@
 import React from 'react';
+import type { ReactNode, FC } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Briefcase, DollarSign, Users, Flag, Shield, ThumbsDown } from 'lucide-react';
 
 interface MetricCardProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string | number;
   change?: string;
@@ -51,7 +52,7 @@ export const metricsConfig = [
   }
 ];
 
-const MetricCard: React.FC<MetricCardProps> = ({
+const MetricCard: FC<MetricCardProps> = ({
   icon,
   label,
   value,

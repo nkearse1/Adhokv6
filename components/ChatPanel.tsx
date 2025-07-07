@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import type { FC, KeyboardEvent } from 'react';
 import { Send, Paperclip, Smile } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,7 +90,7 @@ const useChatMessages = (projectId: string) => {
   return { messages, setMessages, sendMessage, isTyping };
 };
 
-const ChatPanel: React.FC<ChatPanelProps> = ({ 
+const ChatPanel: FC<ChatPanelProps> = ({
   role, 
   projectId,
   partnerTypingLabel = "Partner is typing...",
@@ -114,7 +115,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     setNewMessage('');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
