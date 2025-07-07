@@ -298,7 +298,7 @@ export default function AdminProjectDetail() {
                 <div className="pt-2 border-t">
                   <div className="flex justify-between">
                     <span>Minimum Badge:</span>
-                    <ExperienceBadge level={project.minimum_badge} />
+                    <ExperienceBadge badge={project.minimum_badge} />
                   </div>
                 </div>
               </div>
@@ -390,7 +390,7 @@ export default function AdminProjectDetail() {
                       </div>
                       <div>
                         <p className="font-medium">{talent.full_name}</p>
-                        <ExperienceBadge level={talent.experience_badge} />
+                        <ExperienceBadge badge={talent.experience_badge} />
                       </div>
                     </div>
                     <div className="space-y-2 text-sm">
