@@ -3,54 +3,46 @@ declare module 'react-dnd-html5-backend';
 declare module 'react-day-picker';
 declare module 'pdfjs-dist';
 
-declare namespace React {
-  type ReactNode = any;
-  interface ReactElement<P = any, T extends string | JSXElementConstructor<any> = any> {}
-  type JSXElementConstructor<P> = any;
-  interface FC<P = {}> {
+declare module 'react' {
+  export as namespace React;
+  export type ReactNode = any;
+  export interface HTMLAttributes<T> {
+    [key: string]: any;
+    className?: string;
+  }
+  export interface FC<P = {}> {
     (props: P): ReactNode;
   }
-  interface ComponentPropsWithoutRef<T> {}
-  interface ComponentPropsWithRef<T> {}
-  interface ComponentProps<T> {}
-  interface ComponentType<P = {}> {}
-  interface HTMLAttributes<T> { [key: string]: any; }
-  interface SVGProps<T> extends HTMLAttributes<T> {}
-  interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {}
-  interface DOMAttributes<T> { [key: string]: any; }
-  interface ClassAttributes<T> {}
-  interface ForwardRefExoticComponent<P> {}
-  interface RefAttributes<T> {}
-  type KeyboardEvent<T = any> = any;
-  type ChangeEvent<T = any> = any;
-  type FormEvent<T = any> = any;
-  type ElementRef<T = any> = any;
-  type CSSProperties = any;
-  function useState<T = any>(
+  export type ChangeEvent<T = any> = any;
+  export type FormEvent<T = any> = any;
+  export type ElementRef<T = any> = any;
+  export function useState<T = any>(
     initial: T
-  ): [T, Dispatch<SetStateAction<T>>];
-  function useEffect(...args: any[]): void;
-  const useContext: any;
-  const useRef: any;
-  const useCallback: any;
-  const useMemo: any;
-  const useReducer: any;
-  const useLayoutEffect: any;
-  const createContext: any;
-  function forwardRef<T = any, P = any>(render: any): any;
-  type Dispatch<A> = (value: A) => void;
-  type SetStateAction<S> = S | ((prev: S) => S);
+  ): [T, (value: T | ((prev: T) => T)) => void];
+  export function useEffect(...args: any[]): void;
+  export const useContext: any;
+  export const useRef: any;
+  export const useCallback: any;
+  export const useMemo: any;
+  export const useReducer: any;
+  export const useLayoutEffect: any;
+  export const createContext: any;
+  export const forwardRef: any;
   const React: any;
-}
-
-declare module 'react' {
+  export default React;
   export = React;
 }
 
+declare var React: any;
+
 declare namespace JSX {
+  interface IntrinsicAttributes {
+    key?: any;
+  }
+  interface IntrinsicElements {
+    [elemName: string]: any;
+  }
   interface Element {}
-  interface IntrinsicAttributes { [key: string]: any; }
-  interface IntrinsicElements { [elemName: string]: any; }
 }
 
 declare module '@clerk/nextjs';
@@ -70,6 +62,7 @@ declare module 'lucide-react';
 declare module 'sonner';
 declare module 'date-fns';
 declare module 'svix';
+declare module 'clsx';
 declare module 'drizzle-orm';
 declare module '@neondatabase/serverless';
 declare module '@radix-ui/*';
