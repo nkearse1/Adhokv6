@@ -3,7 +3,10 @@ import { updateTalentTrustScore } from '@/lib/apiHandlers/talent';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function POST(request: NextRequest, ctx: RouteContext) {
+  const { id } = await ctx.params;
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
@@ -13,7 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
   
   try {
-    const data = await updateTalentTrustScore(params.id);
+    const data = await updateTalentTrustScore(id);
     return NextResponse.json({ data });
   } catch (error) {
     console.error('Error updating trust score:', error);

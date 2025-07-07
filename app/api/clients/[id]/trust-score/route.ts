@@ -5,10 +5,13 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
+type RouteContext = { params: Promise<{ id: string }> };
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  ctx: RouteContext
 ) {
+  const { id } = await ctx.params;
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
@@ -22,7 +25,7 @@ export async function POST(
     await db
       .update(users)
       .set({ trustScore: score, updatedAt: new Date() })
-      .where(eq(users.id, params.id));
+      .where(eq(users.id, id));
     return NextResponse.json({ success: true, score });
   } catch (err) {
     console.error('Update trust score error', err);

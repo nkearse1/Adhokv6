@@ -3,7 +3,10 @@ import { flagTalent } from '@/lib/apiHandlers/talent';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function POST(request: NextRequest, ctx: RouteContext) {
+  const { id } = await ctx.params;
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
@@ -14,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   
   try {
     const { reason } = await request.json();
-    const data = await flagTalent(params.id, reason);
+    const data = await flagTalent(id, reason);
     return NextResponse.json({ data });
   } catch (error) {
     console.error('Error flagging talent:', error);
