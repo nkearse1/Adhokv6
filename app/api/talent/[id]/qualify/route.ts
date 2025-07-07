@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { flagTalent } from '@/lib/apiHandlers/talent';
+import { qualifyTalent } from '@/lib/apiHandlers/talent';
 import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
@@ -13,11 +13,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
   
   try {
-    const { reason } = await req.json();
-    const data = await flagTalent(params.id, reason);
+    const { qualified } = await request.json();
+    const data = await qualifyTalent(params.id, qualified);
     return NextResponse.json({ data });
   } catch (error) {
-    console.error('Error flagging talent:', error);
-    return NextResponse.json({ error: 'Failed to flag talent' }, { status: 500 });
+    console.error('Error updating talent qualification:', error);
+    return NextResponse.json({ error: 'Failed to update talent qualification' }, { status: 500 });
   }
 }

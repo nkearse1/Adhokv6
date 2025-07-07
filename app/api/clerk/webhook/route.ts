@@ -8,12 +8,12 @@ interface ClerkWebhookEvent {
   data: any;
 }
 
-export async function POST(req: NextRequest) {
-  const payload = await req.text();
+export async function POST(request: NextRequest) {
+  const payload = await request.text();
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
 
   try {
-    const evt = wh.verify(payload, req.headers as any) as ClerkWebhookEvent;
+    const evt = wh.verify(payload, request.headers as any) as ClerkWebhookEvent;
     console.log('Clerk webhook event', evt.type);
 
     if (evt.type === 'user.created') {
