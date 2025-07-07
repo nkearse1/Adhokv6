@@ -2,6 +2,7 @@ declare module 'react-dnd';
 declare module 'react-dnd-html5-backend';
 declare module 'react-day-picker';
 declare module 'pdfjs-dist';
+
 declare module 'react' {
   export function useState<T = any>(initial: T): [T, (value: T) => void];
   export function useEffect(...args: any[]): void;
@@ -16,6 +17,7 @@ declare module 'react' {
   const React: any;
   export default React;
 }
+
 declare module '@clerk/nextjs';
 declare module 'next/navigation';
 declare module 'next/link';
@@ -28,6 +30,7 @@ declare module 'date-fns';
 declare module 'clsx';
 declare module 'drizzle-orm';
 declare module '@neondatabase/serverless';
+
 declare module 'class-variance-authority' {
   export function cva(...args: any[]): any;
   export type VariantProps<T> = any;
