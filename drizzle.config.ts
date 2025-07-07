@@ -1,4 +1,4 @@
-import type { Config } from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -8,7 +8,7 @@ if (!connectionString) {
   throw new Error('DATABASE_URL is not defined');
 }
 
-export default {
+export default defineConfig({
   schema: './lib/schema.ts',
   out: './drizzle',
   dialect: 'postgresql',
@@ -17,4 +17,4 @@ export default {
   },
   verbose: true,
   strict: true,
-} satisfies Config;
+});

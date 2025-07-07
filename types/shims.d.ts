@@ -40,7 +40,3 @@ declare module 'drizzle-orm/pg-core';
 declare module 'tailwind-merge' {
   export function twMerge(...inputs: any[]): string;
 }
-declare module 'clsx' {
-  export type ClassValue = any;
-  export default function clsx(...inputs: ClassValue[]): string;
-}
