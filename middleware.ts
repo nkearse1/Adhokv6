@@ -3,7 +3,7 @@ import { withClerkMiddleware, getAuth } from '@clerk/nextjs/server';
 import { NextResponse, type NextRequest } from "next/server";
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-export default withClerkMiddleware((req: NextRequest) => {
+const handleClerkAuth = (req: NextRequest): NextResponse => {
   const { userId, sessionClaims } = getAuth(req);
 
   if (!userId) {
@@ -28,7 +28,9 @@ export default withClerkMiddleware((req: NextRequest) => {
   }
 
   return NextResponse.next();
-});
+};
+
+export default withClerkMiddleware(handleClerkAuth);
 
 export const config = {
   matcher: [

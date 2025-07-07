@@ -43,7 +43,7 @@ export default function ProjectTemplateCard({ template, onSelect }: ProjectTempl
             </Badge>
             <h3 className="text-lg font-semibold mt-2">{template.title}</h3>
           </div>
-          <ExperienceBadge level={template.suggested_level} />
+          <ExperienceBadge badge={template.suggested_level} />
         </div>
 
         <p className="text-sm text-gray-600 mb-4">{template.description}</p>

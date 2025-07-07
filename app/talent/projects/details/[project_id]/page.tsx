@@ -53,9 +53,9 @@ export default function TalentProjectDetail() {
       
       // Mock talent profile
       const mockTalent = {
-        full_name: user?.fullName || 'Talent',
-        experience_badge: 'Expert Talent',
-        portfolio_url: 'https://example.com/portfolio'
+        fullName: user?.fullName || 'Talent',
+        experienceBadge: 'Expert Talent',
+        portfolioUrl: 'https://example.com/portfolio'
       };
       
       setTalentProfile(mockTalent);
@@ -206,14 +206,14 @@ export default function TalentProjectDetail() {
               <div>
                 <h4 className="text-sm font-medium mb-2">Your Profile</h4>
                 <div className="space-y-2">
-                  <p className="text-sm">{talentProfile.full_name}</p>
-                  <span className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold rounded-full ${getBadgeStyle(talentProfile.experience_badge)}`}>
+                  <p className="text-sm">{talentProfile.fullName}</p>
+                  <span className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold rounded-full ${getBadgeStyle(talentProfile.experienceBadge)}`}>
                     <BadgeCheck className="w-4 h-4" />
-                    {talentProfile.experience_badge}
+                    {talentProfile.experienceBadge}
                   </span>
-                  {talentProfile.portfolio_url && (
+                  {talentProfile.portfolioUrl && (
                     <a
-                      href={talentProfile.portfolio_url}
+                      href={talentProfile.portfolioUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-sm text-blue-600 hover:underline"

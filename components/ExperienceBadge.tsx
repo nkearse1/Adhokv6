@@ -1,13 +1,20 @@
 import React from 'react';
 import { Star, Trophy, Medal, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 
 interface Props {
-  level: string;
+  badge: string;
+  showTooltip?: boolean;
   className?: string;
 }
 
-export default function ExperienceBadge({ level, className }: Props) {
+export default function ExperienceBadge({ badge, showTooltip, className }: Props): JSX.Element {
   // Map database badge values to internal configuration
   const mapBadgeToLevel = (badge: string): 'entry' | 'mid' | 'expert' | 'elite' => {
     switch (badge?.toLowerCase()) {
@@ -56,10 +63,10 @@ export default function ExperienceBadge({ level, className }: Props) {
     },
   };
 
-  const mappedLevel = mapBadgeToLevel(level);
+  const mappedLevel = mapBadgeToLevel(badge);
   const { icon: Icon, label, baseClasses } = config[mappedLevel];
 
-  return (
+  const badgeElement = (
     <span
       className={cn(
         'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium',
@@ -72,4 +79,17 @@ export default function ExperienceBadge({ level, className }: Props) {
       {label}
     </span>
   );
+
+  if (showTooltip) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{badgeElement}</TooltipTrigger>
+          <TooltipContent>{label}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return badgeElement;
 }

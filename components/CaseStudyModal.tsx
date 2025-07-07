@@ -24,11 +24,18 @@ export interface CaseStudyData {
   showOnPortfolio: boolean;
 }
 
+export interface CaseStudy {
+  id: string;
+  summary: string;
+  outcome: string;
+  deliverableId?: string;
+}
+
 interface CaseStudyModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: CaseStudyData) => void;
-  initialData?: CaseStudyData;
+  initialData?: CaseStudyData | CaseStudy;
   deliverables?: Deliverable[];
 }
 
@@ -42,12 +49,22 @@ export default function CaseStudyModal({ open, onClose, onSubmit, initialData, d
 
   useEffect(() => {
     if (initialData) {
-      setTitle(initialData.title);
-      setProblem(initialData.problem);
-      setSolution(initialData.solution);
-      setKpis(initialData.kpis);
-      setResults(initialData.results);
-      setShowOnPortfolio(initialData.showOnPortfolio);
+      if ('title' in initialData) {
+        setTitle(initialData.title);
+        setProblem(initialData.problem);
+        setSolution(initialData.solution);
+        setKpis(initialData.kpis);
+        setResults(initialData.results);
+        setShowOnPortfolio(initialData.showOnPortfolio);
+      } else {
+        // Fallback mapping when provided with CaseStudy
+        setTitle(initialData.summary ?? '');
+        setProblem(initialData.summary ?? '');
+        setSolution(initialData.outcome ?? '');
+        setKpis('');
+        setResults(initialData.outcome ?? '');
+        setShowOnPortfolio(false);
+      }
     } else if (deliverables.length > 0) {
       const [first] = deliverables;
       setTitle(first.title);

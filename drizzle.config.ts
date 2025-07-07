@@ -11,9 +11,9 @@ if (!connectionString) {
 export default {
   schema: './lib/schema.ts',
   out: './drizzle',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString,
+    url: connectionString,
   },
   verbose: true,
   strict: true,

@@ -43,9 +43,9 @@ export default function WaitlistPage() {
       <div className="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <img 
-              src="/adhok-logo.png" 
-              alt="Adhok" 
+            <img
+              src="/assets/adhok_logo_icon_teal_brand_precise3.png"
+              alt="Adhok"
               className="h-16 w-auto"
             />
           </div>

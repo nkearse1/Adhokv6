@@ -122,7 +122,7 @@ export default function ProjectUploadFlow() {
         <div className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
             <img
-              src="/adhok_logo_icon_teal_brand_precise3.png"
+              src="/assets/adhok_logo_icon_teal_brand_precise3.png"
               alt="Adhok Logo"
               className="h-8 w-8"
             />

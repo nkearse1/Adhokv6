@@ -12,6 +12,7 @@ interface AuthState {
   isAdmin: boolean;
   loading: boolean;
   isAuthenticated: boolean;
+  authUser: any;
   setDevRole: (role: UserRole) => void;
 }
 
@@ -22,6 +23,7 @@ const defaultAuthState: AuthState = {
   isAdmin: false,
   loading: true,
   isAuthenticated: false,
+  authUser: null,
   setDevRole: () => {},
 };
 
@@ -67,6 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           isAdmin: mock.isAdmin || false,
           isAuthenticated: true,
           loading: false,
+          authUser: null,
           setDevRole: (role) => {
             localStorage.setItem('dev_user_role', role);
             window.location.reload();
@@ -86,6 +89,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           isAdmin: role === 'admin',
           isAuthenticated: true,
           loading: false,
+          authUser: user,
           setDevRole: () => {},
         });
       } else {

@@ -11,10 +11,10 @@ import { useRouter } from 'next/navigation';
 
 interface TalentTrustScore {
   id: string;
-  full_name: string;
+  fullName: string;
   username: string;
-  trust_score: number | null;
-  trust_score_updated_at: string | null;
+  trustScore: number | null;
+  trustScoreUpdatedAt: string | null;
   isQualified: boolean;
 }
 
@@ -22,7 +22,7 @@ export default function TrustScoreList() {
   const [talents, setTalents] = useState<TalentTrustScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<'trust_score' | 'full_name' | 'updated_at'>('trust_score');
+  const [sortField, setSortField] = useState<'trustScore' | 'fullName' | 'updatedAt'>('trustScore');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [updatingAll, setUpdatingAll] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -42,20 +42,20 @@ export default function TrustScoreList() {
 
       if (searchQuery) {
         data = data.filter((t: any) =>
-          t.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          t.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (t.username || '').toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
 
       data.sort((a: any, b: any) => {
         const dir = sortDirection === 'asc' ? 1 : -1;
-        if (sortField === 'updated_at') {
-          return (new Date(a.trust_score_updated_at).getTime() - new Date(b.trust_score_updated_at).getTime()) * dir;
+        if (sortField === 'updatedAt') {
+          return (new Date(a.trustScoreUpdatedAt).getTime() - new Date(b.trustScoreUpdatedAt).getTime()) * dir;
         }
-        if (sortField === 'full_name') {
-          return a.full_name.localeCompare(b.full_name) * dir;
+        if (sortField === 'fullName') {
+          return a.fullName.localeCompare(b.fullName) * dir;
         }
-        return ((a.trust_score ?? 0) - (b.trust_score ?? 0)) * dir;
+        return ((a.trustScore ?? 0) - (b.trustScore ?? 0)) * dir;
       });
 
       setTalents(data);
@@ -71,7 +71,7 @@ export default function TrustScoreList() {
     fetchTalentTrustScores();
   };
 
-  const handleSort = (field: 'trust_score' | 'full_name' | 'updated_at') => {
+  const handleSort = (field: 'trustScore' | 'fullName' | 'updatedAt') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -176,7 +176,7 @@ export default function TrustScoreList() {
               <TableRow>
                 <TableHead 
                   className="cursor-pointer hover:text-[#2E3A8C]"
-                  onClick={() => handleSort('full_name')}
+                  onClick={() => handleSort('fullName')}
                 >
                   <div className="flex items-center gap-1">
                     Talent
@@ -185,7 +185,7 @@ export default function TrustScoreList() {
                 </TableHead>
                 <TableHead 
                   className="cursor-pointer hover:text-[#2E3A8C]"
-                  onClick={() => handleSort('trust_score')}
+                  onClick={() => handleSort('trustScore')}
                 >
                   <div className="flex items-center gap-1">
                     Trust Score
@@ -195,7 +195,7 @@ export default function TrustScoreList() {
                 <TableHead>Status</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:text-[#2E3A8C]"
-                  onClick={() => handleSort('updated_at')}
+                  onClick={() => handleSort('updatedAt')}
                 >
                   <div className="flex items-center gap-1">
                     Last Updated
@@ -214,24 +214,24 @@ export default function TrustScoreList() {
                         <User className="h-4 w-4 text-gray-600" />
                       </div>
                       <div>
-                        <p className="font-medium">{talent.full_name}</p>
+                        <p className="font-medium">{talent.fullName}</p>
                         <p className="text-sm text-gray-500">@{talent.username}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {talent.trust_score !== null ? (
+                      {talent.trustScore !== null ? (
                         <>
                           <span className={`font-bold ${
-                            talent.trust_score >= 80 ? 'text-green-600' : 
-                            talent.trust_score >= 60 ? 'text-blue-600' : 
-                            talent.trust_score >= 40 ? 'text-yellow-600' : 
+                            talent.trustScore >= 80 ? 'text-green-600' :
+                            talent.trustScore >= 60 ? 'text-blue-600' :
+                            talent.trustScore >= 40 ? 'text-yellow-600' :
                             'text-red-600'
                           }`}>
-                            {talent.trust_score.toFixed(1)}
+                            {talent.trustScore.toFixed(1)}
                           </span>
-                          {getTrustScoreBadge(talent.trust_score)}
+                          {getTrustScoreBadge(talent.trustScore)}
                         </>
                       ) : (
                         <span className="text-gray-500">Not calculated</span>
@@ -251,7 +251,7 @@ export default function TrustScoreList() {
                           Unqualified
                         </Badge>
                       )}
-                      {talent.trust_score !== null && talent.trust_score < 40 && (
+                      {talent.trustScore !== null && talent.trustScore < 40 && (
                         <Badge className="bg-red-100 text-red-800 border-red-200 flex items-center gap-1">
                           <AlertTriangle className="h-3 w-3" />
                           PIP List
@@ -260,8 +260,8 @@ export default function TrustScoreList() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {talent.trust_score_updated_at ? (
-                      new Date(talent.trust_score_updated_at).toLocaleDateString()
+                    {talent.trustScoreUpdatedAt ? (
+                      new Date(talent.trustScoreUpdatedAt).toLocaleDateString()
                     ) : (
                       'Never'
                     )}
