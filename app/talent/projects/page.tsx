@@ -8,12 +8,12 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 
-const isAuctionExpired = (end) => {
+const isAuctionExpired = (end?: string | Date): boolean => {
   if (!end) return false;
   return new Date(end) < new Date();
 };
 
-const formatTimeRemaining = (end) => {
+const formatTimeRemaining = (end?: string | Date): string => {
   if (!end) return "Unknown";
   const now = new Date();
   const endDate = new Date(end);
@@ -159,8 +159,10 @@ export default function ProjectsPage() {
   );
 
   const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
-  const formatDueDate = (isoDate) => format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
-  const timeRemaining = (isoDate) => formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  const formatDueDate = (isoDate: string | Date) =>
+    format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
+  const timeRemaining = (isoDate: string | Date) =>
+    formatDistanceToNow(new Date(isoDate), { addSuffix: true });
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
