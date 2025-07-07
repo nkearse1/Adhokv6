@@ -8,7 +8,7 @@ type SessionClaimsWithRole = {
   };
 };
 
-export async function POST(_req: NextRequest, _ctx: { params: {} }) {
+export async function POST(_req: NextRequest) {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 

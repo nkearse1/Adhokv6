@@ -8,7 +8,7 @@ interface ClerkWebhookEvent {
   data: any;
 }
 
-export async function POST(request: NextRequest, _ctx: { params: {} }) {
+export async function POST(request: NextRequest) {
   const payload = await request.text();
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
 
