@@ -1,36 +1,35 @@
 // middleware.ts
-import { withClerkMiddleware, getAuth } from '@clerk/nextjs/server';
+import { authMiddleware } from '@clerk/nextjs';
 import { NextResponse, type NextRequest } from "next/server";
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-const handleClerkAuth = (req: NextRequest): NextResponse => {
-  const { userId, sessionClaims } = getAuth(req);
+export default authMiddleware({
+  afterAuth(auth, req: NextRequest) {
+    if (!auth.userId) {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
+    }
 
-  if (!userId) {
-    return NextResponse.redirect(new URL('/sign-in', req.url));
-  }
-  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role as
-    string | undefined;
+    const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as
+      string | undefined;
 
-  const pathname = req.nextUrl.pathname;
+    const pathname = req.nextUrl.pathname;
 
-  // Protect role-specific routes
-  if (pathname.startsWith("/admin") && role !== "admin") {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+    // Protect role-specific routes
+    if (pathname.startsWith("/admin") && role !== "admin") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
 
-  if (pathname.startsWith("/client") && role !== "client") {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+    if (pathname.startsWith("/client") && role !== "client") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
 
-  if (pathname.startsWith("/talent/dashboard") && role !== "talent") {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+    if (pathname.startsWith("/talent/dashboard") && role !== "talent") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
 
-  return NextResponse.next();
-};
-
-export default withClerkMiddleware(handleClerkAuth);
+    return NextResponse.next();
+  },
+});
 
 export const config = {
   matcher: [
