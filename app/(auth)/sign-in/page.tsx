@@ -26,9 +26,8 @@ export default function SignInPage() {
               footerActionLink: "text-[#2E3A8C] hover:text-[#2E3A8C]/90"
             }
           }}
-          redirectUrl="/dashboard"
+          redirectUrl="/talent/dashboard"
         />
       </div>
     </main>
-  );
-}
+  );}
