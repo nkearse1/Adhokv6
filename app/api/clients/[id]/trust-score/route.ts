@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 type RouteContext = { params: Promise<{ id: string }> };

@@ -1,6 +1,6 @@
 import { getClientProjects } from '@/lib/apiHandlers/clients';
 import { NextResponse, NextRequest } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 type RouteContext = { params: Promise<{ id: string }> };
