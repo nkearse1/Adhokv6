@@ -14,7 +14,7 @@ interface Props {
   className?: string;
 }
 
-export default function ExperienceBadge({ badge, showTooltip, className }: Props): JSX.Element {
+export default function ExperienceBadge({ badge, showTooltip, className }: Props) {
   // Map database badge values to internal configuration
   const mapBadgeToLevel = (badge: string): 'entry' | 'mid' | 'expert' | 'elite' => {
     switch (badge?.toLowerCase()) {
