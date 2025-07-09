@@ -1,2 +1,67 @@
-tsconfig.tsbuildinfo
+# Node & dependencies
+node_modules/
+.yarn/
+.pnpm/
+
+# Build output
+.next/
+out/              # if using `next export`
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Coverage & test output
+coverage/
+.nyc_output/
+jest-output/
+
+# Runtime
+*.log
+*.tsbuildinfo
+.cache/
+turbo/
+
+# Misc
+*.local
+*.pid
+*.seed
+*.tgz
+
+# Build tools / Bundlers
+.vercel/
+.netlify/
+.eslintcache
+
+# Next.js optional cache
+.next/cache/
+
+# Clerk session cache (if ever saved locally)
+.clerk/
+
+# Drizzle (SQLite or migration output)
+drizzle/migrations/*.ts
+drizzle/*.sqlite
+drizzle/*.db
+
+# Custom scripts/output
+scripts/output/
