@@ -282,7 +282,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {/* Status CTA Button */}
                       {cta && (
                         <Button
-                          onClick={(e) => {
+                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation();
                             cta.action();
                           }}
