@@ -42,6 +42,8 @@ npm run dev
 yarn dev
 ```
 
+When working in cloud IDEs such as StackBlitz or Codesandbox, you may see a `.next/` folder created after running the dev server. This directory contains build artifacts and is already listed in `.gitignore`, so it can safely be removed or ignored.
+
 ## Mock User Credentials
 
 All mock users have the password: `password123`
