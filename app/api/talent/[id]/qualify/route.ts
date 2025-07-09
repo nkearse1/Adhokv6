@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { qualifyTalent } from '@/lib/apiHandlers/talent';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 type RouteContext = { params: Promise<{ id: string }> };

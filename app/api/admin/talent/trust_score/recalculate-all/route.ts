@@ -1,6 +1,6 @@
 import { recalculateAllTrustScores } from '@/lib/apiHandlers/admin';
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 type SessionClaimsWithRole = {
   metadata?: {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/schema';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 type SessionClaimsWithRole = {
   metadata?: {

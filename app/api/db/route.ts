@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users, projects, talentProfiles } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
