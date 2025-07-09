@@ -42,7 +42,11 @@ export default function AdhokV1() {
     }
   };
 
-  const handlePlaceBid = (projectId, professional, ratePerHour) => {
+  const handlePlaceBid = (
+    projectId: number,
+    professional: string,
+    ratePerHour: number
+  ) => {
     const project = projects.find(p => p.id === projectId);
     if (!ratePerHour || isNaN(ratePerHour)) {
       toast.error("Please enter a valid hourly rate");
@@ -63,7 +67,7 @@ export default function AdhokV1() {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (authUser.trim()) {
       toast.success(`Welcome, ${authUser}!`);

@@ -68,7 +68,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
                 <Button
                   size="sm"
                   variant="secondary"
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation();
                     const updated = projects.map((p: CompletedProject) =>
                       p.id === project.id
