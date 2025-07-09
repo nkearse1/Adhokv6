@@ -8,7 +8,6 @@ A platform for connecting marketing professionals with high-value projects throu
 
 - Node.js (v18 or higher)
 - npm or yarn
-- Supabase account
 
 ### Installation
 
@@ -23,8 +22,6 @@ yarn install
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Connect to Supabase using the "Connect to Supabase" button in the top right
-   - Add your `SUPABASE_SERVICE_ROLE_KEY` from the Supabase dashboard
 
 4. Set up mock data (optional):
 

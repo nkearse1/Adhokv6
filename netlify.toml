@@ -8,15 +8,6 @@
 [dev]
   command = "next dev"
 
-[[redirects]]
-# Only redirect if someone visits adhokpro.com directly and your DNS points here — remove to let GoDaddy handle
-# from = "/" → removed intentionally
-
-[[redirects]]
-  from = "https://adhokpro.com/*"
-  to = "https://app.adhokpro.com/:splat"
-  status = 301
-  force = true
 
 [[redirects]]
   from = "/*"
