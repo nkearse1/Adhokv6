@@ -6,7 +6,7 @@ import { auth } from '@clerk/nextjs';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   // Check if user is authenticated
   if (!userId) {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   // Check if user is authenticated
   if (!userId) {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const { userId } = auth();
+  const { userId } = await auth();
   
   // Check if user is authenticated
   if (!userId) {
@@ -143,7 +143,7 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role

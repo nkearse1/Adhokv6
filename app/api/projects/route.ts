@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(_req: NextRequest) {
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
 
   // Cast to ensure TypeScript knows the shape of sessionClaims.metadata
   const role = (sessionClaims?.metadata as { role?: string })?.role;
