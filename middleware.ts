@@ -1,12 +1,13 @@
 // middleware.ts
 import { authMiddleware } from '@clerk/nextjs/server';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest, type NextFetchEvent } from 'next/server';
+import type { AuthObject } from '@clerk/backend';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export default authMiddleware({
   publicRoutes: ['/', '/sign-in', '/sign-up', '/waitlist'],
 
-  afterAuth(auth, req: NextRequest) {
+  afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
     if (!auth.userId) return NextResponse.next(); // allow all public pages
 
     const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as string | undefined;

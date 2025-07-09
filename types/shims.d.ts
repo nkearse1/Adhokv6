@@ -11,6 +11,8 @@ declare module 'next/link';
 declare module 'next/server' {
   export type NextRequest = any;
   export type NextResponse = any;
+  export type NextFetchEvent = any;
+  export type NextMiddleware = any;
   const NextResponse: any;
   export { NextResponse };
 }
@@ -19,6 +21,7 @@ declare module 'next-auth/react';
 declare module 'next';
 declare module 'lucide-react';
 declare module 'sonner';
+declare module 'lodash';
 declare module 'date-fns';
 declare module 'svix';
 declare module 'drizzle-orm';
@@ -40,3 +43,12 @@ declare module 'drizzle-orm/pg-core';
 declare module 'tailwind-merge' {
   export function twMerge(...inputs: any[]): string;
 }
+
+// Stubs for dialect packages not used in this project
+declare module 'mysql2/promise';
+declare module 'bun-types';
+declare module 'pg-protocol/dist/messages';
+declare module 'drizzle-orm/mysql-core';
+declare module 'drizzle-orm/sqlite-core';
+declare module 'drizzle-orm/mysql-core/*';
+declare module 'drizzle-orm/sqlite-core/*';
