@@ -7,7 +7,7 @@
       "esnext"
     ],
     "allowJs": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
     "noEmit": true,
@@ -16,7 +16,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -27,15 +27,33 @@
       "@/*": [
         "./*"
       ],
-      "drizzle-orm/mysql-core": ["./types/stubs.d.ts"],
-      "drizzle-orm/mysql-core/*": ["./types/stubs.d.ts"],
-      "drizzle-orm/sqlite-core": ["./types/stubs.d.ts"],
-      "drizzle-orm/sqlite-core/*": ["./types/stubs.d.ts"],
-      "mysql2/promise": ["./types/stubs.d.ts"],
-      "bun-types": ["./types/stubs.d.ts"],
-      "pg-protocol/dist/messages": ["./types/stubs.d.ts"],
-      "react-day-picker": ["./types/stubs.d.ts"],
-      "react-day-picker/*": ["./types/stubs.d.ts"]
+      "drizzle-orm/mysql-core": [
+        "./types/stubs.d.ts"
+      ],
+      "drizzle-orm/mysql-core/*": [
+        "./types/stubs.d.ts"
+      ],
+      "drizzle-orm/sqlite-core": [
+        "./types/stubs.d.ts"
+      ],
+      "drizzle-orm/sqlite-core/*": [
+        "./types/stubs.d.ts"
+      ],
+      "mysql2/promise": [
+        "./types/stubs.d.ts"
+      ],
+      "bun-types": [
+        "./types/stubs.d.ts"
+      ],
+      "pg-protocol/dist/messages": [
+        "./types/stubs.d.ts"
+      ],
+      "react-day-picker": [
+        "./types/stubs.d.ts"
+      ],
+      "react-day-picker/*": [
+        "./types/stubs.d.ts"
+      ]
     },
     "types": [
       "react",
