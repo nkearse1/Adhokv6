@@ -9,6 +9,7 @@
     "allowJs": true,
     "skipLibCheck": false,
     "strict": true,
+    "noImplicitAny": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -25,7 +26,16 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      "drizzle-orm/mysql-core": ["./types/stubs.d.ts"],
+      "drizzle-orm/mysql-core/*": ["./types/stubs.d.ts"],
+      "drizzle-orm/sqlite-core": ["./types/stubs.d.ts"],
+      "drizzle-orm/sqlite-core/*": ["./types/stubs.d.ts"],
+      "mysql2/promise": ["./types/stubs.d.ts"],
+      "bun-types": ["./types/stubs.d.ts"],
+      "pg-protocol/dist/messages": ["./types/stubs.d.ts"],
+      "react-day-picker": ["./types/stubs.d.ts"],
+      "react-day-picker/*": ["./types/stubs.d.ts"]
     },
     "types": [
       "react",
