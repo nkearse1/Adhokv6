@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { CalendarIcon, Clock, ExternalLink, AlertTriangle, MessageSquare, CreditCard } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -21,6 +21,7 @@ import { useAuth } from '@/lib/useAuth';
 export default function ProjectWorkspace() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const project_id = params.project_id;
   const { authUser } = useAuth();
   const [projectName] = useState("SEO Optimization");
@@ -62,9 +63,12 @@ export default function ProjectWorkspace() {
   useEffect(() => {
     if (!loading && !canAccess) {
       const username = authUser?.user_metadata?.username || authUser?.id;
-      router.push(`/talent/${username}/projects/${project_id}/details`);
+      const dest = `/talent/${username}/projects/${project_id}/details`;
+      if (pathname !== dest) {
+        router.push(dest);
+      }
     }
-  }, [loading, canAccess, router, project_id, authUser]);
+  }, [loading, canAccess, router, project_id, authUser, pathname]);
 
   if (loading || !statusReady) {
     return (

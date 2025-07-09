@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,7 @@ interface Project {
 
 export default function AdminPanel() {
   const router = useRouter();
+  const pathname = usePathname();
   const [users, setUsers] = useState<User[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,9 @@ export default function AdminPanel() {
     } catch (error) {
       console.error('Auth error:', error);
       toast.error('You are not authorized to access the admin panel');
-      router.push('/');
+      if (pathname !== '/') {
+        router.push('/');
+      }
     }
   };
 

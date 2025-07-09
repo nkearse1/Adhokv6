@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { CalendarIcon, Clock, ExternalLink, AlertTriangle, MessageSquare, CreditCard } from 'lucide-react';
@@ -101,6 +101,7 @@ const useEscrow = (projectId: string) => {
 export default function ProjectWorkspace() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const project_id = params.project_id as string;
   const { user } = useUser();
   const [projectName] = useState("SEO Optimization");
@@ -142,9 +143,12 @@ export default function ProjectWorkspace() {
   useEffect(() => {
     if (!loading && !canAccess) {
       const username = user?.username || user?.id;
-      router.push(`/talent/projects/details/${project_id}`);
+      const dest = `/talent/projects/details/${project_id}`;
+      if (pathname !== dest) {
+        router.push(dest);
+      }
     }
-  }, [loading, canAccess, router, project_id, user]);
+  }, [loading, canAccess, router, project_id, user, pathname]);
 
   if (loading || !statusReady) {
     return (
