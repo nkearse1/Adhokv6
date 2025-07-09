@@ -10,7 +10,7 @@ type SessionClaimsWithRole = {
 export const runtime = 'nodejs'; // ⛔ Clerk not supported on Edge runtime
 
 export async function GET(_req: NextRequest) {
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
 
   // ✅ Safely extract role
   const userRole = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;

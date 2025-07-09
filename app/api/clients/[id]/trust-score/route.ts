@@ -12,7 +12,7 @@ export async function POST(
   ctx: RouteContext
 ) {
   const { id } = await ctx.params;
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role

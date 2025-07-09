@@ -10,7 +10,7 @@ type SessionClaimsWithRole = {
 };
 
 export async function GET(_req: NextRequest) {
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
   // Check if user is authenticated and has admin role
