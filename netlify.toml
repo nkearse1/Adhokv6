@@ -1,25 +1,22 @@
 [build]
-  command = "npm run build"
+  command = "yarn build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18.20.8"
 
-# Optional: keep this if you're using Netlify CLI locally
 [dev]
   command = "next dev"
+
+[[redirects]]
+# Only redirect if someone visits adhokpro.com directly and your DNS points here — remove to let GoDaddy handle
+# from = "/" → removed intentionally
 
 [[redirects]]
   from = "https://adhokpro.com/*"
   to = "https://app.adhokpro.com/:splat"
   status = 301
   force = true
-
-[[redirects]]
-  from = "/"
-  to = "/waitlist"
-  status = 200
-  conditions = { Host = ["adhokpro.com"] }
 
 [[redirects]]
   from = "/*"
@@ -34,8 +31,7 @@
   X-XSS-Protection = "1; mode=block"
   X-Content-Type-Options = "nosniff"
   Referrer-Policy = "strict-origin-when-cross-origin"
-Content-Security-Policy = "default-src 'self' https://app.adhokpro.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+  Content-Security-Policy = "default-src 'self' https://app.adhokpro.com; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  
