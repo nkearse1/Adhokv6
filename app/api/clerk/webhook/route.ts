@@ -13,10 +13,11 @@ export async function POST(request: NextRequest) {
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
 
   try {
+    const requestHeaders = new Headers(await request.headers);
     const headers = {
-      'svix-id': request.headers.get('svix-id') || '',
-      'svix-timestamp': request.headers.get('svix-timestamp') || '',
-      'svix-signature': request.headers.get('svix-signature') || '',
+      'svix-id': requestHeaders.get('svix-id') || '',
+      'svix-timestamp': requestHeaders.get('svix-timestamp') || '',
+      'svix-signature': requestHeaders.get('svix-signature') || '',
     };
     const evt = wh.verify(payload, headers) as ClerkWebhookEvent;
     console.log('Clerk webhook event', evt.type);
