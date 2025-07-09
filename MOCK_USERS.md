@@ -4,17 +4,7 @@ This document contains the credentials for all mock users created by the setup s
 
 ## How to Run Setup
 
-1. **Get your Supabase Service Role Key:**
-   - Go to your Supabase project dashboard
-   - Navigate to **Settings** > **API**
-   - Copy the `service_role` key (starts with `eyJ...`)
-
-2. **Add to your `.env` file:**
-   ```
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
-   ```
-
-3. **Run the setup script:**
+1. **Run the setup script:**
    ```bash
    npm run setup-mock-data
    ```
@@ -132,9 +122,6 @@ The setup script creates 4 realistic projects with different budgets, requiremen
 ## Troubleshooting
 
 If the setup script fails:
-1. Verify your `.env` file has the correct `SUPABASE_SERVICE_ROLE_KEY`
-2. Check that your Supabase project is active and accessible
-3. Ensure your database has the required tables (run migrations if needed)
-4. Check the console output for specific error messages
-
+1. Ensure your database has the required tables (run migrations if needed)
+2. Check the console output for specific error messages
 The script will show detailed success/failure information for each operation.
