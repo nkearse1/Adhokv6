@@ -12,6 +12,13 @@ export default authMiddleware({
     const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as string | undefined;
     const pathname = req.nextUrl.pathname;
 
+    if (!role) {
+      if (pathname !== '/waitlist') {
+        return NextResponse.redirect(new URL('/waitlist', req.url));
+      }
+      return NextResponse.next();
+    }
+
     if (pathname.startsWith('/admin') && role !== 'admin') {
       return NextResponse.redirect(new URL('/', req.url));
     }

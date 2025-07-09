@@ -4,6 +4,8 @@ node_modules/
 .pnpm/
 
 # Build output
+# Next.js builds will generate a `.next/` directory.
+# It contains compiled assets and should never be committed.
 .next/
 out/              # if using `next export`
 dist/
