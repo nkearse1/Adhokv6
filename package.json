@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run check-supabase && npm run type-check",
+    "prebuild": "npm run check-lockfile && npm run check-netlify && npm run check-supabase && npm run type-check",
     "build": "next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
     "type-check": "tsc --noEmit",
@@ -20,14 +20,21 @@
     "seed-auth": "node --import dotenv/config scripts/seed-auth-users.js",
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
     "recalculate-trust-scores": "node --import dotenv/config scripts/recalculateTrustScores.js",
-    "process-brief": "node scripts/processBrief.js"
+    "process-brief": "node scripts/processBrief.js",
+    "check-lockfile": "yarn install --immutable --immutable-cache --check-cache",
+    "check-netlify": "node scripts/check-no-netlify-plugin.cjs",
+    "postinstall": "node scripts/postinstall-cleanup.cjs"
+  },
+  "resolutions": {
+    "@types/pg": "8.11.6",
+    "@types/node": "20.11.17",
+    "@clerk/types": "3.65.5"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
     "@clerk/types": "^3.65.5",
     "@hookform/resolvers": "^3.3.4",
     "@neondatabase/serverless": "^0.9.0",
-    "@netlify/plugin-nextjs": "^5.8.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
