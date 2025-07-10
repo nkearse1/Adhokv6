@@ -1,4 +1,3 @@
-// middleware.ts
 import { authMiddleware } from '@clerk/nextjs/server';
 import {
   NextResponse,
@@ -32,13 +31,12 @@ export default authMiddleware({
       });
     }
 
-    if (!auth.userId) return NextResponse.next(); // allow public pages
+    // Allow public routes and unauthenticated access
+    if (!auth.userId) return NextResponse.next();
 
-    if (!role) {
-      if (pathname !== '/waitlist') {
-        return safeRedirect('/waitlist', req);
-      }
-      return NextResponse.next();
+    // Redirect signed-in users with no role to waitlist
+    if (auth.userId && !role && !pathname.startsWith('/waitlist')) {
+      return safeRedirect('/waitlist', req);
     }
 
     const validRoles = ['admin', 'client', 'talent'];
