@@ -20,14 +20,17 @@
     "seed-auth": "node --import dotenv/config scripts/seed-auth-users.js",
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
     "recalculate-trust-scores": "node --import dotenv/config scripts/recalculateTrustScores.js",
-    "process-brief": "node scripts/processBrief.js"
+    "process-brief": "node scripts/processBrief.js",
+    "postinstall": "node scripts/postinstall-cleanup.js",
+    "preinstall": "node scripts/check-banned-packages.cjs",
+    "check-lockfile": "yarn install --immutable --check-cache",
+    "verify": "npm run lint && npm run type-check && npm run check-lockfile"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
     "@clerk/types": "^3.65.5",
     "@hookform/resolvers": "^3.3.4",
     "@neondatabase/serverless": "^0.9.0",
-    "@netlify/plugin-nextjs": "^5.8.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
@@ -98,5 +101,10 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3"
+  },
+  "resolutions": {
+    "@types/node": "20.17.50",
+    "@types/pg": "8.15.4",
+    "@clerk/types": "3.65.5"
   }
 }

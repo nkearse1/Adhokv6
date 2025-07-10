@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "jsx": "react-jsx",
-    "types": ["react", "react-dom"],
+    "types": ["react", "react-dom", "@clerk/nextjs"],
 
     /* Linting */
     "strict": true,
@@ -37,5 +37,10 @@
     "app/api",
     "scripts",
     "middleware.ts"
+  ],
+  "exclude": [
+    "node_modules/drizzle-orm/mysql-core",
+    "node_modules/drizzle-orm/sqlite-core",
+    "node_modules/bun-types"
   ]
 }
