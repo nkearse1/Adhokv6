@@ -57,7 +57,8 @@
     },
     "types": [
       "react",
-      "react-dom"
+      "react-dom",
+      "@clerk/nextjs"
     ]
   },
   "include": [
@@ -73,6 +74,10 @@
     "types/**/*.d.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "node_modules/drizzle-orm/mysql-core",
+    "node_modules/drizzle-orm/sqlite-core",
+    "node_modules/bun-types",
+    "node_modules/pg-protocol/dist/messages"
   ]
 }

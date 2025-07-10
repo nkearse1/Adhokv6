@@ -40,7 +40,7 @@ export default authMiddleware({
     }
 
     const validRoles = ['admin', 'client', 'talent'];
-    if (!validRoles.includes(role)) {
+    if (!role || !validRoles.includes(role)) {
       return NextResponse.next();
     }
 
