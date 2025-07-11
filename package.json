@@ -90,8 +90,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^8.57.1",
-    "@types/node": "^20.11.17",
-    "@types/pg": "^8.11.2",
+    "@types/node": "22.15.33",
+    "@types/pg": "8.11.6",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.17",
@@ -106,10 +106,5 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3"
-  },
-  "resolutions": {
-    "@types/node": "20.17.50",
-    "@types/pg": "8.15.4",
-    "@clerk/types": "3.65.5"
   }
 }
