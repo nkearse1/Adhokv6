@@ -12,4 +12,4 @@ Before committing, run the full verification suite:
 
 
 
-During CI and `prebuild` a custom script `check-type-imports` runs to ensure framework types such as `Metadata` and `NextRequest` are only imported using `import type` statements and that no legacy `require()` calls are present.
+During CI and `prebuild` a custom script `check-type-imports` runs to ensure framework types such as `Metadata`, `NextRequest` and `NextApiRequest` are only imported using `import type` statements and that no legacy `require()` calls are present.

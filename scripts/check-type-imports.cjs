@@ -24,6 +24,7 @@ const typePatterns = [
   ['Payload', 'recharts/types/component/DefaultTooltipContent'],
   ['ValueType', 'recharts/types/component/DefaultTooltipContent'],
   ['NextRequest', 'next/server'],
+  ['NextApiRequest', 'next'],
   ['NextApiResponse', 'next'],
   ['ButtonProps', '@/components/ui/button'],
 ];
