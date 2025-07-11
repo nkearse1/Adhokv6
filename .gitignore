@@ -67,3 +67,6 @@ drizzle/*.db
 
 # Custom scripts/output
 scripts/output/
+
+# Favicon is generated locally
+public/favicon.ico

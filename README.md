@@ -39,6 +39,12 @@ npm run dev
 yarn dev
 ```
 
+### Favicon
+
+The repository does not include `public/favicon.ico`. If you want to use a
+custom icon, create or download one and place it in `public/favicon.ico`. This
+file is ignored by Git so your personal icon won't be committed.
+
 When working in cloud IDEs such as StackBlitz or Codesandbox, you may see a `.next/` folder created after running the dev server. This directory contains build artifacts and is already listed in `.gitignore`, so it can safely be removed or ignored.
 
 ## Mock User Credentials
