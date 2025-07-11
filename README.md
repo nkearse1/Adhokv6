@@ -33,6 +33,12 @@ yarn setup-mock-data
 yarn dev
 ```
 
+Before pushing changes, run the verification suite:
+
+```bash
+yarn verify
+```
+
 ### Favicon
 
 The repository does not include `public/favicon.ico`. If you want to use a

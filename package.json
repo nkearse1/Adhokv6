@@ -25,7 +25,8 @@
     "postinstall": "node scripts/postinstall-cleanup.js",
     "preinstall": "node scripts/check-banned-packages.cjs",
     "check-lockfile": "node scripts/check-package-manager.cjs",
-    "verify": "yarn lint && yarn type-check && yarn check-lockfile"
+    "check-eslint-versions": "node scripts/check-eslint-versions.cjs",
+    "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
@@ -97,7 +98,8 @@
     "drizzle-kit": "^0.21.2",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
-    "@typescript-eslint/eslint-plugin": "^6.22.0",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
     "@types/lodash": "^4.14.202",
     "next": "^15.3.4",
     "postcss": "^8.4.35",
