@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { rmSync } from 'fs';
+const { rmSync } = require('fs');
 
 const MIN_NODE_MAJOR = 18;
 const currentMajor = parseInt(process.versions.node.split('.')[0], 10);
