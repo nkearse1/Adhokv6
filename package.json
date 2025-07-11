@@ -8,12 +8,13 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "yarn check-supabase && yarn check-type-imports && yarn type-check",
+    "prebuild": "yarn install --check-files && yarn check-supabase && yarn check-type-imports && yarn type-check",
     "build": "next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
     "check-type-imports": "node scripts/check-type-imports.cjs",
     "type-check": "tsc --noEmit",
-    "lint": "eslint .",
+    "lint": "yarn lint:package && eslint .",
+    "lint:package": "node scripts/lint-package-json.cjs",
     "start": "next start",
     "db:push": "node --import dotenv/config node_modules/.bin/drizzle-kit push:pg",
     "db:generate": "node --import dotenv/config node_modules/.bin/drizzle-kit generate:pg",
@@ -25,12 +26,8 @@
     "postinstall": "node scripts/postinstall-cleanup.js",
     "preinstall": "node scripts/check-banned-packages.cjs",
     "check-lockfile": "node scripts/check-package-manager.cjs",
-
     "check-eslint-versions": "node scripts/check-eslint-versions.cjs",
     "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions"
-
-    "verify": "yarn lint && yarn type-check && yarn check-lockfile"
-
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
