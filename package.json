@@ -8,9 +8,10 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run check-supabase && npm run type-check",
+    "prebuild": "npm run check-supabase && npm run check-type-imports && npm run type-check",
     "build": "next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
+    "check-type-imports": "node scripts/check-type-imports.cjs",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "start": "next start",
