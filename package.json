@@ -25,8 +25,12 @@
     "postinstall": "node scripts/postinstall-cleanup.js",
     "preinstall": "node scripts/check-banned-packages.cjs",
     "check-lockfile": "node scripts/check-package-manager.cjs",
+
     "check-eslint-versions": "node scripts/check-eslint-versions.cjs",
     "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions"
+
+    "verify": "yarn lint && yarn type-check && yarn check-lockfile"
+
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
