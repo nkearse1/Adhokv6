@@ -1,0 +1,14 @@
+name: Lockfile Integrity
+on: [push, pull_request]
+jobs:
+  dedupe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npx yarn-deduplicate
+      - run: yarn install --check-files
+      - run: node scripts/check-type-versions.cjs
