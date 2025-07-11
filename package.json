@@ -23,7 +23,7 @@
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
     "recalculate-trust-scores": "node --import dotenv/config scripts/recalculateTrustScores.js",
     "process-brief": "node scripts/processBrief.js",
-    "postinstall": "node scripts/postinstall-cleanup.js",
+    "postinstall": "node scripts/postinstall-cleanup.cjs",
     "preinstall": "node scripts/check-banned-packages.cjs",
     "check-lockfile": "node scripts/check-package-manager.cjs",
     "check-eslint-versions": "node scripts/check-eslint-versions.cjs",

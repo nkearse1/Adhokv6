@@ -16,6 +16,12 @@ if (metadataMisuse) {
   hasErrors = true;
 }
 
+const metadataNamespace = search('Metadata\\.');
+if (metadataNamespace) {
+  console.error('Metadata must not be used as a namespace:\n' + metadataNamespace);
+  hasErrors = true;
+}
+
 const typePatterns = [
   ['ControllerProps', 'react-hook-form'],
   ['FieldPath', 'react-hook-form'],
