@@ -16,6 +16,26 @@ if (metadataMisuse) {
   hasErrors = true;
 }
 
+const typePatterns = [
+  ['ControllerProps', 'react-hook-form'],
+  ['FieldPath', 'react-hook-form'],
+  ['FieldValues', 'react-hook-form'],
+  ['NameType', 'recharts/types/component/DefaultTooltipContent'],
+  ['Payload', 'recharts/types/component/DefaultTooltipContent'],
+  ['ValueType', 'recharts/types/component/DefaultTooltipContent'],
+  ['NextRequest', 'next/server'],
+  ['NextApiResponse', 'next'],
+  ['ButtonProps', '@/components/ui/button'],
+];
+
+for (const [name, mod] of typePatterns) {
+  const result = search(`import { ${name} } from '${mod}'`);
+  if (result) {
+    console.error(`${name} must be imported using \`import type\`:\n` + result);
+    hasErrors = true;
+  }
+}
+
 const legacyRequire = search('require(');
 if (legacyRequire) {
   console.error('Legacy require() usage detected:\n' + legacyRequire);
