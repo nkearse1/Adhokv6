@@ -2,13 +2,8 @@
 # Bootstrap development environment
 set -e
 
-if [ -f yarn.lock ]; then
-  echo "Installing dependencies with yarn..."
-  yarn install
-else
-  echo "Installing dependencies with npm..."
-  npm install
-fi
+echo "Installing dependencies with yarn..."
+yarn install
 
 if [ -f .env.example ] && [ ! -f .env ]; then
   cp .env.example .env

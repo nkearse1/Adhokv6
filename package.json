@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm run check-supabase && npm run check-type-imports && npm run type-check",
+    "prebuild": "yarn check-supabase && yarn check-type-imports && yarn type-check",
     "build": "next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
     "check-type-imports": "node scripts/check-type-imports.cjs",
@@ -24,8 +24,8 @@
     "process-brief": "node scripts/processBrief.js",
     "postinstall": "node scripts/postinstall-cleanup.js",
     "preinstall": "node scripts/check-banned-packages.cjs",
-    "check-lockfile": "yarn install --immutable --check-cache",
-    "verify": "npm run lint && npm run type-check && npm run check-lockfile"
+    "check-lockfile": "node scripts/check-package-manager.cjs",
+    "verify": "yarn lint && yarn type-check && yarn check-lockfile"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
