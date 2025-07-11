@@ -7,7 +7,7 @@ A platform for connecting marketing professionals with high-value projects throu
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- npm or yarn
+- Yarn
 
 ### Installation
 
@@ -15,8 +15,6 @@ A platform for connecting marketing professionals with high-value projects throu
 2. Install dependencies:
 
 ```bash
-npm install
-# or
 yarn install
 ```
 
@@ -26,16 +24,12 @@ yarn install
 4. Set up mock data (optional):
 
 ```bash
-npm run setup-mock-data
-# or
 yarn setup-mock-data
 ```
 
 5. Start the development server:
 
 ```bash
-npm run dev
-# or
 yarn dev
 ```
 
