@@ -6,7 +6,7 @@ This document contains the credentials for all mock users created by the setup s
 
 1. **Run the setup script:**
    ```bash
-   npm run setup-mock-data
+   yarn setup-mock-data
    ```
 
 ## Mock User Credentials
