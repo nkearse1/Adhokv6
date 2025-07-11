@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { Webhook } from 'svix';
 import { db } from '@/lib/db';
 import { users, talentProfiles, clientProfiles } from '@/lib/schema';
