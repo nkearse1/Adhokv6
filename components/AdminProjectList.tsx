@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -67,9 +66,11 @@ export default function AdminProjectList() {
       }
 
       if (bidFilter === "0") {
-        filteredData = filteredData.filter(p => !p.projectBids[0]?.count || p.projectBids[0].count === 0);
+        filteredData = filteredData.filter(
+          p => !p.projectBids?.[0]?.count || p.projectBids?.[0]?.count === 0
+        );
       } else if (bidFilter === "1+") {
-        filteredData = filteredData.filter(p => p.projectBids[0]?.count > 0);
+        filteredData = filteredData.filter(p => (p.projectBids?.[0]?.count || 0) > 0);
       }
 
       if (revenueFilter === "low") {

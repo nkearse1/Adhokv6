@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
@@ -10,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ProjectTimeline from '@/components/ProjectTimeline';
-import DeliverablesPanel from '@/components/DeliverablesPanel';
+import DeliverablesPanel, { type Deliverable as PanelDeliverable } from '@/components/DeliverablesPanel';
 import ActivityLog from '@/components/ActivityLog';
 import ChatPanel from '@/components/ChatPanel';
 import FileUpload from '@/components/FileUpload';
@@ -252,7 +251,7 @@ export default function ProjectWorkspace() {
               role="talent"
               projectId={project_id}
               partnerTypingLabel="Client is typing..."
-              deliverables={deliverables}
+              deliverables={deliverables as unknown as PanelDeliverable[]}
               projectStatus={projectStatus}
               onActivity={addActivityLogEntry}
             />
@@ -261,7 +260,7 @@ export default function ProjectWorkspace() {
           <TabsContent value="deliverables">
             <DeliverablesPanel 
               role="talent"
-              deliverables={deliverables}
+              deliverables={deliverables as unknown as PanelDeliverable[]}
               editable
               showForm
               projectDeadline={projectDeadline}
@@ -282,7 +281,7 @@ export default function ProjectWorkspace() {
           <TabsContent value="activity">
             <ActivityLog
               role="talent"
-              deliverables={deliverables}
+              deliverables={deliverables as any}
               activityLog={activityLog}
             />
           </TabsContent>

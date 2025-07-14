@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -45,6 +44,8 @@ interface TalentProfile {
   joinMethod?: string;
   qualificationReason?: string;
   qualificationHistory?: string[];
+  location?: string;
+  trustScoreUpdatedAt?: string;
 }
 
 export default function AdminTalentList() {
