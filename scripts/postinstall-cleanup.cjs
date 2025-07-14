@@ -10,11 +10,6 @@ if (currentMajor < MIN_NODE_MAJOR) {
   );
 }
 
-if (process.mainModule) {
-  console.warn(
-    '[postinstall-cleanup] Expected ESM context but running as CommonJS.'
-  );
-}
 
 const paths = [
   'node_modules/drizzle-orm/mysql-core',
