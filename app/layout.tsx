@@ -1,5 +1,4 @@
 import * as React from 'react';
-import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
@@ -9,7 +8,7 @@ import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Adhok',
   description: 'Next.js + Clerk App',
   icons: [

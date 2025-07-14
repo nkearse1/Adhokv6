@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +24,9 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
       const json = await res.json();
       if (res.ok) {
         const all = json.data || [];
-        setProjects(all.filter((p: any) => p.status === 'completed' && p.talentId === userId));
+        setProjects(
+          all.filter((p: any) => p.status === 'completed' && p.talentId === userId) as CompletedProject[]
+        );
       }
     }
 
@@ -75,7 +76,7 @@ export function CompletedProjectsList({ userId }: { userId: string }) {
                         ? { ...p, visibility: p.visibility === 'public' ? 'private' : 'public' }
                         : p
                     );
-                    setProjects(updated);
+                    setProjects(updated as CompletedProject[]);
                   }}
                 >
                   {project.visibility === 'public' ? 'Make Private' : 'Make Public'}

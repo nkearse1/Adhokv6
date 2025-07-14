@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +15,23 @@ interface ChartDataPoint {
 
 interface AdminLineChartProps {
   selectedMetrics: string[];
+}
+
+interface Project {
+  createdAt: string;
+  projectBudget?: number;
+  flagged?: boolean;
+}
+
+interface TalentProfile {
+  id: string;
+  createdAt: string;
+  isQualified: boolean;
+}
+
+interface Review {
+  createdAt: string;
+  rating: number;
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -61,16 +77,16 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
 
         const projectsRes = await fetch('/api/db?table=projects');
         const projectsJson = await projectsRes.json();
-        const projects = projectsJson.data || [];
+        const projects: Project[] = projectsJson.data || [];
 
 
         const reviewsRes = await fetch('/api/db?table=project_reviews');
         const reviewsJson = await reviewsRes.json();
-        const reviews = reviewsJson.data || [];
+        const reviews: Review[] = reviewsJson.data || [];
 
-         const talentsRes = await fetch('/api/db?table=talent_profiles');
+        const talentsRes = await fetch('/api/db?table=talent_profiles');
         const talentsJson = await talentsRes.json();
-        const talents = talentsJson.data || [];
+        const talents: TalentProfile[] = talentsJson.data || [];
 
 
         const months: Record<string, ChartDataPoint> = {};
@@ -89,7 +105,7 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
           };
         }
 
-        projects?.forEach(p => {
+        projects?.forEach((p: Project) => {
           const m = new Date(p.createdAt).toLocaleString('default', { month: 'short' });
           const bucket = months[m];
           if (!bucket) return;
@@ -99,7 +115,7 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
         });
 
         const talentMonths: Record<string, Set<string>> = {};
-        talents?.forEach(t => {
+        talents?.forEach((t: TalentProfile) => {
           if (!t.isQualified) return;
           const m = new Date(t.createdAt).toLocaleString('default', { month: 'short' });
           if (!talentMonths[m]) talentMonths[m] = new Set();
@@ -109,7 +125,7 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
           if (months[m]) months[m].activeTalent = ids.size;
         });
 
-        reviews?.forEach(r => {
+        reviews?.forEach((r: Review) => {
           if (r.rating < 3) {
             const m = new Date(r.createdAt).toLocaleString('default', { month: 'short' });
             if (months[m]) months[m].negativeReviews += 1;

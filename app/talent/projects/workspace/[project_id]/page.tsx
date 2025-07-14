@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
@@ -57,12 +56,15 @@ const useProjectStatus = (projectId: string) => {
     statusReady: true,
     canAccess: true,
     hasTrackingInfo: false,
-    updateDeliverableStatus: (id: string, status: any) => {
-      setDeliverables(prev => prev.map(d => d.id === id ? { ...d, status } : d));
+    updateDeliverableStatus: async (id: string, status: any) => {
+      setDeliverables(prev => prev.map(d => (d.id === id ? { ...d, status } : d)));
       setActivityLog(prev => [...prev, `Deliverable "${deliverables.find(d => d.id === id)?.title}" status updated to ${status}`]);
     },
-    addDeliverable: (deliverable: any) => {
-      setDeliverables(prev => [...prev, { ...deliverable, id: Date.now().toString(), actualHours: 0, timeEntries: [] }]);
+    addDeliverable: async (deliverable: any) => {
+      setDeliverables(prev => [
+        ...prev,
+        { ...deliverable, id: Date.now().toString(), actualHours: 0, timeEntries: [] },
+      ]);
       setActivityLog(prev => [...prev, `New deliverable "${deliverable.title}" added`]);
     },
     updateDeliverable: (id: string, updates: any) => {
