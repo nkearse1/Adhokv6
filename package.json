@@ -108,4 +108,8 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3"
   }
+"resolutions": {
+  "sharp": "npm:@empty/sharp@0.0.0"
+}
+
 }
