@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "prebuild": "prebuild": "yarn install --check-files && yarn check-type-imports && yarn type-check",
+    "prebuild": "yarn check-type-imports && yarn type-check",
     "build": "yarn type-check && next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
     "check-type-imports": "node scripts/check-type-imports.cjs",
@@ -23,7 +23,6 @@
     "setup-mock-data": "node scripts/setupMockData.js",
     "backfill-missing-ids": "node --import dotenv/config scripts/backfillMissingProjectIds.js",
     "recalculate-trust-scores": "node --import dotenv/config scripts/recalculateTrustScores.js",
-    "packageManager": "yarn@4.9.2"
     "process-brief": "node scripts/processBrief.js",
     "postinstall": "node scripts/postinstall-cleanup.cjs",
     "preinstall": "node scripts/check-banned-packages.cjs",
@@ -31,6 +30,7 @@
     "check-eslint-versions": "node scripts/check-eslint-versions.cjs",
     "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions"
   },
+  "packageManager": "yarn@4.9.2",
   "dependencies": {
     "@clerk/nextjs": "^4.31.8",
     "@clerk/types": "^3.65.5",
@@ -72,6 +72,8 @@
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.344.0",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^3.11.174",
     "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-day-picker": "^8.9.4",
@@ -81,7 +83,6 @@
     "react-hook-form": "^7.49.3",
     "react-resizable-panels": "^2.0.11",
     "recharts": "^2.12.0",
-    "sharp": "0.34.2",
     "sonner": "^1.4.0",
     "svix": "^1.20.0",
     "tailwind-merge": "^2.2.1",
@@ -107,9 +108,8 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.8.3"
+  },
+  "resolutions": {
+    "sharp": "npm:@empty/sharp@0.0.0"
   }
-"resolutions": {
-  "sharp": "npm:@empty/sharp@0.0.0"
-}
-
 }
