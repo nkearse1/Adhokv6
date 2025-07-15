@@ -21,7 +21,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: any }) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+   <ClerkProvider
+  publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+  frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
+>
+
       <html lang="en">
         <body>
           <AuthProvider>
