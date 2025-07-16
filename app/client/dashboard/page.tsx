@@ -1,13 +1,16 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+
+import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import ClientProjectsList from '@/components/ClientProjectsList';
 import InviteTalentBanner from '@/components/InviteTalentBanner';
 import BudgetTracker from '@/components/BudgetTracker';
+
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -17,6 +20,8 @@ interface Project {
   projectBudget: number;
   bids?: number;
 }
+
+const USE_MOCK_DATA = true; // Set to false in production
 
 export default function ClientDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -33,29 +38,34 @@ export default function ClientDashboard() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      
-      // This would be replaced with a fetch to your API
-      // For now, we'll use mock data
-      const mockProjects = [
-        {
-          id: '1',
-          title: 'SEO Optimization Campaign',
-          status: 'open',
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          projectBudget: 3500,
-          bids: 3
-        },
-        {
-          id: '2',
-          title: 'Social Media Strategy',
-          status: 'in_progress',
-          deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-          projectBudget: 2800,
-          bids: 5
-        }
-      ];
-      
-      setProjects(mockProjects);
+
+      if (USE_MOCK_DATA) {
+        const mockProjects = [
+          {
+            id: '1',
+            title: 'SEO Optimization Campaign',
+            status: 'open',
+            deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+            projectBudget: 3500,
+            bids: 3
+          },
+          {
+            id: '2',
+            title: 'Social Media Strategy',
+            status: 'in_progress',
+            deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+            projectBudget: 2800,
+            bids: 5
+          }
+        ];
+        setProjects(mockProjects);
+      } else {
+        const res = await fetch('/api/db?table=projects');
+        const json = await res.json();
+        const userProjects = (json.data || []).filter((p: any) => p.clientId === user?.id);
+        setProjects(userProjects);
+      }
+
     } catch (error) {
       console.error('Error fetching projects:', error);
       toast.error('Failed to load projects');
@@ -63,7 +73,6 @@ export default function ClientDashboard() {
       setLoading(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -90,9 +99,8 @@ export default function ClientDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
-      {/* Mobile-responsive header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-brand-neutral">Client Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-indigo-900">Client Dashboard</h1>
         <Button 
           onClick={() => router.push('/upload')} 
           className="w-full sm:w-auto bg-[#00D1C1] text-white hover:bg-[#00b4ab]"
@@ -103,8 +111,6 @@ export default function ClientDashboard() {
 
       <InviteTalentBanner />
       <BudgetTracker projects={projects} />
-
-      {/* Mobile-responsive project grid */}
       <div className="grid gap-4">
         <ClientProjectsList projects={projects} />
       </div>

@@ -1,12 +1,25 @@
 'use client';
+
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function InviteTalentBanner() {
+  const router = useRouter();
+
   return (
-    <div className="p-4 bg-blue-50 border rounded mb-4 flex items-center justify-between">
-      <p className="text-sm text-blue-900">Need extra help on a project? Invite talent to bid.</p>
-      <Button className="bg-[#2E3A8C] text-white hover:bg-[#1B276F]">Invite Talent</Button>
+    <div className="bg-[#F0F9FA] border border-[#B5E3E1] p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
+      <div>
+        <h3 className="font-semibold text-[#2E3A8C]">Need more talent?</h3>
+        <p className="text-sm text-gray-600">
+          Invite qualified experts to collaborate on your briefs.
+        </p>
+      </div>
+      <Button
+        onClick={() => router.push('/talent/sign-up')}
+        className="bg-[#00D1C1] text-white hover:bg-[#00b4ab]"
+      >
+        Invite Talent
+      </Button>
     </div>
   );
 }
-

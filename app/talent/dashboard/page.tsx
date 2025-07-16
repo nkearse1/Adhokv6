@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,13 +20,13 @@ import { CompletedProjectsList } from "@/components/CompletedProjectsList";
 import ActiveBidsPanel from "@/components/ActiveBidsPanel";
 import BadgeDisplay from "@/components/BadgeDisplay";
 
-const USE_MOCK_SESSION = true;
 const TEAL_COLOR = "#00A499";
+const USE_MOCK_SESSION = true;
 
 const experienceBadgeMap: Record<string, string> = {
   "Entry Level": "Specialist",
   "Mid-Level": "Pro Talent",
-  "Expert": "Expert",
+  "Expert": "Expert Talent",
 };
 
 interface Deliverable {
@@ -80,130 +81,66 @@ interface Project {
   };
 }
 
-interface Profile {
-  id: string;
-  fullName: string;
-  email: string;
-  expertise: string;
-  location?: string;
-  rate?: number;
-  linkedinUrl?: string;
-  isQualified: boolean;
-  metadata?: {
-    marketing?: {
-      expertiseLevel?: string;
-    };
-  };
-}
-
 export default function TalentDashboard() {
+  const { userId } = useAuth();
   const router = useRouter();
-  const { userId, authUser, isAuthenticated, loading: authLoading } = useAuth();
 
+  const [currentTab, setCurrentTab] = useState<'activeBids' | 'earnings' | 'portfolio'>('activeBids');
   const [projects, setProjects] = useState<Project[]>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [stats, setStats] = useState({
-    activeBids: 0,
-    totalEarnings: 0,
-    completedProjects: 0,
-  });
-  const [loading, setLoading] = useState(true);
-
-  const [currentTab, setCurrentTab] = useState<"activeBids" | "wonProjects" | "earnings" | "portfolio">("activeBids");
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (USE_MOCK_SESSION) {
-      setProfile({
-        id: "c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13",
-        fullName: "Mock Talent",
-        email: "talent@adhok.dev",
-        expertise: "SEO",
-        location: "Tampa, FL",
-        rate: 75,
-        linkedinUrl: "https://linkedin.com/in/mocktalent",
-        isQualified: true,
-        metadata: { marketing: { expertiseLevel: "Pro Talent" } },
-      });
-      const mockProjects = [
+    if (USE_MOCK_SESSION && userId) {
+      setProjects([
         {
-          id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
-          title: "Mock SEO Audit",
-          description: "Audit a small business website",
-          status: "open",
+          id: "mock1",
+          title: "Brand Audit and SEO",
+          description: "Run a full marketing audit.",
+          status: "complete",
           deadline: new Date().toISOString(),
-          projectBudget: 500,
-          bidCount: 4,
-          lastBid: 72,
-          metadata: { marketing: { expertiseLevel: "Pro Talent" } },
-        },
-        {
-          id: "e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15",
-          title: "Social Media Strategy",
-          description: "Develop comprehensive social media plan",
-          status: "completed",
-          deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-          projectBudget: 1500,
-          bidCount: 1,
-          lastBid: 140,
-          deliverables: [
-            { id: "1", title: "Content Calendar" },
-            { id: "2", title: "Platform Strategy" },
-          ],
+          projectBudget: 2000,
           caseStudy: {
             id: "cs1",
-            summary: "Developed and implemented a full strategy.",
-            outcome: "Client doubled their engagement.",
-            deliverableId: "1",
+            summary: "Increased SEO visibility by 40%",
+            outcome: "Traffic up 40% in 3 months",
           },
-          metadata: { marketing: { expertiseLevel: "Expert" } },
+          deliverables: [
+            { id: "d1", title: "Audit Report" },
+            { id: "d2", title: "Keyword List" },
+          ],
         },
-      ];
-      setProjects(mockProjects);
-      setStats({ activeBids: 1, totalEarnings: 1200, completedProjects: 1 });
-      setLoading(false);
-      return;
+      ]);
     }
-  }, [authLoading, isAuthenticated, userId]);
+  }, [userId]);
 
-  const handleSaveCaseStudy = (projectId: string, newData: CaseStudy) => {
-    setProjects(prev =>
-      prev.map(project =>
-        project.id === projectId ? { ...project, caseStudy: newData } : project
-      )
-    );
-    toast.success("Case study saved!");
-  };
-
-  const statLabelMap: Record<string, string> = {
+  const statLabelMap = {
     activeBids: "Active Bids",
-    wonProjects: "Won Projects",
-    earnings: "Total Earnings",
+    earnings: "Revenue Overview",
     portfolio: "Completed Projects",
   };
 
-  const statValueMap: Record<string, number | string> = {
-    activeBids: stats.activeBids,
-    wonProjects: stats.completedProjects,
-    earnings: stats.totalEarnings.toLocaleString(),
-    portfolio: stats.completedProjects,
+  const statValueMap = {
+    activeBids: 1,
+    earnings: "$7,200",
+    portfolio: 1,
   };
 
-  const filteredProjects = projects.filter((p) => {
-    if (currentTab === "activeBids") return p.status !== "completed";
-    if (currentTab === "wonProjects") return p.status === "completed";
-    if (currentTab === "portfolio") return p.status === "completed";
-    return false;
-  });
+  const filteredProjects = projects.filter(p => p.status === 'complete');
 
-  const username = authUser?.user_metadata?.username || authUser?.id;
+  const handleSaveCaseStudy = (projectId: string, updated: CaseStudy) => {
+    const updatedProjects = projects.map(p =>
+      p.id === projectId ? { ...p, caseStudy: updated } : p
+    );
+    setProjects(updatedProjects);
+    toast.success("Case Study saved");
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6 px-2 md:px-0">
         <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
         <BadgeDisplay />
-        <Button onClick={() => router.push(`/talent/${username}/projects`)}>Browse Projects</Button>
+        <Button onClick={() => router.push(`/talent/${userId}/projects`)}>Browse Projects</Button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -225,52 +162,52 @@ export default function TalentDashboard() {
       <h2 className="text-xl font-semibold text-[#2E3A8C] mb-4">{statLabelMap[currentTab]}</h2>
 
       <div className="space-y-4">
-        {currentTab === 'activeBids' && <ActiveBidsPanel />}
+        {currentTab === 'activeBids' && userId && <ActiveBidsPanel userId={userId} />}
         {currentTab === 'earnings' && <RevenuePanel />}
-        {currentTab === 'portfolio' && <CompletedProjectsList userId={userId || ''} />}
-        {currentTab === "portfolio" ? (
-          filteredProjects.map(project => (
-            <div key={project.id} className="bg-white border rounded-lg p-4 shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-lg text-[#2E3A8C]">{project.title}</h3>
-                <Badge variant="outline">Complete</Badge>
-              </div>
-              <p className="text-sm text-gray-600 mb-2">Deadline: {formatDistanceToNow(new Date(project.deadline), { addSuffix: true })}</p>
-              {project.caseStudy ? (
-                <div className="bg-gray-50 p-3 rounded-md mb-2 text-sm">
-                  <p className="font-medium text-[#2E3A8C] mb-1">📘 Case Study Summary</p>
-                  <p>{project.caseStudy.summary}</p>
+        {currentTab === 'portfolio' && (
+          <>
+            <CompletedProjectsList userId={userId || ''} />
+            {filteredProjects.map(project => (
+              <div key={project.id} className="bg-white border rounded-lg p-4 shadow-sm">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-semibold text-lg text-[#2E3A8C]">{project.title}</h3>
+                  <Badge variant="outline">Complete</Badge>
                 </div>
-              ) : (
-                <p className="text-sm italic text-gray-500 mb-2">No case study submitted yet.</p>
-              )}
-              <Button variant="secondary" onClick={() => setEditingProjectId(project.id)}>
-                {project.caseStudy ? "Edit Case Study" : "Add Case Study"}
-              </Button>
+                <p className="text-sm text-gray-600 mb-2">
+                  Deadline: {formatDistanceToNow(new Date(project.deadline), { addSuffix: true })}
+                </p>
+                {project.caseStudy ? (
+                  <div className="bg-gray-50 p-3 rounded-md mb-2 text-sm">
+                    <p className="font-medium text-[#2E3A8C] mb-1">📘 Case Study Summary</p>
+                    <p>{project.caseStudy.summary}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm italic text-gray-500 mb-2">No case study submitted yet.</p>
+                )}
+                <Button variant="secondary" onClick={() => setEditingProjectId(project.id)}>
+                  {project.caseStudy ? "Edit Case Study" : "Add Case Study"}
+                </Button>
 
-              {editingProjectId === project.id && (
-                <CaseStudyModal
-                  open={true}
-                  onClose={() => setEditingProjectId(null)}
-                  deliverables={project.deliverables || []}
-                  initialData={project.caseStudy ? toCaseStudyData(project.caseStudy) : undefined}
-                  onSubmit={(newData) => {
-                    handleSaveCaseStudy(project.id, {
-                      id: project.caseStudy?.id || '',
-                      summary: newData.problem || newData.title,
-                      outcome: newData.results || newData.solution,
-                      deliverableId: project.caseStudy?.deliverableId,
-                    });
-                    setEditingProjectId(null);
-                  }}
-                />
-              )}
-            </div>
-          ))
-        ) : currentTab === "earnings" ? (
-          <TalentEarnings />
-        ) : (
-          <p className="text-gray-500 text-sm">No projects in this tab.</p>
+                {editingProjectId === project.id && (
+                  <CaseStudyModal
+                    open={true}
+                    onClose={() => setEditingProjectId(null)}
+                    deliverables={project.deliverables || []}
+                    initialData={project.caseStudy ? toCaseStudyData(project.caseStudy) : undefined}
+                    onSubmit={(newData) => {
+                      handleSaveCaseStudy(project.id, {
+                        id: project.caseStudy?.id || '',
+                        summary: newData.problem || newData.title,
+                        outcome: newData.results || newData.solution,
+                        deliverableId: project.caseStudy?.deliverableId,
+                      });
+                      setEditingProjectId(null);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+          </>
         )}
       </div>
     </div>
