@@ -1,5 +1,5 @@
 'use client';
-import { SignIn } from "@clerk/nextjs";
+import { SignInForm } from '@/components/SignInForm';
 
 export default function SignInPage() {
   return (
@@ -13,7 +13,7 @@ export default function SignInPage() {
           <p className="text-sm text-[#00A499] font-medium">Sign in to find second-stream projects</p>
         </div>
 
-        <SignIn 
+        <SignInForm
           appearance={{
             elements: {
               formButtonPrimary: "bg-[#2E3A8C] hover:bg-[#2E3A8C]/90",
@@ -26,8 +26,8 @@ export default function SignInPage() {
               footerActionLink: "text-[#2E3A8C] hover:text-[#2E3A8C]/90"
             }
           }}
-          redirectUrl="/talent/dashboard"
         />
       </div>
     </main>
-  );}
+  );
+}

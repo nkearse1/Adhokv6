@@ -27,7 +27,7 @@ export function Header() {
     const dashboardPaths: { [key: string]: string } = {
       client: `/client/dashboard`,
       talent: `/talent/dashboard`,
-      admin: `/admin/dashboard`
+      admin: `/admin/panel`
     };
     
     const currentDashboard = dashboardPaths[userRole as keyof typeof dashboardPaths];
@@ -41,7 +41,7 @@ export function Header() {
       case 'talent':
         return `/talent/dashboard`;
       case 'admin':
-        return `/admin/dashboard`;
+        return `/admin/panel`;
       default:
         return '/';
     }

@@ -142,15 +142,6 @@ export default function ProjectWorkspace() {
     }
   }, [projectStatus]);
 
-  useEffect(() => {
-    if (!loading && !canAccess) {
-      const username = user?.username || user?.id;
-      const dest = `/talent/projects/details/${project_id}`;
-      if (pathname !== dest) {
-        router.push(dest);
-      }
-    }
-  }, [loading, canAccess, router, project_id, user, pathname]);
 
   if (loading || !statusReady) {
     return (
@@ -178,8 +169,8 @@ export default function ProjectWorkspace() {
               </p>
             </AlertDescription>
           </Alert>
-          <Button onClick={() => router.push(`/talent/projects/details/${project_id}`)} className="mt-4 w-full sm:w-auto">
-            View Project Details
+          <Button onClick={() => router.push('/talent/dashboard')} className="mt-4 w-full sm:w-auto">
+            Back to Dashboard
           </Button>
         </div>
       </div>
@@ -196,12 +187,6 @@ export default function ProjectWorkspace() {
         {/* Mobile-responsive header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#2E3A8C] break-words">{projectName}</h1>
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href={`/talent/projects/details/${project_id}`} className="flex items-center gap-2">
-              <ExternalLink className="h-4 w-4" />
-              Project Details
-            </Link>
-          </Button>
         </div>
 
         <ProjectTimeline status={projectStatus} role="talent" />

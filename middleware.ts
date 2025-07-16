@@ -16,7 +16,7 @@ function safeRedirect(path: string, req: NextRequest) {
 }
 
 export default authMiddleware({
-  publicRoutes: ['/', '/sign-in', '/sign-up', '/waitlist'],
+  publicRoutes: ['/', '/sign-in', '/sign-up', '/waitlist', '/sign-in-callback'],
 
   afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
     const pathname = req.nextUrl.pathname;
