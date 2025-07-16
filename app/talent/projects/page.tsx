@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
+import ProjectList from '@/components/ProjectList';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -187,6 +188,5 @@ export default function ProjectsPage() {
     (p: Project) => selectedCategory === 'All' || p.category === selectedCategory
   );
 
-  // JSX rendering remains unchanged
-  return <></>;
+  return <ProjectList />;
 }

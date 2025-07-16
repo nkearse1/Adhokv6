@@ -1,7 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface Bid {
   id: string;
@@ -16,7 +17,7 @@ interface Project {
   title: string;
 }
 
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = true; // Set to false in production
 
 export default function ActiveBidsPanel({ userId }: { userId: string }) {
   const [bids, setBids] = useState<Bid[]>([]);
@@ -25,37 +26,38 @@ export default function ActiveBidsPanel({ userId }: { userId: string }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch("/api/db?table=project_bids");
+        const res = await fetch('/api/db?table=project_bids');
         const json = await res.json();
         const userBids = (json.data || []).filter(
-          (b: any) => b.professionalId === userId,
+          (b: any) => b.professionalId === userId
         );
         setBids(userBids);
+
         const projectIds = userBids.map((b: any) => b.projectId);
         if (projectIds.length) {
-          const pres = await fetch("/api/db?table=projects");
+          const pres = await fetch('/api/db?table=projects');
           const pjson = await pres.json();
           setProjects(
-            (pjson.data || []).filter((p: any) => projectIds.includes(p.id)),
+            (pjson.data || []).filter((p: any) => projectIds.includes(p.id))
           );
         }
       } catch (err) {
-        console.error("Failed loading bids", err);
+        console.error('Failed loading bids', err);
       }
     }
 
     if (USE_MOCK_DATA) {
       setBids([
         {
-          id: "bid1",
-          projectId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
+          id: 'bid1',
+          projectId: 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14',
           professionalId: userId,
           ratePerHour: 72,
-          status: "active",
+          status: 'active',
         },
       ]);
       setProjects([
-        { id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14", title: "Mock SEO Audit" },
+        { id: 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', title: 'Mock SEO Audit' },
       ]);
       return;
     }
@@ -65,6 +67,19 @@ export default function ActiveBidsPanel({ userId }: { userId: string }) {
 
   const getProjectTitle = (id: string) =>
     projects.find((p) => p.id === id)?.title || id;
+
+  const getStatusBadgeColor = (status?: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   if (!bids.length) {
     return (
@@ -81,12 +96,3 @@ export default function ActiveBidsPanel({ userId }: { userId: string }) {
           <CardContent className="p-4 flex justify-between items-center">
             <div>
               <h3 className="font-medium">{getProjectTitle(bid.projectId)}</h3>
-              <p className="text-sm text-gray-500">${bid.ratePerHour}/hr</p>
-            </div>
-            <Badge variant="secondary">{bid.status || "pending"}</Badge>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-}

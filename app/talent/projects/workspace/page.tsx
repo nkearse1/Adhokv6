@@ -13,6 +13,9 @@ import DeliverablesPanel, { type Deliverable as PanelDeliverable } from '@/compo
 import ActivityLog from '@/components/ActivityLog';
 import ChatPanel from '@/components/ChatPanel';
 import FileUpload from '@/components/FileUpload';
+import WorkspaceTabs from '@/components/WorkspaceTabs';
+import DeliverableUpload from '@/components/DeliverableUpload';
+import ClientFeedbackCard from '@/components/ClientFeedbackCard';
 import { useProjectStatus } from '@/hooks/useProjectStatus';
 import { useEscrow } from '@/hooks/useEscrow';
 import { useAuth } from '@/lib/useAuth';
@@ -225,6 +228,10 @@ export default function ProjectWorkspace() {
             </div>
           </div>
         )}
+
+        <WorkspaceTabs />
+        <DeliverableUpload />
+        <ClientFeedbackCard />
 
         {/* Mobile-responsive tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
