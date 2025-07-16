@@ -2,10 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    ignoreBuildErrors: false, 
+    ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/admin/dashboard',
+        destination: '/admin/panel',
+        permanent: false,
+      },
+    ];
   },
 };
 
