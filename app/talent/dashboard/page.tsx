@@ -14,6 +14,10 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import TalentEarnings from "@/components/TalentEarnings";
 import CaseStudyModal from "@/components/CaseStudyModal";
+import RevenuePanel from "@/components/RevenuePanel";
+import { CompletedProjectsList } from "@/components/CompletedProjectsList";
+import ActiveBidsPanel from "@/components/ActiveBidsPanel";
+import BadgeDisplay from "@/components/BadgeDisplay";
 
 const USE_MOCK_SESSION = true;
 const TEAL_COLOR = "#00A499";
@@ -198,6 +202,7 @@ export default function TalentDashboard() {
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6 px-2 md:px-0">
         <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
+        <BadgeDisplay />
         <Button onClick={() => router.push(`/talent/${username}/projects`)}>Browse Projects</Button>
       </div>
 
@@ -220,6 +225,9 @@ export default function TalentDashboard() {
       <h2 className="text-xl font-semibold text-[#2E3A8C] mb-4">{statLabelMap[currentTab]}</h2>
 
       <div className="space-y-4">
+        {currentTab === 'activeBids' && <ActiveBidsPanel />}
+        {currentTab === 'earnings' && <RevenuePanel />}
+        {currentTab === 'portfolio' && <CompletedProjectsList userId={userId || ''} />}
         {currentTab === "portfolio" ? (
           filteredProjects.map(project => (
             <div key={project.id} className="bg-white border rounded-lg p-4 shadow-sm">

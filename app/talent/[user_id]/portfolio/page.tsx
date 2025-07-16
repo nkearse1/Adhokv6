@@ -2,6 +2,7 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ExperienceBadge from '@/components/ExperienceBadge';
+import PortfolioDisplay from '@/components/PortfolioDisplay';
 
 export default function TalentPortfolioPage() {
   const params = useParams();
@@ -125,6 +126,7 @@ export default function TalentPortfolioPage() {
       {/* Portfolio List */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Portfolio Projects</h2>
+        <PortfolioDisplay />
         {portfolio.length === 0 ? (
           <p className="text-gray-500">No public work yet</p>
         ) : (

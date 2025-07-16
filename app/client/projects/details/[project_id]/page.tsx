@@ -18,6 +18,8 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import ProjectStatusCard from '@/components/ProjectStatusCard';
+import TalentAssignmentBox from '@/components/TalentAssignmentBox';
 
 export default function ClientProjectDetail() {
   const params = useParams();
@@ -59,6 +61,7 @@ export default function ClientProjectDetail() {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
+      <ProjectStatusCard status={project.status} />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="min-w-0 flex-1">
           <h1 className="text-xl sm:text-2xl font-bold text-[#2E3A8C] mb-2 break-words">
@@ -161,6 +164,7 @@ export default function ClientProjectDetail() {
             <Users className="w-4 h-4" />
             Project Team
           </h3>
+          <TalentAssignmentBox />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>

@@ -11,7 +11,11 @@
 | Route                | Purpose                                              |
 |----------------------|------------------------------------------------------|
 | `/talent/projects`   | Talent sees open projects + inline bid submission     |
+| `/talent/projects/details/[project_id]` | View project details, submit work |
+| `/talent/projects/workspace/[project_id]` | Workspace chat & deliverables |
+| `/talent/[user_id]/portfolio` | Public portfolio for each talent |
 | `/client/dashboard`  | Project creators post new jobs (`UploadFlow.tsx`)     |
+| `/client/projects/details/[project_id]` | Manage project status & reviews |
 | `/api/project/post`  | Planned: endpoint for project creation                |
 | `/api/bid/submit`    | Planned: endpoint to store bids                       |
 
