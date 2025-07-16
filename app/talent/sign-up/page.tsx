@@ -1,7 +1,9 @@
 'use client';
-import { SignUp } from "@clerk/nextjs";
+import { useState } from 'react';
+import { TalentSignUpForm } from '@/components/TalentSignUpForm';
 
 export default function TalentSignUpPage() {
+  const [loading, setLoading] = useState(false);
   return (
     <main className="min-h-screen flex items-center justify-center bg-white p-4">
       <div className="max-w-2xl w-full space-y-6">
@@ -10,30 +12,9 @@ export default function TalentSignUpPage() {
             <div className="h-8 w-8 text-[#2E3A8C] font-bold text-2xl">💼</div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[#2F2F2F]">Adhok</h1>
           </div>
-          <p className="text-sm text-[#00A499] font-medium">
-            Sign up to earn from second-stream projects
-          </p>
+          <p className="text-sm text-[#00A499] font-medium">Sign up to earn from second-stream projects</p>
         </div>
-        
-        <SignUp
-          appearance={{
-            elements: {
-              formButtonPrimary: "bg-[#2E3A8C] hover:bg-[#2E3A8C]/90",
-              card: "shadow-none",
-              headerTitle: "hidden",
-              headerSubtitle: "hidden",
-              socialButtonsBlockButton: "border border-gray-300 shadow-sm",
-              formFieldLabel: "text-gray-700",
-              formFieldInput: "border border-gray-300 rounded-md",
-              footerActionLink: "text-[#2E3A8C] hover:text-[#2E3A8C]/90"
-            }
-          }}
-          signInUrl="/sign-in"
-          redirectUrl="/talent/dashboard"
-          unsafeMetadata={{
-            role: "talent",
-          }}
-          />
+        <TalentSignUpForm loading={loading} setLoading={setLoading} />
       </div>
     </main>
   );
