@@ -17,15 +17,23 @@ function safeRedirect(path: string, req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-function mockMiddleware(req: NextRequest) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[middleware] MOCK MODE ACTIVE — skipping Clerk auth enforcement');
-  }
-  return NextResponse.next();
-}
-
-const clerkMiddleware = authMiddleware({
-  publicRoutes: ['/', '/sign-in', '/sign-up', '/waitlist', '/sign-in-callback'],
+const middleware = isMock
+  ? function middlewareMock(req: NextRequest) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          '[middleware] MOCK MODE ACTIVE — skipping Clerk auth enforcement',
+        );
+      }
+      return NextResponse.next();
+    }
+  : authMiddleware({
+      publicRoutes: [
+        '/',
+        '/sign-in',
+        '/sign-up',
+        '/waitlist',
+        '/sign-in-callback',
+      ],
 
   afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
     const pathname = req.nextUrl.pathname;
@@ -65,8 +73,6 @@ const clerkMiddleware = authMiddleware({
     return NextResponse.next();
   },
 });
-
-const middleware = isMock ? mockMiddleware : clerkMiddleware;
 
 export default middleware;
 
