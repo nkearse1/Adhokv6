@@ -89,6 +89,21 @@ All mock users have the password: `password123`
 - **Expertise:** Web Design & Development
 - **Badge:** Specialist
 
+## DevRoleSwitcher
+
+The development layout includes a floating **DevRoleSwitcher** tool. It
+appears only when `NODE_ENV` is `development` and lets you pick a temporary
+user role for testing. The selected role is saved to `localStorage` under the
+`dev_user_role` key. Removing or changing this key will refresh the page and
+update the mock auth state.
+
+For preview environments such as StackBlitz, set
+`NEXT_PUBLIC_USE_MOCK=true` in your `.env` file. This bypasses Clerk and uses
+the mock role logic automatically.
+
+If you encounter `401` errors or an infinite reload loop, ensure that a role is
+stored in `dev_user_role` or clear the key and choose a role again.
+
 ## Project Structure
 
 - `/app` - Next.js application routes and pages
