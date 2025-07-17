@@ -18,27 +18,37 @@ function safeRedirect(path: string, req: NextRequest) {
 export default authMiddleware({
   publicRoutes: ['/', '/sign-in', '/sign-up', '/waitlist', '/sign-in-callback'],
 
-  afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
+  async afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
     const pathname = req.nextUrl.pathname;
     const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as
       string | undefined;
 
+    // ✅ Allow bypass for StackBlitz or dev mock mode
+    const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+    if (isMock) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[middleware] MOCK MODE ACTIVE — skipping Clerk auth enforcement');
+      }
+      return NextResponse.next();
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      console.log('auth middleware', {
+      console.log('[middleware]', {
         userId: auth.userId,
         role,
         pathname,
       });
     }
 
-    // Allow public routes and unauthenticated access
+    // ✅ Skip if not signed in (for public routes)
     if (!auth.userId) return NextResponse.next();
 
-    // Redirect signed-in users with no role to waitlist
+    // ✅ Redirect signed-in users without role to waitlist
     if (auth.userId && !role && !pathname.startsWith('/waitlist')) {
       return safeRedirect('/waitlist', req);
     }
 
+    // ✅ Enforce role-based route protection
     const validRoles = ['admin', 'client', 'talent'];
     if (!role || !validRoles.includes(role)) {
       return NextResponse.next();
