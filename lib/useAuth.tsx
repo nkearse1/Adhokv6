@@ -32,9 +32,13 @@ const AuthContext = createContext<AuthState>(defaultAuthState);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, isSignedIn, isLoaded } = useUser();
-  const [state, setState] = useState(defaultAuthState);
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkUser = isMock
+    ? { user: null, isSignedIn: false, isLoaded: false }
+    : // eslint-disable-next-line react-hooks/rules-of-hooks
+      useUser();
+  const { user, isSignedIn, isLoaded } = clerkUser;
+  const [state, setState] = useState(defaultAuthState);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' || isMock) {

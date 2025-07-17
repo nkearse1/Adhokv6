@@ -18,6 +18,7 @@ export function Header() {
   const { userId, userRole, username, isAuthenticated, authUser } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { signOut } = isMock ? { signOut: () => {} } : useClerk();
 
   const dashboardPaths: { [key: string]: string } = {
