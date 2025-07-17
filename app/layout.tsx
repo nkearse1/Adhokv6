@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
@@ -19,23 +21,30 @@ export const metadata = {
   ],
 };
 
-export default function RootLayout({ children }: { children: any }) {
-  return (
-   <ClerkProvider
-  publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-  frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
->
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 
-      <html lang="en">
-        <body>
-          <AuthProvider>
-            <Header />
-            {children}
-            <Toaster />
-            <DevRoleSwitcher />
-          </AuthProvider>
-        </body>
-      </html>
+  const AppContent = (
+    <html lang="en">
+      <body>
+        <AuthProvider>
+          <Header />
+          {children}
+          <Toaster />
+          <DevRoleSwitcher />
+        </AuthProvider>
+      </body>
+    </html>
+  );
+
+  return isMock ? (
+    AppContent
+  ) : (
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
+    >
+      {AppContent}
     </ClerkProvider>
   );
 }
