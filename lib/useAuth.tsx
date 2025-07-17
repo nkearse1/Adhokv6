@@ -28,7 +28,6 @@ const defaultAuthState: AuthState = {
 };
 
 const AuthContext = createContext<AuthState>(defaultAuthState);
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: any = ({ children }: { children: any }) => {
@@ -36,6 +35,25 @@ export const AuthProvider: any = ({ children }: { children: any }) => {
   const [state, setState] = useState(defaultAuthState);
 
   useEffect(() => {
+    const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+
+    // ✅ MOCK OVERRIDE FOR STACKBLITZ/PREVIEW
+    if (isMockMode) {
+      const role: UserRole = 'talent'; // Default mock role
+      setState({
+        userId: 'mock-user-001',
+        username: 'mockuser',
+        userRole: role,
+        isAdmin: role === 'admin',
+        isAuthenticated: true,
+        loading: false,
+        authUser: null,
+        setDevRole: () => {},
+      });
+      return;
+    }
+
+    // ✅ LOCAL DEV ROLE SELECTION
     if (process.env.NODE_ENV === 'development') {
       const devRole = localStorage.getItem('dev_user_role') as UserRole | null;
 
@@ -79,6 +97,7 @@ export const AuthProvider: any = ({ children }: { children: any }) => {
       }
     }
 
+    // ✅ REAL AUTH
     if (isLoaded) {
       if (isSignedIn && user) {
         const role = (user.publicMetadata?.role as UserRole) || 'talent';
@@ -93,10 +112,4 @@ export const AuthProvider: any = ({ children }: { children: any }) => {
           setDevRole: () => {},
         });
       } else {
-        setState({ ...defaultAuthState, loading: false });
-      }
-    }
-  }, [isLoaded, isSignedIn, user]);
-
-  return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
-};
+        setState({
