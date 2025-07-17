@@ -16,7 +16,7 @@ export const metadata = {
   icons: [
     {
       rel: 'icon',
-      url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTE1MCAyNUwyNjIuNSA4Ny41VjIxMi41TDE1MCAyNzVMMzcuNSAyMTIuNVY4Ny41TDE1MCAyNVoiIGZpbGw9IiMwMEE0OTkiLz4KICA8cGF0aCBkPSJNMTUwIDc1TDEwMCAxMjVNMTUwIDc1TDIwMCAxMjVNMTUwIDc1VjE3NU0xMDAgMTI1VjE3NU0yMDAgMTI1VjE3NU0xMDAgMTc1TDE1MCAyMjVNMTUwIDE3NVYyMjVNMjAwIDE3NUwxNTAgMjI1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+Cg=='
+      url: '/favicon.svg',
     },
   ],
 };
@@ -24,7 +24,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 
-  const AppContent = (
+  const App = (
     <html lang="en">
       <body>
         <AuthProvider>
@@ -37,14 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 
-  return isMock ? (
-    AppContent
-  ) : (
+  return isMock ? App : (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API}
     >
-      {AppContent}
+      {App}
     </ClerkProvider>
   );
 }
