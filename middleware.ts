@@ -43,9 +43,9 @@ export default authMiddleware({
     // ✅ Skip if not signed in (for public routes)
     if (!auth.userId) return NextResponse.next();
 
-    // ✅ Redirect signed-in users without role to waitlist
-    if (auth.userId && !role && !pathname.startsWith('/waitlist')) {
-      return safeRedirect('/waitlist', req);
+    // ✅ Redirect signed-in users without role to home
+    if (auth.userId && !role && pathname !== '/') {
+      return safeRedirect('/', req);
     }
 
     // ✅ Enforce role-based route protection
