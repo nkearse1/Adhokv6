@@ -113,13 +113,13 @@ export default function TalentDashboard() {
     }
   }, [userId]);
 
-  const statLabelMap = {
+  const statLabelMap: Record<string, string> = {
     activeBids: "Active Bids",
     earnings: "Revenue Overview",
     portfolio: "Completed Projects",
   };
 
-  const statValueMap = {
+  const statValueMap: Record<string, string | number> = {
     activeBids: 1,
     earnings: "$7,200",
     portfolio: 1,
@@ -139,7 +139,7 @@ export default function TalentDashboard() {
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6 px-2 md:px-0">
         <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
-        <BadgeDisplay />
+        <BadgeDisplay tier="Expert Talent" />
         <Button onClick={() => router.push(`/talent/${userId}/projects`)}>Browse Projects</Button>
       </div>
 

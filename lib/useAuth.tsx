@@ -34,9 +34,10 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, isSignedIn, isLoaded } = useUser();
   const [state, setState] = useState(defaultAuthState);
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || isMock) {
       const devRole = localStorage.getItem('dev_user_role') as UserRole | null;
 
       if (devRole) {
