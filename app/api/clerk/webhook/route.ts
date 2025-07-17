@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { Webhook } from 'svix';
+import { clerkClient } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { users, talentProfiles, clientProfiles } from '@/lib/schema';
 
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest) {
       const role = (public_metadata?.role as string) || 'talent';
 
       if (id && email) {
+        // Ensure the Clerk user has the role stored in public metadata
+        await clerkClient.users.updateUser(id, {
+          publicMetadata: { role },
+        });
+
         // Insert into users table
         await db.insert(users).values({
           id,
