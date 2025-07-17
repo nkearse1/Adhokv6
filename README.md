@@ -39,6 +39,20 @@ Before pushing changes, run the verification suite:
 yarn verify
 ```
 
+### Dev Role Switcher
+
+During development a floating `DevRoleSwitcher` appears in the bottom left
+corner of the app. It lets you simulate different roles without signing in by
+updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
+populate mock user details and refreshes the page when a new role is selected.
+
+### Preview Mock Mode
+
+Preview deployments (e.g. StackBlitz) can use mock authentication by setting
+`NEXT_PUBLIC_USE_MOCK=true` in the environment. This skips Clerk checks in
+`middleware.ts` and `useAuth.tsx`. If you encounter 401 errors or redirect loops
+when testing a preview, enable this variable to force mock mode.
+
 ### Favicon
 
 The repository does not include `public/favicon.ico`. If you want to use a
