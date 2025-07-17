@@ -39,6 +39,20 @@ Before pushing changes, run the verification suite:
 yarn verify
 ```
 
+### Dev Role Switcher
+
+During development a floating `DevRoleSwitcher` appears in the bottom left
+corner of the app. It lets you simulate different roles without signing in by
+updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
+populate mock user details and refreshes the page when a new role is selected.
+
+### Preview Mock Mode
+
+Preview deployments (e.g. StackBlitz) can use mock authentication by setting
+`NEXT_PUBLIC_USE_MOCK=true` in the environment. This skips Clerk checks in
+`middleware.ts` and `useAuth.tsx`. If you encounter 401 errors or redirect loops
+when testing a preview, enable this variable to force mock mode.
+
 ### Favicon
 
 The repository does not include `public/favicon.ico`. If you want to use a
@@ -88,6 +102,21 @@ All mock users have the password: `password123`
 - **Username:** `sophie_anderson`
 - **Expertise:** Web Design & Development
 - **Badge:** Specialist
+
+## DevRoleSwitcher
+
+The development layout includes a floating **DevRoleSwitcher** tool. It
+appears only when `NODE_ENV` is `development` and lets you pick a temporary
+user role for testing. The selected role is saved to `localStorage` under the
+`dev_user_role` key. Removing or changing this key will refresh the page and
+update the mock auth state.
+
+For preview environments such as StackBlitz, set
+`NEXT_PUBLIC_USE_MOCK=true` in your `.env` file. This bypasses Clerk and uses
+the mock role logic automatically.
+
+If you encounter `401` errors or an infinite reload loop, ensure that a role is
+stored in `dev_user_role` or clear the key and choose a role again.
 
 ## Project Structure
 

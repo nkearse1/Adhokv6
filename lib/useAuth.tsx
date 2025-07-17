@@ -31,7 +31,7 @@ const AuthContext = createContext<AuthState>(defaultAuthState);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: any = ({ children }: { children: any }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { user, isSignedIn, isLoaded } = useUser();
   const [state, setState] = useState(defaultAuthState);
 

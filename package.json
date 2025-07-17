@@ -108,7 +108,6 @@
     "typescript": "^5.8.3"
   },
   "resolutions": {
-    "pdfjs-dist/canvas": "npm:@empty/canvas@0.0.0",
     "react-day-picker": "^8.9.4",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1"
