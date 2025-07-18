@@ -58,8 +58,7 @@
     },
     "types": [
       "react",
-      "react-dom",
-      "@clerk/nextjs"
+      "react-dom"
     ]
   },
   "include": [
