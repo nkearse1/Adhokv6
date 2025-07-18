@@ -8,6 +8,10 @@ import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/useAuth';
 import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 
+const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '';
+const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API || '';
+
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
@@ -22,7 +26,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 
   const App = (
     <html lang="en">
@@ -37,13 +40,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 
-  return isMock || !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
+  return isMock || !clerkKey ? (
     App
   ) : (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
-      frontendApi={process.env.NEXT_PUBLIC_CLERK_FRONTEND_API!}
-    >
+    <ClerkProvider publishableKey={clerkKey} frontendApi={clerkApi}>
       {App}
     </ClerkProvider>
   );
