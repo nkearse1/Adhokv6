@@ -6,15 +6,17 @@ import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/useAuth';
 import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Adhok',
   description: 'Next.js + Clerk App',
   icons: [{ rel: 'icon', url: '/favicon.svg' }],
 };
+
+const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const inner = (
@@ -30,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body suppressHydrationWarning={true}>
         {isMock || !clerkKey ? inner : (
-          <ClerkProvider publishableKey={clerkKey} frontendApi={clerkApi!}>
+          <ClerkProvider publishableKey={clerkKey!} frontendApi={clerkApi!}>
             {inner}
           </ClerkProvider>
         )}
