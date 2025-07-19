@@ -1,21 +1,28 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 
 export default function SignInCallback() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading,
+    isAuthenticated,
+  } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (loading) return;
 
-    if (!isSignedIn) {
+    if (!isAuthenticated) {
       router.replace('/sign-in');
       return;
     }
 
-    const role = user?.publicMetadata?.role as string | undefined;
+    const role = userRole as string | undefined;
     let destination = '/waitlist';
 
     if (role === 'admin') destination = '/admin/panel';
@@ -23,7 +30,7 @@ export default function SignInCallback() {
     else if (role === 'talent') destination = '/talent/dashboard';
 
     router.replace(destination);
-  }, [isLoaded, isSignedIn, user, router]);
+  }, [loading, isAuthenticated, userRole, router]);
 
   return (
     <main className="min-h-screen flex items-center justify-center">
