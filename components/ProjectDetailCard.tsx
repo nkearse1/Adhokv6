@@ -1,5 +1,6 @@
 'use client';
 import { CalendarIcon } from 'lucide-react';
+import DurationBadge from '@/components/DurationBadge';
 
 interface Props {
   project: {
@@ -20,6 +21,7 @@ export default function ProjectDetailCard({ project }: Props) {
       <div className="flex items-center gap-2 text-sm text-gray-600">
         <CalendarIcon className="w-4 h-4" />
         <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
+        <DurationBadge estimatedHours={project.estimated_hours} />
       </div>
       <div className="text-sm text-gray-600">
         {project.estimated_hours}h @ ${project.hourly_rate}/hr

@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import DurationBadge from '@/components/DurationBadge';
+import { calculateEstimatedHours } from '@/lib/estimation';
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -13,6 +15,7 @@ interface Project {
   deadline: string;
   expertiseLevel: string;
   bidCount?: number;
+  projectBudget?: number;
   status?: string;
   overview?: string;
   deliverables?: string;
@@ -55,6 +58,7 @@ export default function ProjectList() {
       deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
       expertiseLevel: 'Mid-Level',
       bidCount: 30,
+      projectBudget: 1500,
       status: 'open',
       overview: 'Help an e-comm brand rank for new seasonal collections.',
       deliverables: '3-5 keyword-optimized landing pages',
@@ -71,6 +75,7 @@ export default function ProjectList() {
       deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
       expertiseLevel: 'Expert',
       bidCount: 75,
+      projectBudget: 5000,
       status: 'open',
       overview: 'Create a viral playbook for product launch.',
       deliverables: '15 content ideas, 7 draft captions, 1 calendar',
@@ -87,6 +92,7 @@ export default function ProjectList() {
       deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       expertiseLevel: 'Entry Level',
       bidCount: 15,
+      projectBudget: 800,
       status: 'open',
       overview: 'Support organic visibility by establishing topic clusters.',
       deliverables: '1 blog strategy, 10 topic outlines',
@@ -158,6 +164,14 @@ export default function ProjectList() {
                 Last bid: ${startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}/hr
               </span>{' '}
               · <span>{timeRemaining(project.deadline)}</span>
+              <DurationBadge
+                className="ml-2"
+                estimatedHours={calculateEstimatedHours({
+                  budget: project.projectBudget,
+                  expertiseLevel: formatExpertise(project.expertiseLevel),
+                  title: project.title,
+                }) || undefined}
+              />
             </div>
           </div>
         ))}
@@ -242,6 +256,13 @@ export default function ProjectList() {
               <span className="ml-auto font-medium text-gray-800">
                 Ends in {timeRemaining(selectedProject.deadline)}
               </span>
+              <DurationBadge
+                estimatedHours={calculateEstimatedHours({
+                  budget: selectedProject.projectBudget,
+                  expertiseLevel: formatExpertise(selectedProject.expertiseLevel),
+                  title: selectedProject.title,
+                }) || undefined}
+              />
             </div>
             <div className="flex gap-4 items-center mb-4">
               <span className="text-sm text-gray-700 mr-2">
