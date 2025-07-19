@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 import {
   BadgeCheck,
@@ -28,7 +28,13 @@ export default function ClientProjectDetail() {
   const [talentProfile, setTalentProfile] = useState<any>(null);
   const [approving, setApproving] = useState(false);
   const [reviewing, setReviewing] = useState(false);
-  const { user, isLoaded } = useUser();
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading: authLoading,
+  } = useAuth();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -52,7 +58,7 @@ export default function ClientProjectDetail() {
     if (project_id) fetchProject();
   }, [project_id]);
 
-  if (!isLoaded) return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
   const totalBudget = project.estimated_hours * project.hourly_rate;

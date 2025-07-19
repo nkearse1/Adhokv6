@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 import { useRouter } from 'next/navigation';
 
 import ClientProjectsList from '@/components/ClientProjectsList';
@@ -27,13 +27,20 @@ export default function ClientDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { user, isSignedIn, isLoaded } = useUser();
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading: authLoading,
+    isAuthenticated,
+  } = useAuth();
 
   useEffect(() => {
-    if (isLoaded && isSignedIn && user) {
+    if (!authLoading && isAuthenticated && userId) {
       fetchProjects();
     }
-  }, [isLoaded, isSignedIn, user]);
+  }, [authLoading, isAuthenticated, userId]);
 
   const fetchProjects = async () => {
     try {
@@ -62,7 +69,7 @@ export default function ClientDashboard() {
       } else {
         const res = await fetch('/api/db?table=projects');
         const json = await res.json();
-        const userProjects = (json.data || []).filter((p: any) => p.clientId === user?.id);
+        const userProjects = (json.data || []).filter((p: any) => p.clientId === userId);
         setProjects(userProjects);
       }
 
@@ -89,7 +96,7 @@ export default function ClientDashboard() {
     );
   }
 
-  if (!isSignedIn) {
+  if (!isAuthenticated) {
     return (
       <div className="max-w-5xl mx-auto p-4 sm:p-6 text-center">
         <p className="text-gray-600">Please sign in to view your dashboard.</p>

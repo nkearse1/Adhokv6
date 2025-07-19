@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AlertTriangle, CheckCircle, Flag, RefreshCw, User, Mail, MapPin, Briefcase, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import TrustScoreCard from '@/components/admin/TrustScoreCard';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 import QualificationHistoryTimeline, { type QualificationEntry } from '@/components/QualificationHistoryTimeline';
 
 interface TalentProfile {
@@ -58,17 +58,24 @@ export default function AdminTalentDetails() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const { user, isSignedIn, isLoaded } = useUser();
-  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading: authLoading,
+    isAuthenticated,
+  } = useAuth();
+  const isAdmin = userRole === 'admin';
   const [talent, setTalent] = useState<TalentProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingTrustScore, setUpdatingTrustScore] = useState(false);
 
   useEffect(() => {
-    if (isLoaded && isSignedIn && isAdmin && id) {
+    if (!authLoading && isAuthenticated && isAdmin && id) {
       fetchTalentDetails();
     }
-  }, [isLoaded, isSignedIn, isAdmin, id]);
+  }, [authLoading, isAuthenticated, isAdmin, id]);
 
   const fetchTalentDetails = async () => {
     try {
@@ -188,7 +195,7 @@ export default function AdminTalentDetails() {
     }
   };
 
-  if (!isLoaded) {
+  if (authLoading) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2E3A8C] mx-auto mb-4"></div>
@@ -197,7 +204,7 @@ export default function AdminTalentDetails() {
     );
   }
 
-  if (!isSignedIn || !isAdmin) {
+  if (!isAuthenticated || !isAdmin) {
     return (
       <div className="max-w-4xl mx-auto p-6 text-center">
         <p className="text-red-600">Unauthorized access. Admin privileges required.</p>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 import { CalendarIcon, Clock, ExternalLink, AlertTriangle, MessageSquare, CreditCard } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -108,7 +108,14 @@ export default function ProjectWorkspace() {
   const router = useRouter();
   const pathname = usePathname();
   const project_id = params.project_id as string;
-  const { user } = useUser();
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading: authLoading,
+    isAuthenticated,
+  } = useAuth();
   const [projectName] = useState("SEO Optimization");
   const [projectDeadline] = useState(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
   const [projectStartDate] = useState(new Date());
@@ -158,7 +165,6 @@ export default function ProjectWorkspace() {
   }
 
   if (!canAccess) {
-    const username = user?.username || user?.id;
     return (
       <div className="min-h-screen bg-[#F0F4FF] flex items-center justify-center p-4">
         <div className="max-w-md mx-auto text-center">
@@ -182,7 +188,6 @@ export default function ProjectWorkspace() {
 
   const progress = getApprovalProgress();
   const isPickedUp = projectStatus === 'Picked Up';
-  const username = user?.username || user?.id;
 
   return (
     <div className="min-h-screen bg-[#F0F4FF]">

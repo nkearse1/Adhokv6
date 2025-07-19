@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
 import { 
   BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, 
@@ -23,8 +23,14 @@ export default function AdminProjectDetail() {
   const [talent, setTalent] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUser();
-  const userRole = user?.publicMetadata?.role;
+  const {
+    userId,
+    userRole,
+    username,
+    authUser,
+    loading: authLoading,
+    isAuthenticated,
+  } = useAuth();
 
   useEffect(() => {
     const fetchProjectData = async () => {

@@ -14,7 +14,6 @@ export const metadata = {
   icons: [{ rel: 'icon', url: '/favicon.svg' }],
 };
 
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
 
@@ -31,11 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        {isMock || !clerkKey ? inner : (
-          <ClerkProvider publishableKey={clerkKey!} frontendApi={clerkApi!}>
-            {inner}
-          </ClerkProvider>
-        )}
+        <ClerkProvider publishableKey={clerkKey} frontendApi={clerkApi}>
+          {inner}
+        </ClerkProvider>
       </body>
     </html>
   );
