@@ -8,12 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Package } from 'lucide-react';
-
-const expertiseRates: { [key: string]: number } = {
-  'Specialist': 50,
-  'Pro Talent': 100,
-  'Expert Talent': 150,
-};
+import { calculateEstimatedHours, expertiseRates } from '@/lib/estimation';
 
 const projectPresets: { [key: string]: Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }> } = {
   SEO: [
@@ -68,25 +63,12 @@ export function ProjectUploadFlow() {
     brandVoice: '',
   });
 
-  const getEstimatedHours = () => {
-    const rate = expertiseRates[form.expertiseLevel];
-    const budget = parseFloat(form.budget);
-    if (!rate || isNaN(budget)) return null;
-
-    const estimatedHoursMap: Record<string, number> = {
-      'Technical SEO Audit': 8,
-      'Full SEO Strategy Plan': 16,
-      'On-page Optimization for Blog': 6,
-      'Google Ads Audit': 10,
-    };
-
-    const matchKey = Object.keys(estimatedHoursMap).find((key) =>
-      form.title.toLowerCase().includes(key.toLowerCase().split(' ')[0])
-    );
-
-    if (matchKey) return estimatedHoursMap[matchKey];
-    return Math.floor(budget / rate);
-  };
+  const getEstimatedHours = () =>
+    calculateEstimatedHours({
+      budget: parseFloat(form.budget),
+      expertiseLevel: form.expertiseLevel,
+      title: form.title,
+    });
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
