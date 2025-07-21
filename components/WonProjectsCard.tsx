@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { mockProjects } from '@/lib/mockData';
 
 interface Project {
   id: string;
@@ -16,18 +17,44 @@ export default function WonProjectsCard({ userId }: { userId: string }) {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('/api/db?table=projects');
-        const json = await res.json();
-        if (res.ok) {
-          const all = json.data || [];
-          setProjects(
-            all.filter(
-              (p: any) =>
-                p.talentId === userId &&
-                (p.status === 'awarded' || p.status === 'complete'),
-            ) as Project[],
+        if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+          const filtered = mockProjects.filter(
+            (p) =>
+              (p as any).talent?.id === userId &&
+              (p.status === 'awarded' || p.status === 'complete'),
           );
+          setProjects(filtered as unknown as Project[]);
+          return;
         }
+
+        const res = await fetch('/api/db?table=projects');
+        if (!res.ok) {
+          console.error('Failed fetching projects:', res.statusText);
+          return;
+        }
+
+        const text = await res.text();
+        if (!text) {
+          console.warn('Empty project response');
+          return;
+        }
+
+        let json: any;
+        try {
+          json = JSON.parse(text);
+        } catch (err) {
+          console.error('Invalid project JSON', err);
+          return;
+        }
+
+        const all = Array.isArray(json?.data) ? json.data : [];
+        setProjects(
+          all.filter(
+            (p: any) =>
+              p.talentId === userId &&
+              (p.status === 'awarded' || p.status === 'complete'),
+          ) as Project[],
+        );
       } catch (err) {
         console.error('Failed loading projects', err);
       }
