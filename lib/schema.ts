@@ -48,6 +48,8 @@ export const talentProfiles = pgTable('talent_profiles', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
+export type TalentProfile = typeof talentProfiles.$inferSelect;
+
 // Projects table
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
