@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/useAuth";
-import { mockProjects, mockTalent } from "@/lib/mockData";
+import { useMockData } from "@/lib/useMockData";
 import {
   Clock,
   ArrowRight,
@@ -95,6 +95,7 @@ interface Project {
 
 export default function TalentDashboard() {
   const { userId } = useAuth();
+  const { projects: allProjects, talents } = useMockData();
   const router = useRouter();
 
   const [currentTab, setCurrentTab] = useState<'activeBids' | 'earnings' | 'portfolio' | 'won'>('activeBids');
@@ -104,17 +105,19 @@ export default function TalentDashboard() {
 
   useEffect(() => {
     if (userId) {
-      const assigned = mockProjects.filter(p => p.talent?.id === userId);
+      const assigned = allProjects.filter(p => p.talent?.id === userId);
       setProjects(assigned as unknown as Project[]);
-      setProfile({
-        fullName: mockTalent.fullName,
-        username: mockTalent.username,
-        email: mockTalent.email,
-        expertise: mockTalent.expertise,
-        experienceBadge: mockTalent.badge,
-      });
+      const t = talents.find(t => t.id === userId) || talents[0];
+      if (t)
+        setProfile({
+          fullName: t.fullName,
+          username: t.username,
+          email: t.email,
+          expertise: t.expertise,
+          experienceBadge: t.badge,
+        });
     }
-  }, [userId]);
+  }, [userId, allProjects, talents]);
 
   const statLabelMap: Record<string, string> = {
     activeBids: "Active Bids",

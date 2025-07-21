@@ -5,8 +5,14 @@ import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm/pg-core';
 import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
+import { mockClients } from '@/lib/mockData';
 
 export async function GET(_req: NextRequest) {
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  if (isMock) {
+    return NextResponse.json({ data: mockClients });
+  }
+
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 

@@ -19,8 +19,10 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMockData } from '@/lib/useMockData';
 
 export default function AdminClientList() {
+  const { clients: mockClients } = useMockData();
   const [clients, setClients] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredClients, setFilteredClients] = useState<any[]>([]);
@@ -35,7 +37,12 @@ export default function AdminClientList() {
 
   const fetchClients = async () => {
     setLoading(true);
-     try {
+    try {
+      if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+        setClients(mockClients);
+        setFilteredClients(mockClients);
+        return;
+      }
       const res = await fetch('/api/clients');
       const json = await res.json();
       if (res.ok) {

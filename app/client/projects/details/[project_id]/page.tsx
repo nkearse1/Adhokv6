@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectStatusCard from '@/components/ProjectStatusCard';
 import TalentAssignmentBox from '@/components/TalentAssignmentBox';
-import { getProjectById } from '@/lib/mockData';
+import { useMockData } from '@/lib/useMockData';
 
 export default function ClientProjectDetail() {
   const params = useParams();
@@ -37,6 +37,8 @@ export default function ClientProjectDetail() {
     loading: authLoading,
   } = useAuth();
 
+  const { getProjectById } = useMockData();
+
   useEffect(() => {
     if (project_id) {
       const proj = getProjectById(project_id);
@@ -45,7 +47,7 @@ export default function ClientProjectDetail() {
         if (proj.talent) setTalentProfile(proj.talent);
       }
     }
-  }, [project_id]);
+  }, [project_id, getProjectById]);
 
   if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
