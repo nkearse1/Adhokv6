@@ -51,7 +51,7 @@ export function EditTalentProfileDialog({ open, onOpenChange, initialData, onSav
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const res = await fetch('/api/talent/update-profile', {
+      const res = await fetch('/api/talent/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),

@@ -152,9 +152,9 @@ export default function TalentDashboard() {
   const openEditDialog = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`/api/db?table=talent_profiles&id=${userId}`);
+      const res = await fetch(`/api/talent/profile?id=${userId}`);
       const json = await res.json();
-      setLoadedProfile(json.data ? json.data[0] : null);
+      setLoadedProfile(json.profile || null);
       setEditOpen(true);
     } catch {
       toast.error('Failed to load profile');

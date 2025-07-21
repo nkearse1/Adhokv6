@@ -8,6 +8,12 @@ import { useUser } from '@clerk/nextjs';
 
 export type TestRole = 'admin' | 'client' | 'talent';
 
+const FALLBACK_USER = {
+  id: '00000000-0000-0000-0000-000000000001',
+  username: 'mock_talent',
+  userRole: 'talent',
+};
+
 async function fetchTestUser(role: TestRole) {
   try {
     const res = await fetch(`/api/test-user?role=${role}`);
@@ -59,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     async function loadTestUser(role: TestRole) {
-      const userObj = await fetchTestUser(role);
+      let userObj = await fetchTestUser(role);
       if (userObj) {
         // userObj is an actual user row from the database
         // even though the login process is mocked
@@ -82,8 +88,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           },
         });
       } else {
-        console.error(`No test user found for role ${role}`);
-        setState((s) => ({ ...s, loading: false }));
+        console.warn(`No test user found for role ${role}, using fallback`);
+        userObj = FALLBACK_USER;
+        setState({
+          userId: userObj.id,
+          username: userObj.username,
+          userRole: userObj.userRole as UserRole,
+          isAdmin: false,
+          isAuthenticated: true,
+          loading: false,
+          authUser: null,
+          setDevRole: (r) => {
+            localStorage.setItem('dev_user_role', r);
+            window.location.reload();
+          },
+        });
       }
     }
 

@@ -1,7 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
-import { users, projects, talentProfiles } from '@/lib/schema';
+import {
+  users,
+  projects,
+  talentProfiles,
+  projectBids,
+  projectReviews,
+  escrowTransactions,
+  notifications,
+} from '@/lib/schema';
+
+const tableMap = {
+  users,
+  projects,
+  talent_profiles: talentProfiles,
+  project_bids: projectBids,
+  project_reviews: projectReviews,
+  escrow_transactions: escrowTransactions,
+  notifications,
+} as const;
 import { eq } from 'drizzle-orm/pg-core';
 import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
@@ -23,35 +41,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Table parameter is required' }, { status: 400 });
     }
     
+    const tableRef = tableMap[table as keyof typeof tableMap];
+    if (!tableRef) {
+      return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    }
+
     let data;
-    
-    switch (table) {
-      case 'users':
-        if (id) {
-          data = await db.select().from(users).where(eq(users.id, id));
-        } else {
-          data = await db.select().from(users).limit(100);
-        }
-        break;
-        
-      case 'projects':
-        if (id) {
-          data = await db.select().from(projects).where(eq(projects.id, id));
-        } else {
-          data = await db.select().from(projects).limit(100);
-        }
-        break;
-        
-      case 'talent_profiles':
-        if (id) {
-          data = await db.select().from(talentProfiles).where(eq(talentProfiles.id, id));
-        } else {
-          data = await db.select().from(talentProfiles).limit(100);
-        }
-        break;
-        
-      default:
-        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    if (id) {
+      data = await db.select().from(tableRef).where(eq(tableRef.id, id));
+    } else {
+      data = await db.select().from(tableRef).limit(100);
     }
     
     return NextResponse.json({ data });
@@ -76,24 +75,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Table and data parameters are required' }, { status: 400 });
     }
     
-    let result;
-    
-    switch (table) {
-      case 'users':
-        result = await db.insert(users).values(data).returning();
-        break;
-        
-      case 'projects':
-        result = await db.insert(projects).values(data).returning();
-        break;
-        
-      case 'talent_profiles':
-        result = await db.insert(talentProfiles).values(data).returning();
-        break;
-        
-      default:
-        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    const tableRef = tableMap[table as keyof typeof tableMap];
+    if (!tableRef) {
+      return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
     }
+
+    const result = await db.insert(tableRef).values(data).returning();
     
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -117,24 +104,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Table, id, and data parameters are required' }, { status: 400 });
     }
     
-    let result;
-    
-    switch (table) {
-      case 'users':
-        result = await db.update(users).set(data).where(eq(users.id, id)).returning();
-        break;
-        
-      case 'projects':
-        result = await db.update(projects).set(data).where(eq(projects.id, id)).returning();
-        break;
-        
-      case 'talent_profiles':
-        result = await db.update(talentProfiles).set(data).where(eq(talentProfiles.id, id)).returning();
-        break;
-        
-      default:
-        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    const tableRef = tableMap[table as keyof typeof tableMap];
+    if (!tableRef) {
+      return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
     }
+
+    const result = await db.update(tableRef).set(data).where(eq(tableRef.id, id)).returning();
     
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -161,25 +136,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Table and id parameters are required' }, { status: 400 });
     }
     
-    let result;
-    
-    switch (table) {
-      case 'users':
-        result = await db.delete(users).where(eq(users.id, id)).returning();
-        break;
-        
-      case 'projects':
-        result = await db.delete(projects).where(eq(projects.id, id)).returning();
-        break;
-        
-      case 'talent_profiles':
-        result = await db.delete(talentProfiles).where(eq(talentProfiles.id, id)).returning();
-        break;
-        
-      default:
-        return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
+    const tableRef = tableMap[table as keyof typeof tableMap];
+    if (!tableRef) {
+      return NextResponse.json({ error: 'Invalid table name' }, { status: 400 });
     }
-    
+
+    const result = await db.delete(tableRef).where(eq(tableRef.id, id)).returning();
+
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
     console.error('Database delete error:', error);
