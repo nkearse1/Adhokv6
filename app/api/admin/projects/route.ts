@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/schema';
 import { auth } from '@clerk/nextjs/server';
+import { mockProjects } from '@/lib/mockData';
 
 type SessionClaimsWithRole = {
   metadata?: {
@@ -11,6 +12,11 @@ type SessionClaimsWithRole = {
 };
 
 export async function GET(_req: NextRequest) {
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  if (isMock) {
+    return NextResponse.json({ data: mockProjects });
+  }
+
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 

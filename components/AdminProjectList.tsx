@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useMockData } from '@/lib/useMockData';
 
 interface AdminProject {
   id: string;
@@ -28,6 +29,7 @@ interface AdminProject {
 
 export default function AdminProjectList() {
   const router = useRouter();
+  const { projects: mockProjects } = useMockData();
   const [projects, setProjects] = useState<AdminProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,15 +45,17 @@ export default function AdminProjectList() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-
-      const res = await fetch('/api/admin/projects');
-      const json = await res.json();
-
-      if (!res.ok) {
-        throw new Error(json.error || 'Request failed');
+      let data: AdminProject[];
+      if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+        data = mockProjects as unknown as AdminProject[];
+      } else {
+        const res = await fetch('/api/admin/projects');
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.error || 'Request failed');
+        }
+        data = json.data as AdminProject[];
       }
-
-      let data = json.data as AdminProject[];
 
       let filteredData = data || [];
 

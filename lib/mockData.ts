@@ -120,3 +120,37 @@ export const mockProjects: MockProject[] = [
 export function getProjectById(id: string): MockProject | undefined {
   return mockProjects.find(p => p.id === id);
 }
+
+export const mockClients: MockUser[] = Array.from(
+  new Map(mockProjects.map(p => [p.client.id, p.client])).values()
+);
+
+export const mockTalents: MockUser[] = Array.from(
+  new Map(
+    mockProjects
+      .filter(p => p.talent)
+      .map(p => [p.talent!.id, p.talent!])
+  ).values()
+);
+
+export const mockBids: MockBid[] = mockProjects.flatMap(p => p.bids || []);
+
+export interface MockReview {
+  id: string;
+  projectId: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  reviewer: { fullName: string };
+}
+
+export const mockReviews: MockReview[] = [
+  {
+    id: 'review1',
+    projectId: 'proj-1',
+    rating: 5,
+    comment: 'Alex did an outstanding job on our SEO strategy.',
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    reviewer: { fullName: 'Sarah Johnson' },
+  },
+];

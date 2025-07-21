@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ProjectDetailCard from '@/components/ProjectDetailCard';
 import SubmitWorkButton from '@/components/SubmitWorkButton';
 import LeaveReviewButton from '@/components/LeaveReviewButton';
+import { useMockData } from '@/lib/useMockData';
 
 interface Project {
   id: string;
@@ -18,22 +19,23 @@ export default function ProjectDetailPage() {
   const params = useParams();
   const project_id = params.project_id as string;
   const [project, setProject] = useState<Project | null>(null);
+  const { getProjectById } = useMockData();
 
   useEffect(() => {
-    const fetchProject = async () => {
-      // replace with API call; mocked for now
-      const data = {
-        id: project_id,
-        title: 'SEO Optimization Campaign',
-        description: 'Improve search rankings for e-commerce website',
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        estimated_hours: 40,
-        hourly_rate: 75,
-      };
-      setProject(data);
-    };
-    if (project_id) fetchProject();
-  }, [project_id]);
+    if (project_id) {
+      const proj = getProjectById(project_id);
+      if (proj) {
+        setProject({
+          id: proj.id,
+          title: proj.title,
+          description: proj.description,
+          deadline: proj.deadline,
+          estimated_hours: proj.deliverables.reduce((a,d)=>a+d.estimatedHours,0),
+          hourly_rate: proj.hourlyRate,
+        });
+      }
+    }
+  }, [project_id, getProjectById]);
 
   if (!project) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;
