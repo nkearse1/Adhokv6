@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "predev": "node scripts/check-env.mjs",
     "prebuild": "yarn check-type-imports && yarn type-check",
     "build": "yarn type-check && next build",
     "check-supabase": "node scripts/check-no-supabase.cjs",
