@@ -1,53 +1,19 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { updateTalentProfile } from '@/lib/db/talentProfiles';
-import { z } from 'zod';
+import { auth } from '@clerk/nextjs';
+import { updateTalentProfile } from '@/lib/db/talent';
 
-const bodySchema = z.object({
-  fullName: z.string().optional(),
-  username: z.string().optional(),
-  bio: z.string().optional(),
-  skills: z.string().optional(),
-  experienceLevel: z.string().optional(),
-  avatarUrl: z.string().url().optional(),
-  portfolioUrl: z.string().url().optional(),
-});
+export async function POST(req: Request) {
+  const { userId } = auth();
+  const overrideId = process.env.NEXT_PUBLIC_SELECTED_USER_ID;
+  const idToUse = userId || overrideId;
 
-const isMock = process.env.USE_MOCK_SESSION === 'true';
-let mockProfile: any = null;
+  if (!idToUse) return new Response('Unauthorized', { status: 401 });
 
-export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  let data;
+  const body = await req.json();
   try {
-    const json = await req.json();
-    data = bodySchema.parse(json);
+    await updateTalentProfile(idToUse, body);
+    return new Response('OK', { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
-  }
-
-  try {
-    if (isMock) {
-      mockProfile = { id: userId, ...data };
-      return NextResponse.json({ profile: mockProfile });
-    }
-
-    const profile = await updateTalentProfile(userId, {
-      fullName: data.fullName,
-      username: data.username,
-      bio: data.bio,
-      expertise: data.skills,
-      experienceBadge: data.experienceLevel,
-      portfolio: data.portfolioUrl,
-    });
-    return NextResponse.json({ profile });
-  } catch (err) {
-    console.error('Failed to update profile', err);
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    console.error('Failed to update profile:', err);
+    return new Response('Error', { status: 500 });
   }
 }
