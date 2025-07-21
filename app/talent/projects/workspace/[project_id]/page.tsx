@@ -17,6 +17,7 @@ import FileUpload from '@/components/FileUpload';
 import WorkspaceTabs from '@/components/WorkspaceTabs';
 import DeliverableUpload from '@/components/DeliverableUpload';
 import ClientFeedbackCard from '@/components/ClientFeedbackCard';
+import { getProjectById } from '@/lib/mockData';
 
 // Mock hooks to replace the ones that used Supabase
 const useProjectStatus = (projectId: string) => {
@@ -116,11 +117,12 @@ export default function ProjectWorkspace() {
     loading: authLoading,
     isAuthenticated,
   } = useAuth();
-  const [projectName] = useState("SEO Optimization");
-  const [projectDeadline] = useState(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
+  const project = getProjectById(project_id) || null;
+  const [projectName] = useState(project?.title || 'Project');
+  const [projectDeadline] = useState(new Date(project?.deadline || Date.now()));
   const [projectStartDate] = useState(new Date());
-  const [estimatedHours] = useState(40);
-  const [hourlyRate] = useState(75);
+  const [estimatedHours] = useState(project?.deliverables.reduce((a,d)=>a+d.estimatedHours,0) || 0);
+  const [hourlyRate] = useState(project?.hourlyRate || 0);
   const [estimatedBudget] = useState(estimatedHours * hourlyRate);
   const [activeTab, setActiveTab] = useState('chat');
 
