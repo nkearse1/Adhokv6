@@ -64,8 +64,7 @@ export default function ProjectWorkspace() {
 
   useEffect(() => {
     if (!loading && !canAccess) {
-      const username = authUser?.user_metadata?.username || authUser?.id;
-      const dest = `/talent/${username}/projects/${project_id}/details`;
+      const dest = `/talent/projects/${project_id}/details`;
       if (pathname !== dest) {
         router.push(dest);
       }
@@ -98,7 +97,7 @@ export default function ProjectWorkspace() {
               </p>
             </AlertDescription>
           </Alert>
-          <Button onClick={() => router.push(`/talent/${username}/projects/${project_id}/details`)} className="mt-4 w-full sm:w-auto">
+          <Button onClick={() => router.push(`/talent/projects/${project_id}/details`)} className="mt-4 w-full sm:w-auto">
             View Project Details
           </Button>
         </div>
@@ -117,7 +116,7 @@ export default function ProjectWorkspace() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-[#2E3A8C] break-words">{projectName}</h1>
           <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href={`/talent/${username}/projects/${project_id}/details`} className="flex items-center gap-2">
+            <Link href={`/talent/projects/${project_id}/details`} className="flex items-center gap-2">
               <ExternalLink className="h-4 w-4" />
               Project Details
             </Link>
