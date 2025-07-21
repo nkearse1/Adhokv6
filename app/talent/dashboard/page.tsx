@@ -145,7 +145,7 @@ export default function TalentDashboard() {
       <div className="flex justify-between items-center mb-6 px-2 md:px-0">
         <h1 className="text-3xl font-bold text-[#2E3A8C]">Talent Dashboard</h1>
         <BadgeDisplay tier="Expert Talent" />
-        <Button onClick={() => router.push(`/talent/${userId}/projects`)}>
+        <Button onClick={() => router.push('/talent/projects')}>
           Browse Projects
         </Button>
       </div>
