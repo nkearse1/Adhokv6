@@ -22,6 +22,9 @@ import ActiveBidsPanel from "@/components/ActiveBidsPanel";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import WonProjectsCard from "@/components/WonProjectsCard";
 import ProfilePanel from "@/components/ProfilePanel";
+import { EditTalentProfileDialog } from "@/components/talent/EditTalentProfileDialog";
+import { TalentSettingsDialog } from "@/components/talent/TalentSettingsDialog";
+import type { TalentProfile } from "@/lib/types/talent";
 
 const TEAL_COLOR = "#00A499";
 
@@ -102,6 +105,9 @@ export default function TalentDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [loadedProfile, setLoadedProfile] = useState<TalentProfile | null>(null);
 
   useEffect(() => {
     if (userId) {
@@ -142,6 +148,20 @@ export default function TalentDashboard() {
     setProjects(updatedProjects);
     toast.success("Case Study saved");
   };
+
+  const openEditDialog = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(`/api/db?table=talent_profiles&id=${userId}`);
+      const json = await res.json();
+      setLoadedProfile(json.data ? json.data[0] : null);
+      setEditOpen(true);
+    } catch {
+      toast.error('Failed to load profile');
+    }
+  };
+
+  const openSettingsDialog = () => setSettingsOpen(true);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -233,9 +253,24 @@ export default function TalentDashboard() {
           </div>
         </div>
         <div className="mt-6 lg:mt-0">
-          <ProfilePanel profile={profile} />
+          <ProfilePanel
+            profile={profile}
+            onEdit={openEditDialog}
+            onSettings={openSettingsDialog}
+          />
         </div>
       </div>
+      <EditTalentProfileDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        initialData={loadedProfile}
+        onSaved={(p) => setProfile(p)}
+      />
+      <TalentSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        email={profile?.email || ''}
+      />
     </div>
   );
 }

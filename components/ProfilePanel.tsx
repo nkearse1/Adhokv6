@@ -13,7 +13,13 @@ interface Profile {
   linkedinUrl?: string;
 }
 
-export default function ProfilePanel({ profile }: { profile: Profile | null }) {
+interface Props {
+  profile: Profile | null;
+  onEdit?: () => void;
+  onSettings?: () => void;
+}
+
+export default function ProfilePanel({ profile, onEdit, onSettings }: Props) {
   if (!profile) return null;
 
   const displayName = profile.fullName || profile.username;
@@ -44,8 +50,8 @@ export default function ProfilePanel({ profile }: { profile: Profile | null }) {
           </a>
         )}
         <div className="flex gap-2 pt-2">
-          <Button size="sm">Edit Profile</Button>
-          <Button size="sm" variant="secondary">
+          <Button size="sm" onClick={onEdit}>Edit Profile</Button>
+          <Button size="sm" variant="secondary" onClick={onSettings}>
             Profile Settings
           </Button>
         </div>
