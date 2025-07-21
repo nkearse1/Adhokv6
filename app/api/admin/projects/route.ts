@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { projects } from '@/lib/schema';
 import { auth } from '@clerk/nextjs/server';
-import { mockProjects } from '@/lib/mockData';
 
 type SessionClaimsWithRole = {
   metadata?: {
@@ -14,7 +13,13 @@ type SessionClaimsWithRole = {
 export async function GET(_req: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   if (isMock) {
-    return NextResponse.json({ data: mockProjects });
+    try {
+      const data = await db.select().from(projects).limit(100);
+      return NextResponse.json({ data });
+    } catch (error) {
+      console.error('Error fetching admin projects:', error);
+      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
+    }
   }
 
   const { userId, sessionClaims } = await auth();

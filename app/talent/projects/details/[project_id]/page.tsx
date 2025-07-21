@@ -30,7 +30,7 @@ export default function ProjectDetailPage() {
           title: proj.title,
           description: proj.description,
           deadline: proj.deadline,
-          estimated_hours: proj.deliverables.reduce((a,d)=>a+d.estimatedHours,0),
+          estimated_hours: proj.deliverables.reduce((a: number, d: any) => a + d.estimatedHours, 0),
           hourly_rate: proj.hourlyRate,
         });
       }

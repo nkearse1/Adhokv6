@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExperienceBadge from '@/components/ExperienceBadge';
-import { getProjectById } from '@/lib/mockData';
 
 export default function AdminProjectDetail() {
   const params = useParams();
@@ -36,48 +35,15 @@ export default function AdminProjectDetail() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        const proj = getProjectById(id);
+        const res = await fetch(`/api/db?table=projects&id=${id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
         if (proj) {
-          setProject({
-            id: proj.id,
-            title: proj.title,
-            description: proj.description,
-            status: proj.status,
-            category: proj.category,
-            deadline: proj.deadline,
-            estimated_hours: proj.deliverables.reduce((a,d)=>a+d.estimatedHours,0),
-            hourly_rate: proj.hourlyRate,
-            flagged: false,
-            metadata: {
-              marketing: {
-                problem: proj.description,
-                deliverables: proj.deliverables.map(d=>d.title).join(', ')
-              },
-              requestor: {
-                name: proj.client.fullName,
-                company: proj.client.username,
-                email: proj.client.email
-              }
-            },
-            minimum_badge: proj.talent?.badge
-          });
-          setClient({
-            full_name: proj.client.fullName,
-            email: proj.client.email,
-            company: proj.client.username,
-            createdAt: new Date().toISOString()
-          });
-          if (proj.talent) {
-            setTalent({
-              full_name: proj.talent.fullName,
-              email: proj.talent.email,
-              experience_badge: proj.talent.badge,
-              expertise: proj.talent.expertise,
-              location: 'Austin, TX'
-            });
-          }
+          setProject(proj);
+          if (proj.client) setClient(proj.client);
+          if (proj.talent) setTalent(proj.talent);
         }
-        
+
         // Mock reviews
         const mockReviews = [
           {
