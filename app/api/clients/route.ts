@@ -5,12 +5,17 @@ import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm/pg-core';
 import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
-import { mockClients } from '@/lib/mockData';
 
 export async function GET(_req: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   if (isMock) {
-    return NextResponse.json({ data: mockClients });
+    try {
+      const data = await db.select().from(users).where(eq(users.userRole, 'client'));
+      return NextResponse.json({ data });
+    } catch (err) {
+      console.error('Error fetching clients', err);
+      return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 });
+    }
   }
 
   const { userId, sessionClaims } = await auth();

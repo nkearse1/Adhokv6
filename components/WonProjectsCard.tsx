@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockProjects } from '@/lib/mockData';
 
 interface Project {
   id: string;
@@ -17,16 +16,6 @@ export default function WonProjectsCard({ userId }: { userId: string }) {
   useEffect(() => {
     async function load() {
       try {
-        if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-          const filtered = mockProjects.filter(
-            (p) =>
-              (p as any).talent?.id === userId &&
-              (p.status === 'awarded' || p.status === 'complete'),
-          );
-          setProjects(filtered as unknown as Project[]);
-          return;
-        }
-
         const res = await fetch('/api/db?table=projects');
         if (!res.ok) {
           console.error('Failed fetching projects:', res.statusText);

@@ -17,7 +17,6 @@ import FileUpload from '@/components/FileUpload';
 import WorkspaceTabs from '@/components/WorkspaceTabs';
 import DeliverableUpload from '@/components/DeliverableUpload';
 import ClientFeedbackCard from '@/components/ClientFeedbackCard';
-import { getProjectById } from '@/lib/mockData';
 
 // Mock hooks to replace the ones that used Supabase
 const useProjectStatus = (projectId: string) => {
@@ -117,13 +116,37 @@ export default function ProjectWorkspace() {
     loading: authLoading,
     isAuthenticated,
   } = useAuth();
-  const project = getProjectById(project_id) || null;
-  const [projectName] = useState(project?.title || 'Project');
-  const [projectDeadline] = useState(new Date(project?.deadline || Date.now()));
+  const [project, setProject] = useState<any | null>(null);
+  const [projectName, setProjectName] = useState('Project');
+  const [projectDeadline, setProjectDeadline] = useState(new Date());
   const [projectStartDate] = useState(new Date());
-  const [estimatedHours] = useState(project?.deliverables.reduce((a,d)=>a+d.estimatedHours,0) || 0);
-  const [hourlyRate] = useState(project?.hourlyRate || 0);
-  const [estimatedBudget] = useState(estimatedHours * hourlyRate);
+  const [estimatedHours, setEstimatedHours] = useState(0);
+  const [hourlyRate, setHourlyRate] = useState(0);
+  const [estimatedBudget, setEstimatedBudget] = useState(0);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch(`/api/db?table=projects&id=${project_id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
+        if (proj) {
+          setProject(proj);
+          setProjectName(proj.title || 'Project');
+          setProjectDeadline(new Date(proj.deadline || Date.now()));
+          const hours = Array.isArray(proj.deliverables)
+            ? proj.deliverables.reduce((a: number, d: any) => a + (d.estimatedHours || 0), 0)
+            : proj.estimatedHours || 0;
+          setEstimatedHours(hours);
+          setHourlyRate(proj.hourlyRate || 0);
+          setEstimatedBudget(hours * (proj.hourlyRate || 0));
+        }
+      } catch (err) {
+        console.error('Failed loading project', err);
+      }
+    }
+    if (project_id) load();
+  }, [project_id]);
   const [activeTab, setActiveTab] = useState('chat');
 
   const {

@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { mockProjects } from "@/lib/mockData";
 
 interface Bid {
   id: string;
@@ -42,17 +41,6 @@ export default function ActiveBidsPanel({ userId }: { userId: string }) {
       } catch (err) {
         console.error("Failed loading bids", err);
       }
-    }
-
-    const mockBids = mockProjects
-      .flatMap(p => p.bids || [])
-      .filter(b => b.userId === userId)
-      .map(b => ({ ...b, professionalId: b.userId }));
-    if (mockBids.length) {
-      setBids(mockBids as Bid[]);
-      const ids = mockBids.map(b => b.projectId);
-      setProjects(mockProjects.filter(p => ids.includes(p.id)) as Project[]);
-      return;
     }
 
     if (userId) load();
