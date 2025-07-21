@@ -2,7 +2,20 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { getMockUser, type MockRole } from './getMockUser';
+
+export type MockRole = 'admin' | 'client' | 'talent';
+
+async function fetchMockUser(role: MockRole) {
+  try {
+    const res = await fetch(`/api/mock-user?role=${role}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.user ?? null;
+  } catch (err) {
+    console.error('fetchMockUser error', err);
+    return null;
+  }
+}
 
 type UserRole = 'admin' | 'client' | 'talent';
 
@@ -42,35 +55,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState(defaultAuthState);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development' || isMock) {
+    async function loadMock(role: MockRole) {
+      const mock = await fetchMockUser(role);
+      if (mock) {
+        console.log('Using mock user', {
+          id: mock.id,
+          role: mock.userRole,
+          name: mock.username,
+        });
+        setState({
+          userId: mock.id,
+          username: mock.username || mock.id,
+          userRole: mock.userRole as UserRole,
+          isAdmin: mock.userRole === 'admin',
+          isAuthenticated: true,
+          loading: false,
+          authUser: null,
+          setDevRole: (r) => {
+            localStorage.setItem('dev_user_role', r);
+            window.location.reload();
+          },
+        });
+      } else {
+        console.error(`No mock user found for role ${role}`);
+        setState((s) => ({ ...s, loading: false }));
+      }
+    }
+
+    if (isMock) {
+      const role =
+        (localStorage.getItem('dev_user_role') as MockRole | null) || 'talent';
+      loadMock(role);
+      return;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
       const devRole = localStorage.getItem('dev_user_role') as MockRole | null;
       if (devRole) {
-        (async () => {
-          const mock = await getMockUser(devRole);
-          if (mock) {
-            console.log(`Using mock user`, {
-              id: mock.id,
-              role: mock.userRole,
-              name: mock.username,
-            });
-            setState({
-              userId: mock.id,
-              username: mock.username || mock.id,
-              userRole: mock.userRole as UserRole,
-              isAdmin: mock.userRole === 'admin',
-              isAuthenticated: true,
-              loading: false,
-              authUser: null,
-              setDevRole: (role) => {
-                localStorage.setItem('dev_user_role', role);
-                window.location.reload();
-              },
-            });
-          } else {
-            console.error(`No mock user found for role ${devRole}`);
-            setState((s) => ({ ...s, loading: false }));
-          }
-        })();
+        loadMock(devRole);
         return;
       }
     }

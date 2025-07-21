@@ -1,5 +1,6 @@
-import { db } from './db';
-import { users } from './schema';
+// Server-only utility to fetch mock users from the database
+import { db } from '../lib/db';
+import { users } from '../lib/schema';
 import { eq } from 'drizzle-orm/pg-core';
 
 export type MockRole = 'admin' | 'client' | 'talent';
