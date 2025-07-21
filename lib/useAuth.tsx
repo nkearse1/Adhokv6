@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { loadUserSession } from './loadUserSession';
 import { useUser } from '@clerk/nextjs';
 
 // Authentication checks are bypassed in mock mode, but the user objects
@@ -55,6 +56,7 @@ const AuthContext = createContext<AuthState>(defaultAuthState);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  loadUserSession();
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   const clerkUser = isMock
     ? { user: null, isSignedIn: false, isLoaded: false }
