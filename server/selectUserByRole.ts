@@ -1,14 +1,10 @@
-// Server-only utility to fetch test users from the database
 import { db } from '../lib/db';
 import { users } from '../lib/schema';
 import { eq } from 'drizzle-orm/pg-core';
 
-// Login is mocked, but these users are real records from the Neon database
-// so downstream hooks should treat them as authenticated users
-
 export type TestRole = 'admin' | 'client' | 'talent';
 
-export async function getTestUser(role: TestRole) {
+export async function selectUserByRole(role: TestRole) {
   try {
     const result = await db
       .select()
@@ -17,7 +13,7 @@ export async function getTestUser(role: TestRole) {
       .limit(1);
     return result[0] || null;
   } catch (err) {
-    console.error('getTestUser error', err);
+    console.error('selectUserByRole error', err);
     return null;
   }
 }
