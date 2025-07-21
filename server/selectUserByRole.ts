@@ -2,9 +2,9 @@ import { db } from '../lib/db';
 import { users } from '../lib/schema';
 import { eq } from 'drizzle-orm/pg-core';
 
-export type UserRole = 'admin' | 'client' | 'talent';
+export type TestRole = 'admin' | 'client' | 'talent';
 
-export async function selectUserByRole(role: UserRole) {
+export async function selectUserByRole(role: TestRole) {
   try {
     const result = await db
       .select()
