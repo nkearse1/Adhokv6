@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { mockProjects } from "@/lib/mockData";
 
 interface Bid {
   id: string;
@@ -16,7 +17,6 @@ interface Project {
   title: string;
 }
 
-const USE_MOCK_DATA = true;
 
 export default function ActiveBidsPanel({ userId }: { userId: string }) {
   const [bids, setBids] = useState<Bid[]>([]);
@@ -44,19 +44,14 @@ export default function ActiveBidsPanel({ userId }: { userId: string }) {
       }
     }
 
-    if (USE_MOCK_DATA) {
-      setBids([
-        {
-          id: "bid1",
-          projectId: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
-          professionalId: userId,
-          ratePerHour: 72,
-          status: "active",
-        },
-      ]);
-      setProjects([
-        { id: "d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14", title: "Mock SEO Audit" },
-      ]);
+    const mockBids = mockProjects
+      .flatMap(p => p.bids || [])
+      .filter(b => b.userId === userId)
+      .map(b => ({ ...b, professionalId: b.userId }));
+    if (mockBids.length) {
+      setBids(mockBids as Bid[]);
+      const ids = mockBids.map(b => b.projectId);
+      setProjects(mockProjects.filter(p => ids.includes(p.id)) as Project[]);
       return;
     }
 

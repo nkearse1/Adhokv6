@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectStatusCard from '@/components/ProjectStatusCard';
 import TalentAssignmentBox from '@/components/TalentAssignmentBox';
+import { getProjectById } from '@/lib/mockData';
 
 export default function ClientProjectDetail() {
   const params = useParams();
@@ -37,25 +38,13 @@ export default function ClientProjectDetail() {
   } = useAuth();
 
   useEffect(() => {
-    const fetchProject = async () => {
-      const res = await fetch(`/api/db?table=projects&id=${project_id}`);
-      const json = await res.json();
-      if (res.ok && json.data[0]) {
-        const data = json.data[0];
-        setProject(data);
-
-        if (data?.talent_id) {
-          const tRes = await fetch('/api/db?table=talent_profiles');
-          const tJson = await tRes.json();
-          if (tRes.ok) {
-            const talent = (tJson.data || []).find((p: any) => p.id === data.talent_id);
-            if (talent) setTalentProfile(talent);
-          }
-        }
+    if (project_id) {
+      const proj = getProjectById(project_id);
+      if (proj) {
+        setProject(proj);
+        if (proj.talent) setTalentProfile(proj.talent);
       }
-    };
-
-    if (project_id) fetchProject();
+    }
   }, [project_id]);
 
   if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;

@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExperienceBadge from '@/components/ExperienceBadge';
+import { getProjectById } from '@/lib/mockData';
 
 export default function AdminProjectDetail() {
   const params = useParams();
@@ -35,77 +36,47 @@ export default function AdminProjectDetail() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        // This would be replaced with a fetch to your API
-        // For now, we'll use mock data
-        const mockProject = {
-          id,
-          title: 'E-commerce SEO Optimization',
-          description: 'Comprehensive SEO audit and optimization for a growing e-commerce website selling sustainable products.',
-          status: 'in_progress',
-          category: 'SEO',
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          estimated_hours: 40,
-          hourly_rate: 75,
-          flagged: false,
-          metadata: {
-            marketing: {
-              problem: 'Low organic search visibility and poor technical SEO performance affecting customer acquisition',
-              deliverables: 'Technical SEO audit, keyword strategy, content optimization plan, performance tracking setup',
-              target_audience: 'E-commerce shoppers interested in sustainable products',
-              platforms: 'Shopify, Google Search Console, Google Analytics 4',
-              preferred_tools: 'Ahrefs, Screaming Frog, Surfer SEO',
-              brand_voice: 'Professional yet approachable, sustainability-focused',
-              inspiration_links: 'https://patagonia.com, https://allbirds.com'
+        const proj = getProjectById(id);
+        if (proj) {
+          setProject({
+            id: proj.id,
+            title: proj.title,
+            description: proj.description,
+            status: proj.status,
+            category: proj.category,
+            deadline: proj.deadline,
+            estimated_hours: proj.deliverables.reduce((a,d)=>a+d.estimatedHours,0),
+            hourly_rate: proj.hourlyRate,
+            flagged: false,
+            metadata: {
+              marketing: {
+                problem: proj.description,
+                deliverables: proj.deliverables.map(d=>d.title).join(', ')
+              },
+              requestor: {
+                name: proj.client.fullName,
+                company: proj.client.username,
+                email: proj.client.email
+              }
             },
-            requestor: {
-              name: 'Sarah Johnson',
-              company: 'EcoShop Inc.',
-              email: 'sarah.johnson@example.com',
-              phone: '+1 (555) 111-2222'
-            }
-          },
-          minimum_badge: 'Expert Talent'
-        };
-        
-        setProject(mockProject);
-        
-        // Mock client data
-        const mockClient = {
-          id: 'client123',
-          full_name: 'Sarah Johnson',
-          email: 'sarah.johnson@example.com',
-          company: 'EcoShop Inc.',
-          createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 3,
-          total_spent: 8500,
-          average_rating: 4.8,
-          verified: true
-        };
-        
-        setClient(mockClient);
-        
-        // Mock talent data
-        const mockTalent = {
-          full_name: 'Alex Rivera',
-          email: 'alex.rivera@example.com',
-          experience_badge: 'Expert Talent',
-          expertise: 'SEO & Content Strategy',
-          location: 'Austin, TX',
-          phone: '+1 (555) 123-4567',
-          linkedin: 'https://linkedin.com/in/alexrivera',
-          portfolio: 'https://alexrivera.dev',
-          bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
-          isQualified: true,
-          createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 12,
-          success_rate: 95,
-          average_rating: 4.9,
-          response_time: '2h',
-          total_earnings: 45000,
-          hourly_rate: 75
-        };
-        
-        setTalent(mockTalent);
+            minimum_badge: proj.talent?.badge
+          });
+          setClient({
+            full_name: proj.client.fullName,
+            email: proj.client.email,
+            company: proj.client.username,
+            createdAt: new Date().toISOString()
+          });
+          if (proj.talent) {
+            setTalent({
+              full_name: proj.talent.fullName,
+              email: proj.talent.email,
+              experience_badge: proj.talent.badge,
+              expertise: proj.talent.expertise,
+              location: 'Austin, TX'
+            });
+          }
+        }
         
         // Mock reviews
         const mockReviews = [

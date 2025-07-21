@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/useAuth";
+import { mockProjects, mockTalent } from "@/lib/mockData";
 import {
   Clock,
   ArrowRight,
@@ -23,7 +24,6 @@ import WonProjectsCard from "@/components/WonProjectsCard";
 import ProfilePanel from "@/components/ProfilePanel";
 
 const TEAL_COLOR = "#00A499";
-const USE_MOCK_SESSION = true;
 
 const experienceBadgeMap: Record<string, string> = {
   "Entry Level": "Specialist",
@@ -103,34 +103,15 @@ export default function TalentDashboard() {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (USE_MOCK_SESSION && userId) {
-      setProjects([
-        {
-          id: "mock1",
-          title: "Brand Audit and SEO",
-          description: "Run a full marketing audit.",
-          status: "complete",
-          deadline: new Date().toISOString(),
-          projectBudget: 2000,
-          caseStudy: {
-            id: "cs1",
-            summary: "Increased SEO visibility by 40%",
-            outcome: "Traffic up 40% in 3 months",
-          },
-          deliverables: [
-            { id: "d1", title: "Audit Report" },
-            { id: "d2", title: "Keyword List" },
-          ],
-        },
-      ]);
+    if (userId) {
+      const assigned = mockProjects.filter(p => p.talent?.id === userId);
+      setProjects(assigned as unknown as Project[]);
       setProfile({
-        fullName: "Alex Rivera",
-        username: "alex_rivera",
-        email: "talent1@example.com",
-        expertise: "SEO & Content Strategy",
-        location: "Austin, TX",
-        experienceBadge: "Expert Talent",
-        linkedinUrl: "https://linkedin.com/in/example",
+        fullName: mockTalent.fullName,
+        username: mockTalent.username,
+        email: mockTalent.email,
+        expertise: mockTalent.expertise,
+        experienceBadge: mockTalent.badge,
       });
     }
   }, [userId]);

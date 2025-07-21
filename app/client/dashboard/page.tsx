@@ -11,6 +11,7 @@ import BudgetTracker from '@/components/BudgetTracker';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
+import { mockProjects, mockClient } from '@/lib/mockData';
 
 interface Project {
   id: string;
@@ -21,7 +22,6 @@ interface Project {
   bids?: number;
 }
 
-const USE_MOCK_DATA = true; // Set to false in production
 
 export default function ClientDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -46,32 +46,8 @@ export default function ClientDashboard() {
     try {
       setLoading(true);
 
-      if (USE_MOCK_DATA) {
-        const mockProjects = [
-          {
-            id: '1',
-            title: 'SEO Optimization Campaign',
-            status: 'open',
-            deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-            projectBudget: 3500,
-            bids: 3
-          },
-          {
-            id: '2',
-            title: 'Social Media Strategy',
-            status: 'in_progress',
-            deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-            projectBudget: 2800,
-            bids: 5
-          }
-        ];
-        setProjects(mockProjects);
-      } else {
-        const res = await fetch('/api/db?table=projects');
-        const json = await res.json();
-        const userProjects = (json.data || []).filter((p: any) => p.clientId === userId);
-        setProjects(userProjects);
-      }
+      const userProjects = mockProjects.filter(p => p.client.id === mockClient.id);
+      setProjects(userProjects as unknown as Project[]);
 
     } catch (error) {
       console.error('Error fetching projects:', error);
