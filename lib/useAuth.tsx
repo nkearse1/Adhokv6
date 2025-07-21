@@ -3,16 +3,19 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 
-export type MockRole = 'admin' | 'client' | 'talent';
+// Authentication checks are bypassed in mock mode, but the user objects
+// returned here are real records queried from the database
 
-async function fetchMockUser(role: MockRole) {
+export type TestRole = 'admin' | 'client' | 'talent';
+
+async function fetchTestUser(role: TestRole) {
   try {
-    const res = await fetch(`/api/mock-user?role=${role}`);
+    const res = await fetch(`/api/test-user?role=${role}`);
     if (!res.ok) return null;
     const data = await res.json();
     return data.user ?? null;
   } catch (err) {
-    console.error('fetchMockUser error', err);
+    console.error('fetchTestUser error', err);
     return null;
   }
 }
@@ -55,19 +58,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState(defaultAuthState);
 
   useEffect(() => {
-    async function loadMock(role: MockRole) {
-      const mock = await fetchMockUser(role);
-      if (mock) {
-        console.log('Using mock user', {
-          id: mock.id,
-          role: mock.userRole,
-          name: mock.username,
+    async function loadTestUser(role: TestRole) {
+      const userObj = await fetchTestUser(role);
+      if (userObj) {
+        // userObj is an actual user row from the database
+        // even though the login process is mocked
+        console.log('Using test user', {
+          id: userObj.id,
+          role: userObj.userRole,
+          name: userObj.username,
         });
         setState({
-          userId: mock.id,
-          username: mock.username || mock.id,
-          userRole: mock.userRole as UserRole,
-          isAdmin: mock.userRole === 'admin',
+          userId: userObj.id,
+          username: userObj.username || userObj.id,
+          userRole: userObj.userRole as UserRole,
+          isAdmin: userObj.userRole === 'admin',
           isAuthenticated: true,
           loading: false,
           authUser: null,
@@ -77,22 +82,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           },
         });
       } else {
-        console.error(`No mock user found for role ${role}`);
+        console.error(`No test user found for role ${role}`);
         setState((s) => ({ ...s, loading: false }));
       }
     }
 
     if (isMock) {
       const role =
-        (localStorage.getItem('dev_user_role') as MockRole | null) || 'talent';
-      loadMock(role);
+        (localStorage.getItem('dev_user_role') as TestRole | null) || 'talent';
+      loadTestUser(role);
       return;
     }
 
     if (process.env.NODE_ENV === 'development') {
-      const devRole = localStorage.getItem('dev_user_role') as MockRole | null;
+      const devRole = localStorage.getItem('dev_user_role') as TestRole | null;
       if (devRole) {
-        loadMock(devRole);
+        loadTestUser(devRole);
         return;
       }
     }

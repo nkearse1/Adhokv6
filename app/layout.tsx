@@ -6,7 +6,7 @@ import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/useAuth';
 import { MockDataProvider } from '@/lib/useMockData';
 import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
-import MockUserBadge from '@/components/dev/MockUserBadge';
+import TestUserBadge from '@/components/dev/TestUserBadge';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Toaster />
         <DevRoleSwitcher />
-        <MockUserBadge />
+        <TestUserBadge />
       </AuthProvider>
     </MockDataProvider>
   );
