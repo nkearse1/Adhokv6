@@ -44,7 +44,7 @@ yarn verify
 During development a floating `DevRoleSwitcher` appears in the bottom left
 corner of the app. It lets you simulate different roles without signing in by
 updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
-populate mock user details and refreshes the page when a new role is selected.
+load real user records from the database and refreshes the page when a new role is selected.
 
 ### Preview Mock Mode
 
@@ -54,6 +54,9 @@ Preview deployments (e.g. StackBlitz) can use mock authentication by setting
 `localStorage` even when `NODE_ENV` is not `development`. If you encounter 401
 errors or redirect loops when testing a preview, enable this variable and select
 a role using the DevRoleSwitcher to force mock mode.
+When active, the DevRoleSwitcher loads a real user record from the database via
+the `/api/test-user` route so you can interact with authentic data while the
+login flow itself is mocked.
 
 ### Favicon
 
@@ -63,9 +66,9 @@ file is ignored by Git so your personal icon won't be committed.
 
 When working in cloud IDEs such as StackBlitz or Codesandbox, you may see a `.next/` folder created after running the dev server. This directory contains build artifacts and is already listed in `.gitignore`, so it can safely be removed or ignored.
 
-## Mock User Credentials
+## Test User Credentials
 
-All mock users have the password: `password123`
+All test users have the password: `password123`
 
 ### Admin User
 - **Email:** `admin@example.com`

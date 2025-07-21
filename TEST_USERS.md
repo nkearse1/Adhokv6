@@ -1,6 +1,6 @@
-# Mock Users for Testing
+# Test Users for Local Authentication
 
-This document contains the credentials for all mock users created by the setup script. Use these to test different user role views and functionality.
+This document contains the credentials for all test users created by the setup script. Login is mocked, but these are real user records from Neon used to test different role views and functionality.
 
 ## How to Run Setup
 
@@ -9,7 +9,7 @@ This document contains the credentials for all mock users created by the setup s
    yarn setup-mock-data
    ```
 
-## Mock User Credentials
+## Test User Credentials
 
 ### Admin User
 - **Email:** `admin@example.com`
@@ -114,7 +114,7 @@ The setup script creates 4 realistic projects with different budgets, requiremen
 
 ## Security Notes
 
-- All mock users use the same password (`password123`) for testing convenience
+- All test users use the same password (`password123`) for testing convenience
 - The service role key has full database access - keep it secure
 - These are test accounts - don't use in production
 - The setup script can be run multiple times safely (it updates existing records)
