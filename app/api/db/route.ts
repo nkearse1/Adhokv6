@@ -26,7 +26,9 @@ import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const { userId } = isMock
+    ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID }
+    : await auth();
   
   // Check if user is authenticated
   if (!isMock && !userId) {
@@ -63,7 +65,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const { userId } = isMock
+    ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID }
+    : await auth();
   
   // Check if user is authenticated
   if (!isMock && !userId) {
@@ -93,7 +97,9 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const { userId } = isMock
+    ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID }
+    : await auth();
   
   // Check if user is authenticated
   if (!isMock && !userId) {
@@ -124,7 +130,10 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   const { userId, sessionClaims } = isMock
-    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
+    ? {
+        userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID,
+        sessionClaims: { metadata: { role: 'admin' } },
+      }
     : await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   

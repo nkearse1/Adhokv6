@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, Users } from "lucide-react";
+import { BRAND_LOGO_URL } from '@/lib/constants';
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState('');
@@ -43,11 +44,7 @@ export default function WaitlistPage() {
       <div className="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <img
-              src="/assets/adhok_logo_icon_teal_brand_precise3.png"
-              alt="Adhok"
-              className="h-16 w-auto"
-            />
+            <img src={BRAND_LOGO_URL} alt="Adhok" className="h-16 w-auto" />
           </div>
           <Badge variant="secondary" className="mb-4 text-brand-accent">
             Coming Soon

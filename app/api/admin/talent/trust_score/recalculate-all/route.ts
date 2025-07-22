@@ -12,7 +12,10 @@ type SessionClaimsWithRole = {
 export async function POST(_req: NextRequest) {
   const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   const { userId, sessionClaims } = isMock
-    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
+    ? {
+        userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID,
+        sessionClaims: { metadata: { role: 'admin' } },
+      }
     : await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Package } from 'lucide-react';
 import { calculateEstimatedHours, expertiseRates } from '@/lib/estimation';
+import { BRAND_LOGO_URL } from '@/lib/constants';
 
 const projectPresets: { [key: string]: Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }> } = {
   SEO: [
@@ -103,11 +104,7 @@ export function ProjectUploadFlow() {
       <div className="max-w-4xl w-full space-y-6">
         <div className="text-center">
           <div className="flex justify-center items-center gap-2 mb-2">
-            <img
-              src="/assets/adhok_logo_icon_teal_brand_precise3.png"
-              alt="Adhok Logo"
-              className="h-8 w-8"
-            />
+            <img src={BRAND_LOGO_URL} alt="Adhok Logo" className="h-8 w-8" />
             <h1 className="text-3xl font-bold text-[#2F2F2F]">Adhok</h1>
           </div>
           <p className="text-sm text-[#00A499] font-medium">
