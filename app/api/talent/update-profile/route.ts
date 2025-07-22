@@ -1,13 +1,10 @@
 import { auth } from '@clerk/nextjs/server';
 import { updateTalentProfile } from '@/lib/db/talent';
+import { resolveUserId } from '@/lib/server/loadUserSession';
 
 export async function POST(req: Request) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock
-    ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID }
-    : await auth();
-  const overrideId = process.env.NEXT_PUBLIC_SELECTED_USER_ID;
-  const idToUse = userId || overrideId;
+  const { userId } = await auth().catch(() => ({ userId: undefined }));
+  const idToUse = userId || resolveUserId();
 
   if (!idToUse) return new Response('Unauthorized', { status: 401 });
 

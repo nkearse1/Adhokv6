@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth } from '@/lib/client/useAuthContext';
 
 interface NeonUser {
   id: string;
@@ -11,6 +12,7 @@ interface NeonUser {
 export default function NeonUserSwitcher() {
   const [users, setUsers] = useState<NeonUser[]>([]);
   const [value, setValue] = useState('');
+  const { authUser } = useAuth();
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
@@ -53,6 +55,14 @@ export default function NeonUserSwitcher() {
           ))}
         </SelectContent>
       </Select>
+      {authUser && (
+        <p
+          className="text-xs text-gray-500 mt-2"
+          title={`Resolved user: ${authUser.username || authUser.full_name || authUser.id}`}
+        >
+          Resolved: {authUser.username || authUser.full_name || authUser.id}
+        </p>
+      )}
     </div>
   );
 }
