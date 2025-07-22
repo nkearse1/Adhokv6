@@ -1,8 +1,11 @@
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { updateTalentProfile } from '@/lib/db/talent';
 
 export async function POST(req: Request) {
-  const { userId } = auth();
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const { userId } = isMock
+    ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID }
+    : await auth();
   const overrideId = process.env.NEXT_PUBLIC_SELECTED_USER_ID;
   const idToUse = userId || overrideId;
 

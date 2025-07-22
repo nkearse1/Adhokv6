@@ -1,5 +1,5 @@
 'use client';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 
 export default function TestUserBadge() {
   const { userId, username, userRole } = useAuth();

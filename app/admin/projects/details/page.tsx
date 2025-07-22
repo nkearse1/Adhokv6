@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
 import { 
   BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, 

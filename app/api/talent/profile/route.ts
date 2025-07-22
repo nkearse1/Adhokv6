@@ -14,9 +14,10 @@ const bodySchema = z.object({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const paramId = searchParams.get('id');
-  const { userId } = await auth();
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const { userId } = isMock ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID } : await auth();
   const id = paramId || userId;
-  if (!id) {
+  if (!isMock && !id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
@@ -30,8 +31,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const { userId } = isMock ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID } : await auth();
+  if (!isMock && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   let data;

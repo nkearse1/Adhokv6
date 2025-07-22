@@ -11,12 +11,15 @@ type SessionClaimsWithRole = {
 export const runtime = 'nodejs'; // ⛔ Clerk not supported on Edge runtime
 
 export async function GET(_req: NextRequest) {
-  const { userId, sessionClaims } = await auth();
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const { userId, sessionClaims } = isMock
+    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
+    : await auth();
 
   // ✅ Safely extract role
   const userRole = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
-  if (!userId || userRole !== 'admin') {
+  if (!isMock && (!userId || userRole !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
