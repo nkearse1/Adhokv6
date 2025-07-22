@@ -20,6 +20,8 @@ yarn install
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
+   - Ensure `NEXT_PUBLIC_SELECTED_USER_ID` is defined. This ID will be used on
+     the server when no runtime override is present.
 
 4. Set up mock data (optional):
 
@@ -45,6 +47,10 @@ During development a floating `DevRoleSwitcher` appears in the bottom left
 corner of the app. It lets you simulate different roles without signing in by
 updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
 load real user records from the database and refreshes the page when a new role is selected.
+### Neon User Switcher
+
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It loads available users from `/api/dev/list-users` and stores the selected ID in `localStorage.adhok_active_user`. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable.
+
 
 ### Preview Mock Mode
 
