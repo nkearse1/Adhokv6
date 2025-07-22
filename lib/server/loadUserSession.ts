@@ -1,16 +1,13 @@
 import { eq } from 'drizzle-orm';
 
-let cachedUserId: string | undefined;
-
-function resolveUserId(): string | undefined {
+export function resolveUserId(): string | undefined {
   if (typeof window !== 'undefined') {
-    const fromLocalStorage = localStorage.getItem('adhok_active_user');
-    if (fromLocalStorage) {
-      cachedUserId = fromLocalStorage;
-      return fromLocalStorage;
-    }
+    return (
+      localStorage.getItem('adhok_active_user') ||
+      process.env.NEXT_PUBLIC_SELECTED_USER_ID
+    );
   }
-  return cachedUserId ?? process.env.NEXT_PUBLIC_SELECTED_USER_ID;
+  return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
 }
 
 export async function loadUserSession() {

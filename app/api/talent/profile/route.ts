@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { updateUser } from '@/lib/db/users';
 import { getFullTalentProfile } from '@/lib/db/talentProfiles';
+import { resolveUserId } from '@/lib/server/loadUserSession';
 
 const bodySchema = z.object({
   fullName: z.string().optional(),
@@ -14,10 +15,9 @@ const bodySchema = z.object({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const paramId = searchParams.get('id');
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID } : await auth();
-  const id = paramId || userId;
-  if (!isMock && !id) {
+  const { userId } = await auth().catch(() => ({ userId: undefined }));
+  const id = paramId || userId || resolveUserId();
+  if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
@@ -31,9 +31,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: process.env.NEXT_PUBLIC_SELECTED_USER_ID } : await auth();
-  if (!isMock && !userId) {
+  const { userId } = await auth().catch(() => ({ userId: undefined }));
+  const id = userId || resolveUserId();
+  if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   let data;
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
   try {
-    const user = await updateUser(userId, data);
+    const user = await updateUser(id, data);
     return NextResponse.json({ user });
   } catch (err) {
     console.error('Failed to update user', err);

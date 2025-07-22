@@ -27,11 +27,12 @@ export function Header() {
     admin: `/admin/panel`,
   };
 
-  const getDashboardPath = () => dashboardPaths[userRole] || '/';
+  const getDashboardPath = () =>
+    (userRole ? dashboardPaths[userRole] : undefined) || '/';
 
   const shouldShowDashboard = () => {
     if (!isAuthenticated) return false;
-    const current = dashboardPaths[userRole];
+    const current = userRole ? dashboardPaths[userRole] : undefined;
     return current && pathname !== current;
   };
 
