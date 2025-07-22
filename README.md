@@ -20,8 +20,8 @@ yarn install
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Ensure `NEXT_PUBLIC_SELECTED_USER_ID` is defined. This ID will be used on
-     the server when no runtime override is present.
+   - Provide your database credentials and Clerk keys if you intend to use the
+     hosted authentication service.
 
 4. Set up mock data (optional):
 
@@ -49,17 +49,15 @@ updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
 load real user records from the database and refreshes the page when a new role is selected.
 ### Neon User Switcher
 
-When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It loads available users from `/api/dev/list-users` and stores the selected ID in `localStorage.adhok_active_user`. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable.
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session.
 
 
 ### Preview Mock Mode
 
-Preview deployments (e.g. StackBlitz) can use mock authentication by setting
-`NEXT_PUBLIC_USE_MOCK=true` in the environment. This skips Clerk checks in
-`middleware.ts` and tells `useAuth.tsx` to read the `dev_user_role` value from
-`localStorage` even when `NODE_ENV` is not `development`. If you encounter 401
-errors or redirect loops when testing a preview, enable this variable and select
-a role using the DevRoleSwitcher to force mock mode.
+Preview deployments (e.g. StackBlitz) can still use a mock authentication flow
+by setting `NEXT_PUBLIC_USE_MOCK=true` in the environment. This bypasses Clerk
+and reads the `dev_user_role` value from `localStorage` so you can test the UI
+without a full auth setup.
 When active, the DevRoleSwitcher loads a real user record from the database via
 the `/api/test-user` route so you can interact with authentic data while the
 login flow itself is mocked.
@@ -122,10 +120,10 @@ user role for testing. The selected role is saved to `localStorage` under the
 `dev_user_role` key. Removing or changing this key will refresh the page and
 update the mock auth state.
 
-For preview environments such as StackBlitz, set
+For preview environments such as StackBlitz you can set
 `NEXT_PUBLIC_USE_MOCK=true` in your `.env` file. This bypasses Clerk and tells
-`useAuth.tsx` to read `dev_user_role` even in production mode, so choose a role
-via the DevRoleSwitcher before testing.
+`useAuth.tsx` to read `dev_user_role` even when not in development, so choose a
+role with the DevRoleSwitcher before testing.
 
 If you encounter `401` errors or an infinite reload loop, ensure that a role is
 stored in `dev_user_role` or clear the key and choose a role again.

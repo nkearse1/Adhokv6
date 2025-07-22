@@ -13,13 +13,13 @@ import NotificationBell from './NotificationBell';
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   const { userId, userRole, username, isAuthenticated, authUser } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { signOut } = isMock ? { signOut: () => {} } : useClerk();
+  const { signOut } = clerkActive ? useClerk() : { signOut: () => {} };
 
   const dashboardPaths: { [key: string]: string } = {
     client: `/client/dashboard`,

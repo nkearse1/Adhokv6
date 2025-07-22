@@ -15,8 +15,9 @@ const bodySchema = z.object({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const paramId = searchParams.get('id');
-  const { userId } = await auth().catch(() => ({ userId: undefined }));
-  const id = paramId || userId || resolveUserId();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  const id = paramId || userId || (await resolveUserId());
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -31,8 +32,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth().catch(() => ({ userId: undefined }));
-  const id = userId || resolveUserId();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  const id = userId || (await resolveUserId());
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

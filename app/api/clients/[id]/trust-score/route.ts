@@ -13,14 +13,14 @@ export async function POST(
   ctx: RouteContext
 ) {
   const { id } = await ctx.params;
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId, sessionClaims } = isMock
-    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
-    : await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId, sessionClaims } = clerkActive
+    ? await auth()
+    : { userId: undefined, sessionClaims: undefined };
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role
-  if (!isMock && (!userId || role !== 'admin')) {
+  if (clerkActive && (!userId || role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

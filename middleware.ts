@@ -7,7 +7,7 @@ import {
 import type { AuthObject } from '@clerk/backend';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+const clerkActive = !!process.env.CLERK_SECRET_KEY;
 
 function safeRedirect(path: string, req: NextRequest) {
   const url = new URL(path, req.url);
@@ -17,7 +17,7 @@ function safeRedirect(path: string, req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-const middleware = isMock
+const middleware = !clerkActive
   ? function middlewareMock(req: NextRequest) {
       if (process.env.NODE_ENV === 'development') {
         console.log(

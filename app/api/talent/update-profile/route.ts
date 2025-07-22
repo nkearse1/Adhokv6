@@ -3,8 +3,9 @@ import { updateTalentProfile } from '@/lib/db/talent';
 import { resolveUserId } from '@/lib/server/loadUserSession';
 
 export async function POST(req: Request) {
-  const { userId } = await auth().catch(() => ({ userId: undefined }));
-  const idToUse = userId || resolveUserId();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  const idToUse = userId || (await resolveUserId());
 
   if (!idToUse) return new Response('Unauthorized', { status: 401 });
 

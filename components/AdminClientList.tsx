@@ -38,11 +38,6 @@ export default function AdminClientList() {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-        setClients(mockClients);
-        setFilteredClients(mockClients);
-        return;
-      }
       const res = await fetch('/api/clients');
       const json = await res.json();
       if (res.ok) {

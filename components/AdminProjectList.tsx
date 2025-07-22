@@ -45,17 +45,12 @@ export default function AdminProjectList() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      let data: AdminProject[];
-      if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-        data = mockProjects as unknown as AdminProject[];
-      } else {
-        const res = await fetch('/api/admin/projects');
-        const json = await res.json();
-        if (!res.ok) {
-          throw new Error(json.error || 'Request failed');
-        }
-        data = json.data as AdminProject[];
+      const res = await fetch('/api/admin/projects');
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Request failed');
       }
+      let data = json.data as AdminProject[];
 
       let filteredData = data || [];
 
