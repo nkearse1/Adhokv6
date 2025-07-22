@@ -7,22 +7,12 @@ import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(_req: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  if (isMock) {
-    try {
-      const data = await db.select().from(users).where(eq(users.userRole, 'client'));
-      return NextResponse.json({ data });
-    } catch (err) {
-      console.error('Error fetching clients', err);
-      return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 });
-    }
-  }
-
-  const { userId, sessionClaims } = await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId, sessionClaims } = clerkActive ? await auth() : { userId: undefined, sessionClaims: undefined };
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
   // Check if user is authenticated and has admin role
-  if (!userId || role !== 'admin') {
+  if (clerkActive && (!userId || role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

@@ -25,11 +25,11 @@ import { auth } from '@clerk/nextjs/server';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
   
   // Check if user is authenticated
-  if (!isMock && !userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
@@ -62,11 +62,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
   
   // Check if user is authenticated
-  if (!isMock && !userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
@@ -92,11 +92,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId } = isMock ? { userId: 'mock' } : await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId } = clerkActive ? await auth() : { userId: undefined };
   
   // Check if user is authenticated
-  if (!isMock && !userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
@@ -122,14 +122,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  const { userId, sessionClaims } = isMock
-    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
-    : await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId, sessionClaims } = clerkActive
+    ? await auth()
+    : { userId: undefined, sessionClaims: undefined };
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role
-  if (!isMock && (!userId || role !== 'admin')) {
+  if (clerkActive && (!userId || role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

@@ -14,10 +14,6 @@ export default function AdminPanel() {
   useEffect(() => {
     async function loadReviews() {
       try {
-        if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-          setReviews(mockReviews);
-          return;
-        }
         const res = await fetch('/api/db?table=project_reviews');
         const json = await res.json();
         if (res.ok) setReviews(json.data || []);

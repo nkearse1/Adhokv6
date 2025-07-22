@@ -11,22 +11,12 @@ type SessionClaimsWithRole = {
 };
 
 export async function GET(_req: NextRequest) {
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
-  if (isMock) {
-    try {
-      const data = await db.select().from(projects).limit(100);
-      return NextResponse.json({ data });
-    } catch (error) {
-      console.error('Error fetching admin projects:', error);
-      return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
-    }
-  }
-
-  const { userId, sessionClaims } = await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  const { userId, sessionClaims } = clerkActive ? await auth() : { userId: undefined, sessionClaims: undefined };
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
 
   // Check if user is authenticated and has admin role
-  if (!userId || role !== 'admin') {
+  if (clerkActive && (!userId || role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
