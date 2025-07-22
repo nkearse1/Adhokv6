@@ -8,11 +8,14 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function POST(request: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const { userId, sessionClaims } = await auth();
+  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const { userId, sessionClaims } = isMock
+    ? { userId: 'mock', sessionClaims: { metadata: { role: 'admin' } } }
+    : await auth();
   const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
   
   // Check if user is authenticated and has admin role
-  if (!userId || role !== 'admin') {
+  if (!isMock && (!userId || role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm/pg-core';
+import { eq } from 'drizzle-orm';
 import { db } from '../db';
 import { talentProfiles, users } from '../schema';
 export type TalentProfile = typeof talentProfiles.$inferSelect;

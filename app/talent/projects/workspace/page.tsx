@@ -18,7 +18,7 @@ import DeliverableUpload from '@/components/DeliverableUpload';
 import ClientFeedbackCard from '@/components/ClientFeedbackCard';
 import { useProjectStatus } from '@/hooks/useProjectStatus';
 import { useEscrow } from '@/hooks/useEscrow';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 
 export default function ProjectWorkspace() {
   const params = useParams();

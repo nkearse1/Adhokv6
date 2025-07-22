@@ -3,7 +3,7 @@ import '@/styles/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/Header';
-import { AuthProvider } from '@/lib/useAuth';
+import { AuthProvider } from '@/lib/client/useAuthContext';
 import { MockDataProvider } from '@/lib/useMockData';
 import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 import TestUserBadge from '@/components/dev/TestUserBadge';
