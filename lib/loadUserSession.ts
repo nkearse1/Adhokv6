@@ -1,5 +1,3 @@
-import { db } from '@/db';
-import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 let cachedUserId: string | undefined;
@@ -16,6 +14,12 @@ function resolveUserId(): string | undefined {
 }
 
 export async function loadUserSession() {
+  if (typeof window !== 'undefined') {
+    throw new Error('loadUserSession must run on the server');
+  }
+
+  const { db } = await import('@/db');
+  const { users } = await import('@/db/schema');
   const id = resolveUserId();
   if (!id) throw new Error('No user ID available to load session');
 
