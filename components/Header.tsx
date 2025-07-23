@@ -15,7 +15,7 @@ export function Header() {
   const pathname = usePathname();
   const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  const { userId, userRole, username, isAuthenticated, authUser } = useAuth();
+  const { userId, userRole, username, isAuthenticated, authUser, loading } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -89,7 +89,7 @@ export function Header() {
           )}
         </div>
 
-        {isAuthenticated ? (
+        {!loading && isAuthenticated ? (
           <div className="flex items-center gap-4">
             <NotificationBell />
             {fullName && (
@@ -109,7 +109,7 @@ export function Header() {
               Sign out
             </Button>
           </div>
-        ) : (
+        ) : !loading ? (
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -126,7 +126,7 @@ export function Header() {
               Sign up
             </Button>
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   );

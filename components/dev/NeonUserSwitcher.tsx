@@ -12,7 +12,7 @@ interface NeonUser {
 export default function NeonUserSwitcher() {
   const [users, setUsers] = useState<NeonUser[]>([]);
   const [value, setValue] = useState('');
-  const { authUser } = useAuth();
+  const { authUser, refreshSession } = useAuth();
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
@@ -34,10 +34,10 @@ export default function NeonUserSwitcher() {
     }
   }, []);
 
-  const handleChange = (val: string) => {
+  const handleChange = async (val: string) => {
     setValue(val);
     localStorage.setItem('adhok_active_user', val);
-    window.location.reload();
+    await refreshSession();
   };
 
   if (process.env.NODE_ENV !== 'development') return null;
