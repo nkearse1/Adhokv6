@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setState({
           userId: user.id,
           username: user.username || user.id,
-          userRole: user.userRole,
-          isAdmin: user.userRole === 'admin',
+          userRole: user.user_role,
+          isAdmin: user.user_role === 'admin',
           isAuthenticated: true,
           loading: false,
           authUser: user,

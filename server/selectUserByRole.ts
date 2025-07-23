@@ -9,7 +9,7 @@ export async function selectUserByRole(role: TestRole) {
     const result = await db
       .select()
       .from(users)
-      .where(eq(users.role, role))
+      .where(eq(users.user_role, role))
       .limit(1);
     return result[0] || null;
   } catch (err) {

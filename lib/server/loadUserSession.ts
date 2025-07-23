@@ -3,8 +3,10 @@ import { eq } from 'drizzle-orm';
 /**
  * Resolve the current user ID. In the browser we honour the
  * `adhok_active_user` value from localStorage so developers can easily
- * switch between seeded users. On the server we fall back to Clerk when
- * available. If no Clerk session is present we use the
+ * switch between seeded users. On the server we fall back to Clerk only in
+ * production. If no Clerk session is present we use the
+ * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable as a fallback.
+ */
 
  
 export async function resolveUserId(): Promise<string | undefined> {
@@ -12,7 +14,10 @@ export async function resolveUserId(): Promise<string | undefined> {
     return localStorage.getItem('adhok_active_user') || undefined;
   }
 
-  if (process.env.CLERK_SECRET_KEY) {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.CLERK_SECRET_KEY
+  ) {
     try {
       const { auth } = await import('@clerk/nextjs/server');
       const { userId } = await auth();
@@ -21,7 +26,6 @@ export async function resolveUserId(): Promise<string | undefined> {
       // ignore and fall back to env based mock id
     }
   }
-
 
   if (process.env.NEXT_PUBLIC_SELECTED_USER_ID) {
     return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
@@ -46,8 +50,12 @@ export async function loadUserSession() {
   try {
     const { db } = await import('@/db');
     const { users } = await import('@/db/schema');
-    const result = await db.select().from(users).where(eq(users.id, id));
-    const user = result?.[0];
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+    const user = result[0];
     return user || null;
   } catch (err) {
     console.error('loadUserSession db error', err);
