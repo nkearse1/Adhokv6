@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { updateUser } from '@/lib/db/users';
 import { getFullTalentProfile } from '@/lib/db/talentProfiles';
@@ -16,7 +15,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const paramId = searchParams.get('id');
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   const id = paramId || userId || (await resolveUserId());
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -33,7 +36,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   const id = userId || (await resolveUserId());
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
