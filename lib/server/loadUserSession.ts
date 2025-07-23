@@ -5,9 +5,8 @@ import { eq } from 'drizzle-orm';
  * `adhok_active_user` value from localStorage so developers can easily
  * switch between seeded users. On the server we fall back to Clerk when
  * available. If no Clerk session is present we use the
- * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable so local
- * development works without authentication.
- */
+
+ 
 export async function resolveUserId(): Promise<string | undefined> {
   if (typeof window !== 'undefined') {
     return localStorage.getItem('adhok_active_user') || undefined;

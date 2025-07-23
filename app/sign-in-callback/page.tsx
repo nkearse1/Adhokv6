@@ -1,6 +1,8 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+
+const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 import { useAuth } from '@/lib/client/useAuthContext';
 
 export default function SignInCallback() {
@@ -17,7 +19,7 @@ export default function SignInCallback() {
   useEffect(() => {
     if (loading) return;
 
-    if (!isAuthenticated) {
+    if (clerkActive && !isAuthenticated) {
       router.replace('/sign-in');
       return;
     }
