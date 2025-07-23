@@ -27,6 +27,7 @@ export async function resolveUserId(): Promise<string | undefined> {
     return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
   }
 
+  console.warn('[resolveUserId] No user ID could be resolved');
   return undefined;
 }
 
@@ -36,7 +37,10 @@ export async function loadUserSession() {
   }
 
   const id = await resolveUserId();
-  if (!id) return null;
+  if (!id) {
+    console.warn('[loadUserSession] Unable to resolve user ID');
+    return null;
+  }
 
   const { db } = await import('@/db');
   const { users } = await import('@/db/schema');

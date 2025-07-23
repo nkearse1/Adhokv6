@@ -28,8 +28,10 @@ export default function NeonUserSwitcher() {
       }
     }
     load();
-    const stored = localStorage.getItem('adhok_active_user');
-    if (stored) setValue(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('adhok_active_user');
+      if (stored) setValue(stored);
+    }
   }, []);
 
   const handleChange = (val: string) => {

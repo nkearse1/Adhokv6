@@ -35,6 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch('/api/session');
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();
+        if (!user) {
+          console.warn('[AuthProvider] Session resolved as null');
+          setState((s) => ({ ...s, loading: false }));
+          return;
+        }
         setState({
           userId: user.id,
           username: user.username || user.id,
