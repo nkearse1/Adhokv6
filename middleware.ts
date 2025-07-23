@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
   const userId = await resolveUserId();
 
-  let role: string | undefined;
+  let user_role: string | undefined;
   if (userId) {
     try {
       const { db } = await import('@/db');
@@ -24,31 +24,31 @@ export async function middleware(req: NextRequest) {
         .from(users)
         .where(eq(users.id, userId))
         .limit(1);
-      role = result[0]?.user_role;
+      user_role = result[0]?.user_role;
     } catch (err) {
       console.error('[middleware] role lookup failed', err);
     }
   }
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('[middleware]', { userId, role, pathname });
+    console.log('[middleware]', { userId, user_role, pathname });
     return NextResponse.next();
   }
 
-  if (!userId || !role) return NextResponse.next();
+  if (!userId || !user_role) return NextResponse.next();
 
   const validRoles = ['admin', 'client', 'talent'];
-  if (!validRoles.includes(role)) return NextResponse.next();
+  if (!validRoles.includes(user_role)) return NextResponse.next();
 
-  if (pathname.startsWith('/admin') && role !== 'admin') {
+  if (pathname.startsWith('/admin') && user_role !== 'admin') {
     return safeRedirect('/', req);
   }
 
-  if (pathname.startsWith('/client') && role !== 'client') {
+  if (pathname.startsWith('/client') && user_role !== 'client') {
     return safeRedirect('/', req);
   }
 
-  if (pathname.startsWith('/talent/dashboard') && role !== 'talent') {
+  if (pathname.startsWith('/talent/dashboard') && user_role !== 'talent') {
     return safeRedirect('/', req);
   }
 

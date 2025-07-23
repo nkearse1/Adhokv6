@@ -1,15 +1,20 @@
-import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function GET(_req: NextRequest) {
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  const { userId, sessionClaims } = clerkActive ? await auth() : { userId: undefined, sessionClaims: undefined };
+  let userId: string | undefined;
+  let sessionClaims: { metadata?: { user_role?: string } } | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    const result = await auth();
+    userId = result.userId;
+    sessionClaims = result.sessionClaims as any;
+  }
 
-  // Cast to ensure TypeScript knows the shape of sessionClaims.metadata
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const user_role = sessionClaims?.metadata?.user_role;
 
-  if (clerkActive && (!userId || role !== 'admin')) {
+  if (clerkActive && (!userId || user_role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
