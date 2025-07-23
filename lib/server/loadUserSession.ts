@@ -5,8 +5,8 @@ import { eq } from 'drizzle-orm';
  * `adhok_active_user` value from localStorage so developers can easily
  * switch between seeded users. On the server we fall back to Clerk when
  * available. If no Clerk session is present we use the
- * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable so local development
- * works without authentication.
+ * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable in development so
+ * local development works without authentication.
  */
 export async function resolveUserId(): Promise<string | undefined> {
   if (typeof window !== 'undefined') {
@@ -23,7 +23,11 @@ export async function resolveUserId(): Promise<string | undefined> {
     }
   }
 
-  return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
+  }
+
+  return undefined;
 }
 
 export async function loadUserSession() {
@@ -31,14 +35,13 @@ export async function loadUserSession() {
     throw new Error('loadUserSession must run on the server');
   }
 
+  const id = await resolveUserId();
+  if (!id) return null;
+
   const { db } = await import('@/db');
   const { users } = await import('@/db/schema');
-  const id = await resolveUserId();
-  if (!id) throw new Error('No user ID available to load session');
-
   const result = await db.select().from(users).where(eq(users.id, id));
   const user = result?.[0];
 
-  if (!user) throw new Error(`User ${id} not found in Neon`);
-  return user;
+  return user || null;
 }
