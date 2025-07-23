@@ -5,8 +5,9 @@ import { eq } from 'drizzle-orm';
  * `adhok_active_user` value from localStorage so developers can easily
  * switch between seeded users. On the server we fall back to Clerk when
  * available. If no Clerk session is present we use the
- * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable in development so
- * local development works without authentication.
+ * `NEXT_PUBLIC_SELECTED_USER_ID` environment variable so server side
+ * rendering works without authentication. This allows SSR and middleware
+ * to resolve a mock user even outside of `development`.
  */
 export async function resolveUserId(): Promise<string | undefined> {
   if (typeof window !== 'undefined') {
@@ -23,7 +24,7 @@ export async function resolveUserId(): Promise<string | undefined> {
     }
   }
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NEXT_PUBLIC_SELECTED_USER_ID) {
     return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
   }
 

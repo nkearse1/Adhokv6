@@ -51,7 +51,7 @@ updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
 load real user records from the database and refreshes the page when a new role is selected.
 ### Neon User Switcher
 
-When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable **only in development**.
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable.
 
 
 ### Preview Mock Mode

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
 
   try {
-    const headerList = await request.headers;
+    const headerList = request.headers;
     const headers = {
       'svix-id': headerList.get('svix-id') || '',
       'svix-timestamp': headerList.get('svix-timestamp') || '',

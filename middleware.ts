@@ -41,17 +41,19 @@ const middleware = !clerkActive
     const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as
       string | undefined;
 
+    const userId = auth.userId || process.env.NEXT_PUBLIC_SELECTED_USER_ID;
+
     if (process.env.NODE_ENV === 'development') {
       console.log('[middleware]', {
-        userId: auth.userId,
+        userId,
         role,
         pathname,
       });
     }
 
-    if (!auth.userId) return NextResponse.next();
+    if (!userId) return NextResponse.next();
 
-    if (auth.userId && !role && pathname !== '/') {
+    if (userId && !role && pathname !== '/') {
       return safeRedirect('/', req);
     }
 
