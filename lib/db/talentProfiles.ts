@@ -32,5 +32,5 @@ export async function getFullTalentProfile(id: string) {
     .limit(1);
   const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
   if (!profile || !user) return null;
-  return { ...profile, userRole: user.userRole, role: user.role };
+  return { ...profile, userRole: user.user_role, role: user.role };
 }
