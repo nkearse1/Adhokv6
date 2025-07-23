@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/Header';
 import { AuthProvider } from '@/lib/client/useAuthContext';
 import { MockDataProvider } from '@/lib/useMockData';
-import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
 import TestUserBadge from '@/components/dev/TestUserBadge';
 import NeonUserSwitcher from '@/components/dev/NeonUserSwitcher';
 
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         {children}
         <Toaster />
-        <DevRoleSwitcher />
         <NeonUserSwitcher />
         <TestUserBadge />
       </AuthProvider>
