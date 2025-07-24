@@ -10,7 +10,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   authUser: any;
-  refreshSession: () => Promise<void>;
+  refreshSession: (id?: string) => Promise<void>;
 }
 
 const defaultState: AuthState = {
@@ -31,9 +31,10 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(defaultState);
 
-  const fetchSession = async () => {
+  const fetchSession = async (id?: string) => {
       try {
-        const res = await fetch('/api/session');
+        const url = id ? `/api/session?id=${encodeURIComponent(id)}` : '/api/session';
+        const res = await fetch(url);
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();
         if (!user) {

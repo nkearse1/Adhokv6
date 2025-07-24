@@ -9,7 +9,8 @@ import { eq } from 'drizzle-orm';
  */
 
  
-export async function resolveUserId(): Promise<string | undefined> {
+export async function resolveUserId(override?: string): Promise<string | undefined> {
+  if (override) return override;
   if (typeof window !== 'undefined') {
     return localStorage.getItem('adhok_active_user') || undefined;
   }
@@ -35,13 +36,13 @@ export async function resolveUserId(): Promise<string | undefined> {
   return undefined;
 }
 
-export async function loadUserSession() {
+export async function loadUserSession(overrideId?: string) {
   if (typeof window !== 'undefined') {
     console.warn('[loadUserSession] Called on the client - returning null');
     return null;
   }
 
-  const id = await resolveUserId();
+  const id = await resolveUserId(overrideId);
   if (!id) {
     console.warn('[loadUserSession] Unable to resolve user ID');
     return null;
