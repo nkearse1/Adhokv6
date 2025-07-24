@@ -8,7 +8,13 @@ function TestComponent({ onRefresh }: { onRefresh: () => void }) {
   return (
     <div>
       <span data-testid="uid">{userId}</span>
-      <button data-testid="refresh" onClick={() => { refreshSession('u2'); onRefresh(); }} />
+      <button
+        data-testid="refresh"
+        onClick={() => {
+          refreshSession({ userId: 'u2' });
+          onRefresh();
+        }}
+      />
     </div>
   );
 }

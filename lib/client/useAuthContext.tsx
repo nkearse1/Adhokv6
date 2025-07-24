@@ -16,7 +16,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   authUser: any;
-  refreshSession: (id?: string) => Promise<void>;
+  refreshSession: (opts?: { userId?: string }) => Promise<void>;
 }
 
 const defaultState: AuthState = {
@@ -37,11 +37,11 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(defaultState);
 
-  const fetchSession = useCallback(async (id?: string) => {
+  const fetchSession = useCallback(async (opts?: { userId?: string }) => {
       try {
         const headers: Record<string, string> = {};
         const url = '/api/session';
-        if (id) headers['x-adhok-user-id'] = id;
+        if (opts?.userId) headers['x-adhok-user-id'] = opts.userId;
         const res = await fetch(url, { headers });
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();
