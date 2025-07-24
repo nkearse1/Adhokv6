@@ -20,8 +20,6 @@ yarn install
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Ensure `NEXT_PUBLIC_SELECTED_USER_ID` is defined. This ID will be used on
-     the server when no runtime override is present.
    - Provide your database credentials and Clerk keys if you intend to use the
      hosted authentication service.
 
@@ -45,7 +43,7 @@ yarn verify
 
 ### Neon User Switcher
 
-When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable.
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session. The chosen ID is sent to `/api/session` so the server resolves the matching user without relying on environment variables.
 
 
 ### Preview Mock Mode
