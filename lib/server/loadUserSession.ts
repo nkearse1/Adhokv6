@@ -51,7 +51,12 @@ export async function loadUserSession() {
     const { db } = await import('@/db');
     const { users } = await import('@/db/schema');
     const result = await db
-      .select()
+      .select({
+        id: users.id,
+        username: users.username,
+        full_name: users.full_name,
+        user_role: users.user_role,
+      })
       .from(users)
       .where(eq(users.id, id))
       .limit(1);
