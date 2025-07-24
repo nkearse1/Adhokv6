@@ -4,11 +4,9 @@ import AdminTalentList from '@/components/AdminTalentList';
 import AdminLineChart from '@/components/AdminLineChart';
 import ReviewList from '@/components/ReviewList';
 import AdminProjectList from '@/components/AdminProjectList';
-import { useMockData } from '@/lib/useMockData';
 import { useEffect, useState } from 'react';
 
 export default function AdminPanel() {
-  const { reviews: mockReviews } = useMockData();
   const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {

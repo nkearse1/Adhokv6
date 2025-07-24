@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
       const email = emailEntry?.email_address;
 
       const fullName = `${first_name || ''} ${last_name || ''}`.trim();
-      const role = (public_metadata?.role as string) || 'talent';
+      const role = (public_metadata?.user_role as string) || 'talent';
 
       if (id && email) {
         // Ensure the Clerk user has the role stored in public metadata
         await clerkClient.users.updateUser(id, {
-          publicMetadata: { role },
+          publicMetadata: { user_role: role },
         });
 
         // Insert into users table
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           fullName,
           email,
           username: username || id,
-          userRole: role,
+          user_role: role,
         });
 
         // Insert into matching profile table

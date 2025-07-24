@@ -38,6 +38,9 @@ export default function NeonUserSwitcher() {
     setValue(val);
     localStorage.setItem('adhok_active_user', val);
     await refreshSession();
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   };
 
   if (process.env.NODE_ENV !== 'development') return null;

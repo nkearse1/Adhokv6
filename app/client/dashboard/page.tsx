@@ -11,7 +11,6 @@ import BudgetTracker from '@/components/BudgetTracker';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { useMockData } from '@/lib/useMockData';
 
 interface Project {
   id: string;
@@ -24,7 +23,6 @@ interface Project {
 
 
 export default function ClientDashboard() {
-  const { projects: allProjects, clients } = useMockData();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -47,9 +45,12 @@ export default function ClientDashboard() {
     try {
       setLoading(true);
 
-      const me = clients.find(c => c.id === userId) || clients[0];
-      const userProjects = allProjects.filter(p => p.client.id === me.id);
-      setProjects(userProjects as unknown as Project[]);
+      const res = await fetch(`/api/clients/${userId}/projects`);
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Request failed');
+      }
+      setProjects(json.projects || []);
 
     } catch (error) {
       console.error('Error fetching projects:', error);

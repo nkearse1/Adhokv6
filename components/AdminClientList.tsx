@@ -19,10 +19,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useMockData } from '@/lib/useMockData';
 
 export default function AdminClientList() {
-  const { clients: mockClients } = useMockData();
   const [clients, setClients] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredClients, setFilteredClients] = useState<any[]>([]);

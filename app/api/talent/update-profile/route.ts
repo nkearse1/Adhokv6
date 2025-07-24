@@ -1,10 +1,13 @@
-import { auth } from '@clerk/nextjs/server';
 import { updateTalentProfile } from '@/lib/db/talent';
 import { resolveUserId } from '@/lib/server/loadUserSession';
 
 export async function POST(req: Request) {
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  const { userId } = clerkActive ? await auth() : { userId: undefined };
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   const idToUse = userId || (await resolveUserId());
 
   if (!idToUse) return new Response('Unauthorized', { status: 401 });
