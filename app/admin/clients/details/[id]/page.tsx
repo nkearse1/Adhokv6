@@ -12,50 +12,24 @@ export default function AdminClientDetails() {
   const [client, setClient] = useState<any>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
+
     const fetchClient = async () => {
-      // This would be replaced with a fetch to your API
-      // For now, we'll use mock data
-      const mockClient = {
-        id,
-        fullName: 'Sarah Johnson',
-        email: 'sarah.johnson@example.com',
-        companyId: '123',
-        createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-        user_role: 'client',
-        companyProfiles: {
-          name: 'EcoShop Inc.'
-        }
-      };
-      
-      setClient(mockClient);
+      const res = await fetch(`/api/clients/${id}`);
+      const json = await res.json();
+      if (res.ok) setClient(json.client);
     };
 
     const fetchProjects = async () => {
-      // This would be replaced with a fetch to your API
-      // For now, we'll use mock data
-      const mockProjects = [
-        {
-          id: '1',
-          title: 'E-commerce SEO Optimization',
-          status: 'in_progress',
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: '2',
-          title: 'Content Marketing Strategy',
-          status: 'completed',
-          deadline: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
-      
-      setProjects(mockProjects);
+      const res = await fetch('/api/db?table=projects');
+      const json = await res.json();
+      const clientProjects = (json.data || []).filter((p: any) => p.clientId === id);
+      setProjects(clientProjects);
     };
 
     Promise.all([fetchClient(), fetchProjects()]).finally(() => setLoading(false));
-  }, [id]);
 
+  }, [id]);
   if (loading) return <div className="p-6">Loading client details...</div>;
   if (!client) return <div className="p-6 text-red-500">Client not found</div>;
 

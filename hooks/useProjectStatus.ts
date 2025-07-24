@@ -60,53 +60,6 @@ interface ProjectStatusResult {
 const accessibleStatuses = ['Picked Up', 'Scope Defined', 'In Progress', 'Submitted', 'Revisions', 'Final Payment', 'Approved', 'Performance Tracking', 'Complete'];
 
 // Mock data for deliverables
-const mockDeliverables: Deliverable[] = [
-  {
-    id: '1',
-    title: 'Technical SEO Audit',
-    description: 'Comprehensive technical audit to identify crawlability, indexation, and speed issues.',
-    problem: 'Site has poor indexation and crawl efficiency',
-    kpis: ['Improve crawl rate by 30%', 'Fix all critical technical issues'],
-    status: 'in_progress',
-    estimatedHours: 8,
-    actualHours: 4,
-    timeEntries: [{ startTime: new Date(), endTime: new Date(), hoursLogged: 4 }]
-  },
-  {
-    id: '2',
-    title: 'Keyword Strategy',
-    description: 'Develop comprehensive keyword targeting strategy',
-    problem: 'Current keyword targeting is too broad',
-    kpis: ['Identify 50+ high-value keywords', 'Create keyword mapping document'],
-    status: 'recommended',
-    estimatedHours: 6,
-    actualHours: 0,
-    timeEntries: []
-  }
-];
-
-// Mock data for activity log
-const mockActivityLog = [
-  'Project started',
-  'Initial deliverables proposed',
-  'Technical SEO audit started'
-];
-
-// Mock data for messages
-const mockMessages: Message[] = [
-  {
-    id: '1',
-    sender: 'client',
-    text: 'Welcome to the workspace! Let us know when you\'re ready to begin.',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-  },
-  {
-    id: '2',
-    sender: 'talent',
-    text: 'Thanks for the opportunity! I\'ve reviewed the brief and I\'m excited to get started.',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-  }
-];
 
 export function useProjectStatus(projectId?: string): ProjectStatusResult {
   const [projectStatus, setProjectStatus] = useState<string>('Loading...');
@@ -150,19 +103,23 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
     try {
       setLoading(true);
 
-      // Set mock data
-      setDeliverables(mockDeliverables);
-      setActivityLog(mockActivityLog);
-      setMessages(mockMessages);
+      const delRes = await fetch('/api/db?table=project_deliverables');
+      const delJson = await delRes.json();
+      const del = (delJson.data || []).filter((d: any) => d.projectId === projectId);
+      setDeliverables(del);
+
+      const actRes = await fetch('/api/db?table=activity_logs');
+      const actJson = await actRes.json();
+      const acts = (actJson.data || []).filter((a: any) => a.projectId === projectId);
+      setActivityLog(acts.map((a: any) => a.action));
+
+      const msgRes = await fetch('/api/db?table=project_messages');
+      const msgJson = await msgRes.json();
+      const msgs = (msgJson.data || []).filter((m: any) => m.projectId === projectId);
+      setMessages(msgs);
       setIsAssignedToTalent(true);
 
-      // Calculate project status
-      const calculatedStatus = calculateProjectStatus(
-        mockDeliverables,
-        hasTrackingInfo,
-        isArchived,
-        true // isAssigned
-      );
+      const calculatedStatus = calculateProjectStatus(del, hasTrackingInfo, isArchived, true);
 
       setProjectStatus(calculatedStatus);
       setStatusReady(true);
