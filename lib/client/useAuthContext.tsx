@@ -1,6 +1,12 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 export interface AuthState {
   userId: string | null;
@@ -31,10 +37,12 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(defaultState);
 
-  const fetchSession = async (id?: string) => {
+  const fetchSession = useCallback(async (id?: string) => {
       try {
-        const url = id ? `/api/session?id=${encodeURIComponent(id)}` : '/api/session';
-        const res = await fetch(url);
+        const headers: Record<string, string> = {};
+        const url = '/api/session';
+        if (id) headers['x-adhok-user-id'] = id;
+        const res = await fetch(url, { headers });
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();
         if (!user) {
@@ -56,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Failed loading session', err);
         setState((s) => ({ ...s, loading: false, refreshSession: fetchSession }));
       }
-  };
+  }, []);
 
   useEffect(() => {
     fetchSession();
