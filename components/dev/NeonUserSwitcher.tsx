@@ -37,7 +37,11 @@ export default function NeonUserSwitcher() {
   const handleChange = async (val: string) => {
     setValue(val);
     localStorage.setItem('adhok_active_user', val);
+    const before = authUser?.id;
     await refreshSession(val);
+    if (authUser && before === authUser.id) {
+      console.error('[NeonUserSwitcher] refreshSession did not update context');
+    }
     if (typeof window !== 'undefined') {
       window.location.reload();
     }

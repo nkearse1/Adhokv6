@@ -3,9 +3,9 @@ import { eq } from 'drizzle-orm';
 /**
  * Resolve the current user ID. The optional override always wins.
  * When running in the browser we read `adhok_active_user` from localStorage
- * so developers can easily switch between seeded users. On the server we only
- * fall back to `NEXT_PUBLIC_SELECTED_USER_ID` during development or tests.
- * Clerk is checked in production when available.
+ * so developers can easily switch between seeded users. On the server we
+ * rely solely on runtime overrides or the production auth provider (Clerk
+ * when configured).
  */
 
  
@@ -26,10 +26,6 @@ export async function resolveUserId(override?: string): Promise<string | undefin
     } catch {
       // ignore and fall through
     }
-  }
-
-  if (process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_SELECTED_USER_ID) {
-    return process.env.NEXT_PUBLIC_SELECTED_USER_ID;
   }
 
   if (process.env.NODE_ENV === 'development') {
