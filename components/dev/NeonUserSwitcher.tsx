@@ -37,7 +37,7 @@ export default function NeonUserSwitcher() {
   const handleChange = async (val: string) => {
     setValue(val);
     localStorage.setItem('adhok_active_user', val);
-    await refreshSession();
+    await refreshSession(val);
     if (typeof window !== 'undefined') {
       window.location.reload();
     }
