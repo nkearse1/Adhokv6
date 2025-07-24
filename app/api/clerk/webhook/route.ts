@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           fullName,
           email,
           username: username || id,
-          userRole: role,
+          user_role: role,
         });
 
         // Insert into matching profile table

@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { Search as SearchIcon } from "lucide-react";
 import { toast } from "sonner";
-import { useMockData } from '@/lib/useMockData';
 
 interface AdminProject {
   id: string;
@@ -29,7 +28,6 @@ interface AdminProject {
 
 export default function AdminProjectList() {
   const router = useRouter();
-  const { projects: mockProjects } = useMockData();
   const [projects, setProjects] = useState<AdminProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");

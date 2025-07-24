@@ -23,7 +23,7 @@ export async function GET(_req: NextRequest) {
   }
   
   try {
-    const data = await db.select().from(users).where(eq(users.userRole, 'client'));
+    const data = await db.select().from(users).where(eq(users.user_role, 'client'));
     return NextResponse.json({ data });
   } catch (err) {
     console.error('Error fetching clients', err);

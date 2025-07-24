@@ -20,7 +20,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectStatusCard from '@/components/ProjectStatusCard';
 import TalentAssignmentBox from '@/components/TalentAssignmentBox';
-import { useMockData } from '@/lib/useMockData';
 
 export default function ClientProjectDetail() {
   const params = useParams();
@@ -37,17 +36,28 @@ export default function ClientProjectDetail() {
     loading: authLoading,
   } = useAuth();
 
-  const { getProjectById } = useMockData();
-
   useEffect(() => {
-    if (project_id) {
-      const proj = getProjectById(project_id);
-      if (proj) {
-        setProject(proj);
-        if (proj.talent) setTalentProfile(proj.talent);
+    async function load() {
+      try {
+        if (!project_id) return;
+        const res = await fetch(`/api/db?table=projects&id=${project_id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
+        if (proj) {
+          setProject(proj);
+          if (proj.talentId) {
+            const profRes = await fetch(`/api/talent/profile?id=${proj.talentId}`);
+            const profJson = await profRes.json();
+            if (profJson.profile) setTalentProfile(profJson.profile);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading project', err);
+        toast.error('Failed to load project');
       }
     }
-  }, [project_id, getProjectById]);
+    load();
+  }, [project_id]);
 
   if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;

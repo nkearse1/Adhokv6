@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/client/useAuthContext";
-import { useMockData } from "@/lib/useMockData";
 import {
   Clock,
   ArrowRight,
@@ -98,7 +97,6 @@ interface Project {
 
 export default function TalentDashboard() {
   const { userId } = useAuth();
-  const { projects: allProjects, talents } = useMockData();
   const router = useRouter();
 
   const [currentTab, setCurrentTab] = useState<'activeBids' | 'earnings' | 'portfolio' | 'won'>('activeBids');
@@ -110,20 +108,33 @@ export default function TalentDashboard() {
   const [loadedProfile, setLoadedProfile] = useState<TalentProfile | null>(null);
 
   useEffect(() => {
-    if (userId) {
-      const assigned = allProjects.filter(p => p.talent?.id === userId);
-      setProjects(assigned as unknown as Project[]);
-      const t = talents.find(t => t.id === userId) || talents[0];
-      if (t)
-        setProfile({
-          fullName: t.fullName,
-          username: t.username,
-          email: t.email,
-          expertise: t.expertise,
-          experienceBadge: t.badge,
-        });
+    async function load() {
+      if (!userId) return;
+      try {
+        const res = await fetch('/api/db?table=projects');
+        const json = await res.json();
+        const all = json.data || [];
+        const assigned = all.filter((p: any) => p.talentId === userId);
+        setProjects(assigned as Project[]);
+
+        const profRes = await fetch(`/api/talent/profile?id=${userId}`);
+        const profJson = await profRes.json();
+        const t = profJson.profile;
+        if (t) {
+          setProfile({
+            fullName: t.fullName,
+            username: t.username,
+            email: t.email,
+            expertise: t.expertise,
+            experienceBadge: t.experienceBadge,
+          });
+        }
+      } catch (err) {
+        console.error('Error loading data', err);
+      }
     }
-  }, [userId, allProjects, talents]);
+    load();
+  }, [userId]);
 
   const statLabelMap: Record<string, string> = {
     activeBids: "Active Bids",

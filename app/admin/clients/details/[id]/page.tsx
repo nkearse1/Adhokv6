@@ -23,7 +23,7 @@ export default function AdminClientDetails() {
         email: 'sarah.johnson@example.com',
         companyId: '123',
         createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-        userRole: 'client',
+        user_role: 'client',
         companyProfiles: {
           name: 'EcoShop Inc.'
         }
@@ -80,7 +80,7 @@ export default function AdminClientDetails() {
             <strong>Company:</strong> {client.companyProfiles?.name || '—'}
           </div>
           <div>
-            <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>
+            <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
           </div>
           <div>
             <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}
