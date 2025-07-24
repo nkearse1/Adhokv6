@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchSession();
-  }, []);
+  }, [fetchSession]);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }
