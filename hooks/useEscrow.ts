@@ -15,7 +15,7 @@ export function useEscrow(projectId: string) {
   const [escrowHistory, setEscrowHistory] = useState<EscrowHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load mock escrow data on mount
+  // Load escrow data on mount
   useEffect(() => {
     if (projectId) {
       loadEscrowData();
@@ -25,13 +25,16 @@ export function useEscrow(projectId: string) {
   const loadEscrowData = async () => {
     try {
       setLoading(true);
-      
-      // Set mock escrow status
-      setEscrowStatus('idle');
+      const statusRes = await fetch(`/api/db?table=escrow_transactions&id=${projectId}`);
+      const statusJson = await statusRes.json();
+      if (statusJson.data?.[0]) {
+        setEscrowStatus(statusJson.data[0].status);
+      }
 
-      // Set mock escrow history
-      const mockHistory: EscrowHistoryEntry[] = [];
-      setEscrowHistory(mockHistory);
+      const historyRes = await fetch('/api/db?table=escrow_history');
+      const historyJson = await historyRes.json();
+      const hist = (historyJson.data || []).filter((h: any) => h.projectId === projectId);
+      setEscrowHistory(hist);
     } catch (error) {
       console.error('Error loading escrow data:', error);
     } finally {

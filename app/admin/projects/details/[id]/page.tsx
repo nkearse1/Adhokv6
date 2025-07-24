@@ -44,27 +44,10 @@ export default function AdminProjectDetail() {
           if (proj.talent) setTalent(proj.talent);
         }
 
-        // Mock reviews
-        const mockReviews = [
-          {
-            id: 'review1',
-            rating: 5,
-            comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
-            createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Michael Chen' },
-            project_title: 'B2B SaaS SEO Strategy'
-          },
-          {
-            id: 'review2',
-            rating: 4,
-            comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
-            createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Emily Rodriguez' },
-            project_title: 'E-commerce Technical SEO'
-          }
-        ];
-        
-        setReviews(mockReviews);
+        const reviewsRes = await fetch('/api/db?table=project_reviews');
+        const reviewsJson = await reviewsRes.json();
+        const projReviews = (reviewsJson.data || []).filter((r: any) => r.projectId === id);
+        setReviews(projReviews);
       } catch (error) {
         console.error('Error fetching project data:', error);
         toast.error('Failed to load project details');

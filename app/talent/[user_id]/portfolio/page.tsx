@@ -14,44 +14,20 @@ export default function TalentPortfolioPage() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      
+
       try {
-        // This would be replaced with a fetch to your API
-        // For now, we'll use mock data
-        const mockProfile = {
-          id: '123',
-          fullName: 'Alex Rivera',
-          username: username,
-          expertise: 'SEO & Content Strategy',
-          location: 'Austin, TX',
-          bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
-          avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-          linkedinUrl: 'https://linkedin.com/in/example',
-          metadata: {
-            marketing: {
-              experienceBadge: 'Expert Talent'
-            }
-          }
-        };
-        
-        setProfile(mockProfile);
-        
-        const mockPortfolio = [
-          {
-            id: '1',
-            title: 'E-commerce SEO Optimization',
-            description: 'Improved organic search visibility for a sustainable products retailer',
-            status: 'completed'
-          },
-          {
-            id: '2',
-            title: 'Content Strategy for SaaS',
-            description: 'Developed comprehensive content strategy for B2B SaaS platform',
-            status: 'completed'
-          }
-        ];
-        
-        setPortfolio(mockPortfolio);
+        const profileRes = await fetch(`/api/talent/profile?id=${username}`);
+        const profileJson = await profileRes.json();
+        if (profileRes.ok) {
+          setProfile(profileJson.profile);
+        }
+
+        const projectsRes = await fetch('/api/db?table=projects');
+        const projectsJson = await projectsRes.json();
+        const portfolioProjects = (projectsJson.data || []).filter(
+          (p: any) => p.talentId === profileJson.profile.id && p.status === 'completed'
+        );
+        setPortfolio(portfolioProjects);
       } catch (error) {
         console.error('Error fetching profile:', error);
       } finally {
