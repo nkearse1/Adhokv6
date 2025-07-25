@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -36,18 +37,27 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState(defaultState);
+  const storedId =
+    typeof window !== 'undefined'
+      ? window.localStorage.getItem('adhok_active_user')
+      : null;
+  const hasFetchedOnce = useRef(false);
 
-  const fetchSession = useCallback(async (opts?: { userId?: string }) => {
+  const fetchSession = useCallback(
+    async (opts?: { userId?: string }) => {
       try {
         const headers: Record<string, string> = {};
         const url = '/api/session';
-        if (opts?.userId) headers['x-adhok-user-id'] = opts.userId;
+        const override = opts?.userId ?? storedId ?? undefined;
+        if (override) headers['x-user-id'] = override;
         const res = await fetch(url, { headers });
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();
         if (!user) {
           console.warn('[AuthProvider] Session resolved as null');
-          setState((s) => ({ ...s, loading: false, refreshSession: fetchSession }));
+          if (!storedId || opts?.userId) {
+            setState((s) => ({ ...s, loading: false, refreshSession: fetchSession }));
+          }
           return;
         }
         setState({
@@ -64,9 +74,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('Failed loading session', err);
         setState((s) => ({ ...s, loading: false, refreshSession: fetchSession }));
       }
-  }, []);
+    },
+    [storedId]
+  );
 
   useEffect(() => {
+    if (hasFetchedOnce.current) return;
+    hasFetchedOnce.current = true;
     fetchSession();
   }, [fetchSession]);
 
