@@ -43,7 +43,7 @@ yarn verify
 
 ### Neon User Switcher
 
-When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and reloads the page so the app hydrates with that user session. The chosen ID is sent to `/api/session` so the server resolves the matching user without relying on environment variables.
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and calls `refreshSession(id)` before reloading the page. The switcher waits for `/api/session` to resolve and shows a small spinner while the update is in progress. Once the context reflects the selected user, the page reloads so the app hydrates with that user session.
 
 
 ### Preview Mock Mode
