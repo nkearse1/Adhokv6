@@ -51,7 +51,7 @@ describe('AuthProvider', () => {
     });
     expect(refreshSpy).toHaveBeenCalled();
     expect(fetchMock).toHaveBeenLastCalledWith('/api/session', {
-      headers: { 'x-adhok-user-id': 'u2' },
+      headers: { 'x-user-id': 'u2' },
     });
   });
 });
