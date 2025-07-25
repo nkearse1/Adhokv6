@@ -3,7 +3,7 @@ export interface MockUser {
   username: string;
   fullName: string;
   email: string;
-  role: 'client' | 'talent' | 'admin';
+  user_role: 'client' | 'talent' | 'admin';
   badge?: string;
   expertise?: string;
 }
@@ -44,7 +44,7 @@ export const mockClient: MockUser = {
   username: 'sarah_johnson',
   fullName: 'Sarah Johnson',
   email: 'client1@example.com',
-  role: 'client'
+  user_role: 'client'
 };
 
 export const mockTalent: MockUser = {
@@ -52,7 +52,7 @@ export const mockTalent: MockUser = {
   username: 'alex_rivera',
   fullName: 'Alex Rivera',
   email: 'talent1@example.com',
-  role: 'talent',
+  user_role: 'talent',
   badge: 'Expert Talent',
   expertise: 'SEO & Content Strategy'
 };
@@ -110,7 +110,7 @@ export const mockProjects: MockProject[] = [
       username: 'michael_chen',
       fullName: 'Michael Chen',
       email: 'client2@example.com',
-      role: 'client'
+      user_role: 'client'
     },
     deliverables: [],
     bids: []

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useClerk } from '@clerk/nextjs';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Trophy, Medal, ArrowLeft } from 'lucide-react';
@@ -13,13 +13,13 @@ import NotificationBell from './NotificationBell';
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  const { userId, userRole, username, isAuthenticated, authUser } = useAuth();
+  const { userId, userRole, username, isAuthenticated, authUser, loading } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { signOut } = isMock ? { signOut: () => {} } : useClerk();
+  const { signOut } = clerkActive ? useClerk() : { signOut: () => {} };
 
   const dashboardPaths: { [key: string]: string } = {
     client: `/client/dashboard`,
@@ -27,11 +27,12 @@ export function Header() {
     admin: `/admin/panel`,
   };
 
-  const getDashboardPath = () => dashboardPaths[userRole] || '/';
+  const getDashboardPath = () =>
+    (userRole ? dashboardPaths[userRole] : undefined) || '/';
 
   const shouldShowDashboard = () => {
     if (!isAuthenticated) return false;
-    const current = dashboardPaths[userRole];
+    const current = userRole ? dashboardPaths[userRole] : undefined;
     return current && pathname !== current;
   };
 
@@ -88,7 +89,7 @@ export function Header() {
           )}
         </div>
 
-        {isAuthenticated ? (
+        {!loading && isAuthenticated ? (
           <div className="flex items-center gap-4">
             <NotificationBell />
             {fullName && (
@@ -108,7 +109,7 @@ export function Header() {
               Sign out
             </Button>
           </div>
-        ) : (
+        ) : !loading ? (
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -125,7 +126,7 @@ export function Header() {
               Sign up
             </Button>
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   );

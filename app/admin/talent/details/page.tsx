@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AlertTriangle, CheckCircle, Flag, RefreshCw, User, Mail, MapPin, Briefcase, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import TrustScoreCard from '@/components/admin/TrustScoreCard';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import QualificationHistoryTimeline, { type QualificationEntry } from '@/components/QualificationHistoryTimeline';
 
 interface TalentProfile {

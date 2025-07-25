@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
 
 interface Project {
