@@ -63,7 +63,7 @@ export default function ClientProjectsList({ projects }: Props) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">No projects yet. Create your first project to get started!</p>
-        <Button onClick={() => router.push('/upload')} className="bg-[#00D1C1] text-white hover:bg-[#00b4ab]">
+        <Button onClick={() => router.push('/client/upload')} className="bg-[#00D1C1] text-white hover:bg-[#00b4ab]">
           <Plus className="mr-2 w-4 h-4" /> Post Your First Project
         </Button>
       </div>

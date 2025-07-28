@@ -19,7 +19,7 @@ export default function Home() {
           <div className="rounded-xl border bg-card text-card-foreground shadow">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Client</h2>
-              <Link href="/upload">
+              <Link href="/client/upload">
                 <Button className="w-full bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white">
                   Create a Project Brief
                 </Button>
