@@ -15,11 +15,34 @@ export function Header() {
   const pathname = usePathname();
   const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  const { userId, userRole, username, isAuthenticated, authUser, loading } = useAuth();
+  const {
+    userId,
+    userRole,
+    username,
+    isAuthenticated,
+    authUser,
+    loading,
+    refreshSession,
+  } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { signOut } = clerkActive ? useClerk() : { signOut: () => {} };
+  const { signOut: clerkSignOut } = clerkActive ? useClerk() : { signOut: () => Promise.resolve() };
+
+  const handleSignOut = async () => {
+    if (clerkActive) {
+      try {
+        await clerkSignOut();
+      } catch (err) {
+        console.error('Clerk signOut failed', err);
+      }
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('adhok_active_user');
+    }
+    await refreshSession();
+    router.push('/');
+  };
 
   const dashboardPaths: { [key: string]: string } = {
     client: `/client/dashboard`,
@@ -104,7 +127,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => signOut(() => router.push('/'))}
+              onClick={handleSignOut}
             >
               Sign out
             </Button>
