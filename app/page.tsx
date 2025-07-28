@@ -13,7 +13,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Mobile-responsive grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-xl border bg-card text-card-foreground shadow">
             <div className="p-6">

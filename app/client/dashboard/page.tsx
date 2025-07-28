@@ -35,15 +35,14 @@ export default function ClientDashboard() {
   } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated && userId) {
+    if (!authLoading && isAuthenticated && userId && userRole === "client") {
       fetchProjects();
     }
-  }, [authLoading, isAuthenticated, userId]);
+  }, [authLoading, isAuthenticated, userId, userRole]);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
-
       const res = await fetch(`/api/clients/${userId}/projects`);
       const json = await res.json();
       if (!res.ok) {
@@ -73,10 +72,10 @@ export default function ClientDashboard() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || userRole !== "client") {
     return (
       <div className="max-w-5xl mx-auto p-4 sm:p-6 text-center">
-        <p className="text-gray-600">Please sign in to view your dashboard.</p>
+        <p className="text-gray-600">Access restricted to clients only.</p>
       </div>
     );
   }
@@ -84,9 +83,7 @@ export default function ClientDashboard() {
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-indigo-900">
-          Client Dashboard
-        </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-indigo-900">Client Dashboard</h1>
         <Button
           onClick={() => router.push("/client/upload")}
           className="w-full sm:w-auto bg-[#00D1C1] text-white hover:bg-[#00b4ab]"
