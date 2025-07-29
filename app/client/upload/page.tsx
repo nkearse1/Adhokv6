@@ -1,18 +1,17 @@
-'use client';
-import { useAuth } from '@/lib/client/useAuthContext';
-import { ProjectUploadFlow } from '@/components/ProjectUploadFlow';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+"use client";
+
+import { useAuth } from "@/lib/client/useAuthContext";
+import { ProjectUploadFlow } from "@/components/ProjectUploadFlow";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ClientUploadPage() {
   const { authUser, loading } = useAuth();
   const router = useRouter();
 
-  console.log('ClientUploadPage authUser', authUser);
-
   useEffect(() => {
-    if (!loading && (!authUser || authUser.user_role !== 'client')) {
-      router.replace('/');
+    if (!loading && (!authUser || authUser.user_role !== "client")) {
+      router.replace("/");
     }
   }, [authUser, loading, router]);
 

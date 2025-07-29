@@ -9,16 +9,16 @@ export default function Home() {
         <header className="mb-8">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 text-[#2E3A8C] font-bold text-2xl">⨁</div>
-            <div>
-            </div>
+            <div></div>
           </div>
         </header>
 
-        {/* Mobile-responsive grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-xl border bg-card text-card-foreground shadow">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Client</h2>
+              <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">
+                I'm a Client
+              </h2>
               <Link href="/client/upload">
                 <Button className="w-full bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white">
                   Create a Project Brief
@@ -29,7 +29,9 @@ export default function Home() {
 
           <div className="rounded-xl border bg-card text-card-foreground shadow">
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Professional</h2>
+              <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">
+                I'm a Professional
+              </h2>
               <div className="space-y-4">
                 <Link href="/sign-in">
                   <Button className="w-full bg-[#00A499] hover:bg-[#00A499]/90 text-white">
