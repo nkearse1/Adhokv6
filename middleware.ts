@@ -12,7 +12,7 @@ function safeRedirect(path: string, req: NextRequest) {
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
-  const userId = await resolveUserId();
+  const userId = await resolveUserId(req);
 
   let user_role: string | undefined;
   if (userId) {

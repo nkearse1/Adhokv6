@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const { auth } = await import('@clerk/nextjs/server');
     userId = (await auth()).userId;
   }
-  const id = paramId || userId || (await resolveUserId());
+  const id = paramId || userId || (await resolveUserId(req));
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const { auth } = await import('@clerk/nextjs/server');
     userId = (await auth()).userId;
   }
-  const id = userId || (await resolveUserId());
+  const id = userId || (await resolveUserId(req));
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
