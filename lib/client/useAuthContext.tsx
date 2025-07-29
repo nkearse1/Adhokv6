@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const headers: Record<string, string> = {};
         const url = '/api/session';
         const override = opts?.userId ?? storedId ?? undefined;
-        if (override) headers['x-user-id'] = override;
+        if (override) headers['adhok_active_user'] = override;
         const res = await fetch(url, { headers });
         if (!res.ok) throw new Error('no session');
         const { user } = await res.json();

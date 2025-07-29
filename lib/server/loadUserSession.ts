@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import type { NextRequest } from 'next/server';
 
 /**
  * Resolve the current user ID. The optional override always wins.
@@ -9,7 +10,18 @@ import { eq } from 'drizzle-orm';
  */
 
  
-export async function resolveUserId(override?: string): Promise<string | undefined> {
+export async function resolveUserId(
+  overrideOrReq?: string | Request | NextRequest
+): Promise<string | undefined> {
+  let override: string | undefined;
+  if (typeof overrideOrReq === 'string') {
+    override = overrideOrReq;
+  } else if (overrideOrReq && 'headers' in overrideOrReq) {
+    const headerVal = overrideOrReq.headers.get('adhok_active_user');
+    const queryVal = new URL(overrideOrReq.url).searchParams.get('adhok_active_user');
+    override = headerVal || queryVal || undefined;
+  }
+
   if (override) return override;
   if (typeof window !== 'undefined') {
     return localStorage.getItem('adhok_active_user') || undefined;
@@ -34,13 +46,15 @@ export async function resolveUserId(override?: string): Promise<string | undefin
   return undefined;
 }
 
-export async function loadUserSession(overrideId?: string) {
+export async function loadUserSession(
+  overrideOrReq?: string | Request | NextRequest
+) {
   if (typeof window !== 'undefined') {
     console.warn('[loadUserSession] Called on the client - returning null');
     return null;
   }
 
-  const id = await resolveUserId(overrideId);
+  const id = await resolveUserId(overrideOrReq);
   if (!id) {
     if (process.env.NODE_ENV === 'development') {
       console.warn('[loadUserSession] Unable to resolve user ID');

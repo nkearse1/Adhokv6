@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { auth } = await import('@clerk/nextjs/server');
     userId = (await auth()).userId;
   }
-  const idToUse = userId || (await resolveUserId());
+  const idToUse = userId || (await resolveUserId(req));
 
   if (!idToUse) return new Response('Unauthorized', { status: 401 });
 
