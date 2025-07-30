@@ -18,9 +18,15 @@ if (pkg.resolutions && (pkg.resolutions['@typescript-eslint/eslint-plugin'] || p
   fail('Do not use resolutions for @typescript-eslint packages');
 }
 const lock = fs.readFileSync('yarn.lock', 'utf8');
-if (!lock.includes(`@typescript-eslint/parser/-/parser-${expected}.tgz`)) {
+const parserOk =
+  lock.includes(`@typescript-eslint/parser/-/parser-${expected}.tgz`) ||
+  lock.includes(`@typescript-eslint/parser@npm:${expected}`);
+if (!parserOk) {
   fail('yarn.lock missing parser version');
 }
-if (!lock.includes(`@typescript-eslint/eslint-plugin/-/eslint-plugin-${expected}.tgz`)) {
+const pluginOk =
+  lock.includes(`@typescript-eslint/eslint-plugin/-/eslint-plugin-${expected}.tgz`) ||
+  lock.includes(`@typescript-eslint/eslint-plugin@npm:${expected}`);
+if (!pluginOk) {
   fail('yarn.lock missing eslint-plugin version');
 }
