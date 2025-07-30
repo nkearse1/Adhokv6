@@ -36,7 +36,10 @@ export default function ClientDashboard() {
   } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && (!authUser || authUser.user_role !== 'client')) {
+    if (
+      !authLoading &&
+      (!authUser || (authUser.user_role !== 'client' && !authUser.isClient))
+    ) {
       router.replace('/');
     }
   }, [authLoading, authUser, router]);
