@@ -54,4 +54,34 @@ describe('AuthProvider', () => {
       headers: { adhok_active_user: 'u2' },
     });
   });
+
+  it('keeps previous user if refresh resolves with null', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user: { id: 'u1', username: 'u1', user_role: 'client' } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user: null }),
+      });
+    // @ts-ignore
+    global.fetch = fetchMock;
+
+    render(
+      <AuthProvider>
+        <TestComponent onRefresh={() => {}} />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('uid').textContent).toBe('u1');
+    });
+
+    fireEvent.click(screen.getByTestId('refresh'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('uid').textContent).toBe('u1');
+    });
+  });
 });

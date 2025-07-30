@@ -98,7 +98,13 @@ export default function ClientDashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-indigo-900">Client Dashboard</h1>
         <Button
-          onClick={() => router.push('/client/upload')}
+          onClick={() => {
+            if (isAuthenticated && userRole === 'client') {
+              router.push('/client/upload');
+            } else {
+              router.push('/');
+            }
+          }}
           className="w-full sm:w-auto bg-[#00D1C1] text-white hover:bg-[#00b4ab]"
         >
           <Plus className="mr-2 w-4 h-4" /> Post New Project
