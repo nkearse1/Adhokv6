@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
+import FindProjectsButton from "@/components/FindProjectsButton";
 
 export default function Home() {
   return (
@@ -31,11 +32,7 @@ export default function Home() {
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Professional</h2>
               <div className="space-y-4">
-                <Link href="/sign-in">
-                  <Button className="w-full bg-[#00A499] hover:bg-[#00A499]/90 text-white">
-                    Find Projects
-                  </Button>
-                </Link>
+                <FindProjectsButton />
                 <Link href="/talent/sign-up">
                   <Button
                     variant="outline"
