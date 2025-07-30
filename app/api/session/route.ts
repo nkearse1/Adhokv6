@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
   const headerId = req.headers.get('adhok_active_user');
   const queryId = new URL(req.url).searchParams.get('adhok_active_user');
   const override = headerId || queryId || undefined;
+  console.log('[api/session] incoming', { headerId, queryId, override });
   const user = await loadUserSession(override);
   if (!user) {
     return NextResponse.json({ user: null });

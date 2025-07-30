@@ -9,7 +9,7 @@ export default function ClientUploadPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!authUser || authUser.user_role !== 'client')) {
+    if (!loading && (authUser === null || authUser.user_role !== 'client')) {
       router.replace('/');
     }
   }, [authUser, loading, router]);

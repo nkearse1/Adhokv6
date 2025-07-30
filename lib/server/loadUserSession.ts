@@ -35,6 +35,10 @@ export async function resolveUserId(
     }
   }
 
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[resolveUserId] override', override);
+  }
+
   if (override) return override;
   if (typeof window !== 'undefined') {
     return localStorage.getItem('adhok_active_user') || undefined;
@@ -68,6 +72,9 @@ export async function loadUserSession(
   }
 
   const id = await resolveUserId(overrideOrReq);
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[loadUserSession] resolved id', id);
+  }
   if (!id) {
     if (process.env.NODE_ENV === 'development') {
       console.warn('[loadUserSession] Unable to resolve user ID');
@@ -96,7 +103,11 @@ export async function loadUserSession(
       .from(clientProfiles)
       .where(eq(clientProfiles.id, id))
       .limit(1);
-    return { ...user, isClient: hasProfile.length > 0 };
+    const session = { ...user, isClient: hasProfile.length > 0 };
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[loadUserSession] session', session);
+    }
+    return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
     return null;

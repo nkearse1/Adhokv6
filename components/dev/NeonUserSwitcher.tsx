@@ -48,7 +48,9 @@ export default function NeonUserSwitcher() {
     setPendingId(val);
     setSwitching(true);
     localStorage.setItem('adhok_active_user', val);
+    console.log('[NeonUserSwitcher] set adhok_active_user', val);
     await refreshSession({ userId: val });
+    console.log('[NeonUserSwitcher] refreshSession called');
   };
 
   useEffect(() => {
