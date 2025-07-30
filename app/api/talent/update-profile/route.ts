@@ -1,7 +1,8 @@
 import { updateTalentProfile } from '@/lib/db/talent';
 import { resolveUserId } from '@/lib/server/loadUserSession';
+import type { NextRequest } from 'next/server';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
   let userId: string | undefined;
   if (clerkActive) {

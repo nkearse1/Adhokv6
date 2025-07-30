@@ -36,6 +36,12 @@ export default function ClientDashboard() {
   } = useAuth();
 
   useEffect(() => {
+    if (!authLoading && (!authUser || authUser.user_role !== 'client')) {
+      router.replace('/');
+    }
+  }, [authLoading, authUser, router]);
+
+  useEffect(() => {
     if (!authLoading && isAuthenticated && userId) {
       fetchProjects();
     }
@@ -59,6 +65,10 @@ export default function ClientDashboard() {
       setLoading(false);
     }
   };
+
+  if (authLoading || !authUser) {
+    return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  }
 
   if (loading) {
     return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
@@ -23,6 +23,7 @@ import TalentAssignmentBox from '@/components/TalentAssignmentBox';
 
 export default function ClientProjectDetail() {
   const params = useParams();
+  const router = useRouter();
   const project_id = params.project_id as string;
   const [project, setProject] = useState<any>(null);
   const [talentProfile, setTalentProfile] = useState<any>(null);
@@ -35,6 +36,12 @@ export default function ClientProjectDetail() {
     authUser,
     loading: authLoading,
   } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && (!authUser || authUser.user_role !== 'client')) {
+      router.replace('/');
+    }
+  }, [authLoading, authUser, router]);
 
   useEffect(() => {
     async function load() {
@@ -59,7 +66,9 @@ export default function ClientProjectDetail() {
     load();
   }, [project_id]);
 
-  if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  if (authLoading || !authUser) {
+    return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  }
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
   const totalBudget = project.estimated_hours * project.hourly_rate;
