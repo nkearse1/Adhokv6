@@ -13,6 +13,7 @@ export interface AuthState {
   userId: string | null;
   username: string | null;
   userRole: string | null;
+  isClient?: boolean;
   isAdmin: boolean;
   isAuthenticated: boolean;
   loading: boolean;
@@ -24,6 +25,7 @@ const defaultState: AuthState = {
   userId: null,
   username: null,
   userRole: null,
+  isClient: false,
   isAdmin: false,
   isAuthenticated: false,
   loading: true,
@@ -40,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     userId: null as string | null,
     username: null as string | null,
     userRole: null as string | null,
+    isClient: false,
     isAdmin: false,
     isAuthenticated: false,
     loading: true,
@@ -68,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userId: user.id,
         username: user.username || user.id,
         userRole: user.user_role,
+        isClient: user.isClient || false,
         isAdmin: user.user_role === 'admin',
         isAuthenticated: true,
         loading: false,

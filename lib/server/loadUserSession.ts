@@ -63,20 +63,27 @@ export async function loadUserSession(
   }
 
   try {
-    const { db } = await import('@/db');
-    const { users } = await import('@/db/schema');
+    const { db } = await import('@/lib/db');
+    const { users, clientProfiles } = await import('@/lib/schema');
     const result = await db
       .select({
         id: users.id,
         username: users.username,
         full_name: users.full_name,
+        email: users.email,
         user_role: users.user_role,
       })
       .from(users)
       .where(eq(users.id, id))
       .limit(1);
     const user = result[0];
-    return user || null;
+    if (!user) return null;
+    const hasProfile = await db
+      .select({ id: clientProfiles.id })
+      .from(clientProfiles)
+      .where(eq(clientProfiles.id, id))
+      .limit(1);
+    return { ...user, isClient: hasProfile.length > 0 };
   } catch (err) {
     console.error('loadUserSession db error', err);
     return null;

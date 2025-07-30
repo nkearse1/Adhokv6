@@ -50,11 +50,27 @@ export function Header() {
     admin: `/admin/panel`,
   };
 
-  const getDashboardPath = () =>
-    (userRole ? dashboardPaths[userRole] : undefined) || '/';
+  const getDashboardPath = () => {
+    if (authUser?.isClient && userRole === 'talent') {
+      return pathname.startsWith('/client')
+        ? '/talent/dashboard'
+        : '/client/dashboard';
+    }
+    if (authUser?.isClient && userRole === 'client') {
+      return pathname.startsWith('/talent')
+        ? '/client/dashboard'
+        : '/talent/dashboard';
+    }
+    return (userRole ? dashboardPaths[userRole] : undefined) || '/';
+  };
 
   const shouldShowDashboard = () => {
     if (!isAuthenticated) return false;
+    if (authUser?.isClient && (userRole === 'talent' || userRole === 'client')) {
+      const talentPath = '/talent/dashboard';
+      const clientPath = '/client/dashboard';
+      return pathname !== talentPath && pathname !== clientPath;
+    }
     const current = userRole ? dashboardPaths[userRole] : undefined;
     return current && pathname !== current;
   };

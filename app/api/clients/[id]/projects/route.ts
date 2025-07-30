@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { loadUserSession } from '@/lib/server/loadUserSession';
 import { db } from '@/lib/db';
-import { projects } from '@/lib/schema';
+import { projects, clientProfiles } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -45,7 +46,10 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
 
 export async function POST(req: NextRequest, ctx: RouteContext) {
   const sessionUser = await loadUserSession(req);
-  if (!sessionUser || sessionUser.user_role !== 'client') {
+  if (
+    !sessionUser ||
+    (sessionUser.user_role !== 'client' && sessionUser.user_role !== 'talent')
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -59,6 +63,21 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
     data = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+  }
+
+  if (sessionUser.user_role === 'talent') {
+    const existing = await db
+      .select()
+      .from(clientProfiles)
+      .where(eq(clientProfiles.id, sessionUser.id))
+      .limit(1);
+    if (existing.length === 0) {
+      await db.insert(clientProfiles).values({
+        id: sessionUser.id,
+        email: sessionUser.email ?? null,
+        companyName: '',
+      });
+    }
   }
 
   try {
