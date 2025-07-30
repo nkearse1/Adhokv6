@@ -58,7 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (typeof window !== 'undefined'
         ? window.localStorage.getItem('adhok_active_user') || undefined
         : undefined);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[fetchSession] localStorage adhok_active_user', override);
+    }
     if (override) headers['adhok_active_user'] = override;
+    console.log('[fetchSession] headers', headers);
 
     const res = await fetch('/api/session', { headers });
     if (!res.ok) throw new Error('no session');
