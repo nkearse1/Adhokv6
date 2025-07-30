@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
+import { headers as nextHeaders } from 'next/headers';
 
 /**
  * Resolve the current user ID. The optional override always wins.
@@ -20,6 +21,18 @@ export async function resolveUserId(
     const headerVal = overrideOrReq.headers.get('adhok_active_user');
     const queryVal = new URL(overrideOrReq.url).searchParams.get('adhok_active_user');
     override = headerVal || queryVal || undefined;
+  } else {
+    try {
+      const headerList = await nextHeaders();
+      override = headerList.get('adhok_active_user') || undefined;
+      if (!override && process.env.NODE_ENV === 'development') {
+        console.warn('[resolveUserId] headers missing adhok_active_user');
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[resolveUserId] unable to read headers()', err);
+      }
+    }
   }
 
   if (override) return override;
