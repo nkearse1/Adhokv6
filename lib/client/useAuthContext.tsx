@@ -39,54 +39,67 @@ export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<Omit<AuthState, 'refreshSession'>>({
-    userId: null as string | null,
-    username: null as string | null,
-    userRole: null as string | null,
+    userId: null,
+    username: null,
+    userRole: null,
     isClient: false,
     isAdmin: false,
     isAuthenticated: false,
     loading: true,
-    authUser: null as any,
+    authUser: null,
   });
+
   const hasFetchedOnce = useRef(false);
 
-  const refreshSession = useCallback(async (opts?: { userId?: string }) => {
-    try {
-      const headers: Record<string, string> = {};
-      const override =
-        opts?.userId ??
-        (typeof window !== 'undefined'
-          ? window.localStorage.getItem('adhok_active_user') || undefined
-          : undefined);
-      if (override) headers['adhok_active_user'] = override;
-      const res = await fetch('/api/session', { headers });
-      if (!res.ok) throw new Error('no session');
-      const { user } = await res.json();
-      if (!user) {
-        console.warn('[AuthProvider] Session resolved as null');
-        setState((s) => ({ ...s, loading: false }));
-        return;
-      }
-      setState({
-        userId: user.id,
-        username: user.username || user.id,
-        userRole: user.user_role,
-        isClient: user.isClient || false,
-        isAdmin: user.user_role === 'admin',
-        isAuthenticated: true,
-        loading: false,
-        authUser: user,
-      });
-    } catch (err) {
-      console.error('Failed loading session', err);
-      setState((s) => ({ ...s, loading: false }));
-    }
+  const fetchSession = useCallback(async (overrideId?: string) => {
+    const headers: Record<string, string> = {};
+    const override =
+      overrideId ??
+      (typeof window !== 'undefined'
+        ? window.localStorage.getItem('adhok_active_user') || undefined
+        : undefined);
+    if (override) headers['adhok_active_user'] = override;
+
+    const res = await fetch('/api/session', { headers });
+    if (!res.ok) throw new Error('no session');
+
+    const { user } = await res.json();
+    return user || null;
   }, []);
 
+  const refreshSession = useCallback(
+    async (opts?: { userId?: string }) => {
+      try {
+        const user = await fetchSession(opts?.userId);
+        if (!user) {
+          console.warn('[AuthProvider] Session resolved as null');
+          setState((prev) => ({ ...prev, loading: false }));
+          return;
+        }
+
+        setState({
+          userId: user.id,
+          username: user.username || user.id,
+          userRole: user.user_role,
+          isClient: user.user_role === 'client',
+          isAdmin: user.user_role === 'admin',
+          isAuthenticated: true,
+          loading: false,
+          authUser: user,
+        });
+      } catch (err) {
+        console.error('Failed loading session', err);
+        setState((prev) => ({ ...prev, loading: false }));
+      }
+    },
+    [fetchSession]
+  );
+
   useEffect(() => {
-    if (hasFetchedOnce.current) return;
-    hasFetchedOnce.current = true;
-    refreshSession();
+    if (!hasFetchedOnce.current) {
+      hasFetchedOnce.current = true;
+      refreshSession();
+    }
   }, [refreshSession]);
 
   const value = { ...state, refreshSession };
