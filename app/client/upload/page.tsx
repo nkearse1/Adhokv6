@@ -8,7 +8,6 @@ export default function ClientUploadPage() {
   const { authUser, loading } = useAuth();
   const router = useRouter();
 
-  console.log('ClientUploadPage authUser', authUser);
 
   useEffect(() => {
     if (!loading && (!authUser || authUser.user_role !== 'client')) {
