@@ -48,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: true,
     authUser: null,
   });
-
   const hasFetchedOnce = useRef(false);
 
   const fetchSession = useCallback(async (overrideId?: string) => {
@@ -58,17 +57,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (typeof window !== 'undefined'
         ? window.localStorage.getItem('adhok_active_user') || undefined
         : undefined);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[fetchSession] localStorage adhok_active_user', override);
-    }
     if (override) headers['adhok_active_user'] = override;
-    console.log('[fetchSession] headers', headers);
-
     const res = await fetch('/api/session', { headers });
     if (!res.ok) throw new Error('no session');
-
     const { user } = await res.json();
-    return user || null;
+    return user as any | null;
   }, []);
 
   const refreshSession = useCallback(
@@ -77,10 +70,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const user = await fetchSession(opts?.userId);
         if (!user) {
           console.warn('[AuthProvider] Session resolved as null');
-          setState((prev) => ({ ...prev, loading: false }));
+          setState((s) => ({ ...s, loading: false }));
           return;
         }
-
         setState({
           userId: user.id,
           username: user.username || user.id,
@@ -93,17 +85,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       } catch (err) {
         console.error('Failed loading session', err);
-        setState((prev) => ({ ...prev, loading: false }));
+        setState((s) => ({ ...s, loading: false }));
       }
     },
     [fetchSession]
   );
 
   useEffect(() => {
-    if (!hasFetchedOnce.current) {
-      hasFetchedOnce.current = true;
-      refreshSession();
-    }
+    if (hasFetchedOnce.current) return;
+    hasFetchedOnce.current = true;
+    refreshSession();
   }, [refreshSession]);
 
   const value = { ...state, refreshSession };
