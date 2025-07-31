@@ -5,20 +5,20 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function ClientUploadPage() {
-  const { authUser, loading } = useAuth();
+  const { authUser, loading, isClient, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (authUser === null || authUser.user_role !== 'client')) {
+    if (!loading && !isClient && !isAuthenticated) {
       router.replace('/');
     }
-  }, [authUser, loading, router]);
+  }, [isClient, isAuthenticated, loading, router]);
 
   if (loading) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;
   }
 
-  if (!authUser || authUser.user_role !== 'client') {
+  if (!isClient) {
     return null;
   }
 

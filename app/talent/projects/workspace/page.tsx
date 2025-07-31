@@ -27,12 +27,16 @@ export default function ProjectWorkspace() {
   const project_id = params.project_id;
   const { authUser } = useAuth();
   const [projectName] = useState("SEO Optimization");
-  const [projectDeadline] = useState(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
+  const [projectDeadline, setProjectDeadline] = useState<Date | null>(null);
   const [projectStartDate] = useState(new Date());
   const [estimatedHours] = useState(40);
   const [hourlyRate] = useState(75);
   const [estimatedBudget] = useState(estimatedHours * hourlyRate);
   const [activeTab, setActiveTab] = useState('chat');
+
+  useEffect(() => {
+    setProjectDeadline(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
+  }, []);
 
   const {
     projectStatus,
@@ -135,7 +139,7 @@ export default function ProjectWorkspace() {
                   {projectStatus}
                 </Badge>
                 <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-                  Due {formatDistanceToNow(projectDeadline, { addSuffix: true })}
+                  {projectDeadline ? `Due ${formatDistanceToNow(projectDeadline, { addSuffix: true })}` : 'Loading...'}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
                   Escrow: {escrowStatus}
@@ -151,7 +155,10 @@ export default function ProjectWorkspace() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="w-4 h-4 text-[#2E3A8C]" />
-                    <span>Deadline: {format(projectDeadline, 'PPP')}</span>
+                    <span>
+                      Deadline:{' '}
+                      {projectDeadline ? format(projectDeadline, 'PPP') : 'TBD'}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -269,7 +276,7 @@ export default function ProjectWorkspace() {
               deliverables={deliverables as unknown as PanelDeliverable[]}
               editable
               showForm
-              projectDeadline={projectDeadline}
+              projectDeadline={projectDeadline ?? new Date()}
               projectStartDate={projectStartDate}
               onAddDeliverable={addDeliverable}
               onStatusChange={updateDeliverableStatus}
