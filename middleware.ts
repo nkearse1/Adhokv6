@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { headers } from 'next/headers';
 import { eq } from 'drizzle-orm';
 import { resolveUserId } from '@/lib/server/loadUserSession';
 
@@ -11,6 +12,7 @@ function safeRedirect(path: string, req: NextRequest) {
 }
 
 export async function middleware(req: NextRequest) {
+  await headers();
   const pathname = req.nextUrl.pathname;
   const userId = await resolveUserId(req);
 

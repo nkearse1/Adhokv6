@@ -50,6 +50,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const hasFetchedOnce = useRef(false);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      if (!window.localStorage.getItem('adhok_active_user')) {
+        window.localStorage.setItem('adhok_active_user', 'client1');
+        console.log('[AuthProvider] default adhok_active_user=client1');
+      }
+    }
+  }, []);
+
   const fetchSession = useCallback(async (overrideId?: string) => {
     const headers: Record<string, string> = {};
     const override =
@@ -61,12 +70,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const res = await fetch('/api/session', { headers });
     if (!res.ok) throw new Error('no session');
     const { user } = await res.json();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[fetchSession] resolved user', user);
+    }
     return user as any | null;
   }, []);
 
   const refreshSession = useCallback(
     async (opts?: { userId?: string }) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[refreshSession] start', opts);
+      }
       try {
+        if (opts?.userId && typeof window !== 'undefined') {
+          window.localStorage.setItem('adhok_active_user', opts.userId);
+        }
         const user = await fetchSession(opts?.userId);
         if (!user) {
           console.warn('[AuthProvider] Session resolved as null');
@@ -83,6 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           loading: false,
           authUser: user,
         });
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[refreshSession] updated state', user);
+        }
       } catch (err) {
         console.error('Failed loading session', err);
         setState((s) => ({ ...s, loading: false }));
@@ -95,6 +116,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (hasFetchedOnce.current) return;
     hasFetchedOnce.current = true;
     refreshSession();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[AuthProvider] initial refreshSession');
+    }
   }, [refreshSession]);
 
   const value = { ...state, refreshSession };
