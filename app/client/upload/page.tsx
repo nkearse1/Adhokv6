@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function ClientUploadPage() {
-  const { authUser, loading, isClient, isAuthenticated } = useAuth();
+  const { loading, isClient, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
