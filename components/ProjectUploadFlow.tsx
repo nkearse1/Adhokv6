@@ -98,6 +98,35 @@ export function ProjectUploadFlow() {
     });
   };
 
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/upload-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          clientName: form.clientName,
+          company: form.company,
+          email: form.email,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Request failed');
+      }
+
+      toast.success('Project submitted successfully!');
+      setStep(1);
+    } catch (err) {
+      console.error('upload error', err);
+      toast.error('Failed to submit project');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start p-4">
       <div className="max-w-4xl w-full space-y-6">
@@ -345,8 +374,8 @@ export function ProjectUploadFlow() {
                   <Button variant="outline" onClick={() => setStep(3)}>
                     Back
                   </Button>
-                  <Button onClick={() => toast.success('Project submitted successfully!')}>
-                    Submit Project
+                  <Button onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? 'Submitting...' : 'Submit Project'}
                   </Button>
                 </div>
               </div>
