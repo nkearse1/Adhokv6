@@ -9,10 +9,10 @@ export default function ClientUploadPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !isClient && !isAuthenticated) {
+    if (!loading && !isClient) {
       router.replace('/');
     }
-  }, [isClient, isAuthenticated, loading, router]);
+  }, [isClient, loading, router]);
 
   if (loading) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;

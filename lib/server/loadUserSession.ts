@@ -97,7 +97,12 @@ export async function loadUserSession(
       .where(eq(users.id, id))
       .limit(1);
     const user = result[0];
-    if (!user) return null;
+    if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[loadUserSession] no user found for id', id);
+      }
+      return null;
+    }
     const hasProfile = await db
       .select({ id: clientProfiles.id })
       .from(clientProfiles)
