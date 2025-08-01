@@ -1,4 +1,5 @@
 'use client';
+
 import { useAuth } from '@/lib/client/useAuthContext';
 import { ProjectUploadFlow } from '@/components/ProjectUploadFlow';
 import { useRouter } from 'next/navigation';
@@ -9,10 +10,11 @@ export default function ClientUploadPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Only redirect if user is authenticated but not a client
     if (!loading && isAuthenticated && !isClient) {
       router.replace('/');
     }
-  }, [isClient, isAuthenticated, loading, router]);
+  }, [loading, isClient, isAuthenticated, router]);
 
   if (loading) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;

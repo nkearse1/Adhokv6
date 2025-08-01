@@ -88,7 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const user = await fetchSession(opts?.userId);
         if (!user) {
           console.warn('[AuthProvider] Session resolved as null');
-          setState((s) => ({ ...s, loading: false }));
+          setState({
+            userId: null,
+            username: null,
+            userRole: null,
+            isClient: false,
+            isAdmin: false,
+            isAuthenticated: false,
+            loading: false,
+            authUser: null,
+          });
           return;
         }
         setState({
@@ -106,7 +115,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (err) {
         console.error('Failed loading session', err);
-        setState((s) => ({ ...s, loading: false }));
+        setState({
+          userId: null,
+          username: null,
+          userRole: null,
+          isClient: false,
+          isAdmin: false,
+          isAuthenticated: false,
+          loading: false,
+          authUser: null,
+        });
       }
     },
     [fetchSession]
