@@ -18,10 +18,6 @@ export default function ClientUploadPage() {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;
   }
 
-  if (!isClient) {
-    return null;
-  }
-
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start p-4">
       <ProjectUploadFlow />
