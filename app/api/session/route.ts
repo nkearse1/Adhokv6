@@ -13,9 +13,14 @@ export async function GET(req: NextRequest) {
     console.warn('[api/session] adhok_active_user header missing');
   }
   console.log('[api/session] incoming', { headerId, queryId, override });
-  const user = await loadUserSession(override);
-  if (!user) {
+  try {
+    const user = await loadUserSession(override);
+    if (!user) {
+      return NextResponse.json({ user: null });
+    }
+    return NextResponse.json({ user });
+  } catch (err) {
+    console.error('[api/session] failed to load session', err);
     return NextResponse.json({ user: null });
   }
-  return NextResponse.json({ user });
 }
