@@ -18,6 +18,7 @@ interface ProjectReviewProps {
     preferredTools: string;
     brandVoice: string;
     briefFile?: string | null;
+    deadline: string;
   };
 }
 
@@ -51,6 +52,7 @@ export function ProjectReviewCard({ project }: ProjectReviewProps) {
             <li><b>Expert Type:</b> {project.expertType}</li>
             <li><b>Target Audience:</b> {project.targetAudience}</li>
             <li><b>Brand Voice:</b> {project.brandVoice}</li>
+            <li><b>Deadline:</b> {new Date(project.deadline).toLocaleDateString()}</li>
           </ul>
         </div>
         <Separator />

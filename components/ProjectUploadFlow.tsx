@@ -62,6 +62,7 @@ export function ProjectUploadFlow() {
     deliverables: '',
     preferredTools: '',
     brandVoice: '',
+    deadline: '',
   });
 
   const getEstimatedHours = () =>
@@ -102,6 +103,16 @@ export function ProjectUploadFlow() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
+      if (!form.deadline) {
+        toast.error('Please select a deadline');
+        setSubmitting(false);
+        return;
+      }
+      if (new Date(form.deadline) < new Date()) {
+        toast.error('Deadline must be in the future');
+        setSubmitting(false);
+        return;
+      }
       const res = await fetch('/api/upload-project', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -111,6 +122,7 @@ export function ProjectUploadFlow() {
           clientName: form.clientName,
           company: form.company,
           email: form.email,
+          deadline: form.deadline,
         }),
       });
 
@@ -302,6 +314,14 @@ export function ProjectUploadFlow() {
                       <p className="text-sm text-gray-600 mt-1">Estimated Hours: {hours} hrs</p>
                     ) : null;
                   })()}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Deadline</label>
+                  <Input
+                    type="date"
+                    value={form.deadline}
+                    onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                  />
                 </div>
                 <Textarea
                   placeholder="Target Audience"

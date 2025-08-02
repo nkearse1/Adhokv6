@@ -58,11 +58,15 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  let data: { title: string; description: string };
+  let data: { title: string; description: string; deadline: string };
   try {
     data = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+  }
+
+  if (!data.title || !data.description || !data.deadline) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   if (sessionUser.user_role === 'talent') {
@@ -86,6 +90,7 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
       .values({
         title: data.title,
         description: data.description,
+        deadline: new Date(data.deadline),
         clientId: sessionUser.id,
         createdBy: sessionUser.id,
       })

@@ -70,9 +70,13 @@ export default function ClientProjectsList({ projects }: Props) {
     );
   }
 
+  const sortedProjects = [...projects].sort(
+    (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+  );
+
   return (
     <>
-      {projects.map((proj) => (
+      {sortedProjects.map((proj) => (
         <div key={proj.id} className="border rounded-lg p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 min-w-0">
