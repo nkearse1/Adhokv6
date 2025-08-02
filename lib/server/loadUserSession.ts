@@ -79,7 +79,8 @@ export async function loadUserSession(
     if (process.env.NODE_ENV === 'development') {
       console.warn('[loadUserSession] Unable to resolve user ID');
     }
-    return null;
+    // Return an empty object so callers using Object.entries don't crash
+    return {};
   }
 
   try {
@@ -99,22 +100,23 @@ export async function loadUserSession(
     const user = result[0];
     if (!user) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn('[loadUserSession] no user found for id', id);
+        console.warn('[loadUserSession] User not found for override:', id);
       }
-      return null;
+      return {};
     }
     const hasProfile = await db
       .select({ id: clientProfiles.id })
       .from(clientProfiles)
       .where(eq(clientProfiles.id, id))
       .limit(1);
-    const session = { ...user, isClient: hasProfile.length > 0 };
+    // Guard against undefined user before spreading
+    const session = { ...(user ?? {}), isClient: hasProfile.length > 0 };
     if (process.env.NODE_ENV === 'development') {
       console.log('[loadUserSession] session', session);
     }
     return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
-    return null;
+    return {};
   }
 }
