@@ -20,22 +20,26 @@ const tableMap = {
   escrow_transactions: escrowTransactions,
   notifications,
 } as const;
-import { eq } from 'drizzle-orm/pg-core';
-import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
 import type { SessionClaimsWithRole } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
-  const { userId } = await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   
   // Check if user is authenticated
-  if (!userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
   try {
-    const { searchParams } = new URL(request.url);
-    const table = searchParams.get('table');
-    const id = searchParams.get('id');
+    const url = new URL(request.url);
+    const table = url.searchParams.get('table');
+    const id = url.searchParams.get('id');
     
     if (!table) {
       return NextResponse.json({ error: 'Table parameter is required' }, { status: 400 });
@@ -61,10 +65,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   
   // Check if user is authenticated
-  if (!userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
@@ -90,10 +99,15 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const { userId } = await auth();
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
   
   // Check if user is authenticated
-  if (!userId) {
+  if (clerkActive && !userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
@@ -119,18 +133,26 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const { userId, sessionClaims } = await auth();
-  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  let sessionClaims: SessionClaimsWithRole | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    const result = await auth();
+    userId = result.userId;
+    sessionClaims = result.sessionClaims as SessionClaimsWithRole;
+  }
+  const user_role = sessionClaims?.metadata?.user_role;
   
   // Check if user is authenticated and has admin role
-  if (!userId || role !== 'admin') {
+  if (clerkActive && (!userId || user_role !== 'admin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
   try {
-    const { searchParams } = new URL(request.url);
-    const table = searchParams.get('table');
-    const id = searchParams.get('id');
+    const url = new URL(request.url);
+    const table = url.searchParams.get('table');
+    const id = url.searchParams.get('id');
     
     if (!table || !id) {
       return NextResponse.json({ error: 'Table and id parameters are required' }, { status: 400 });

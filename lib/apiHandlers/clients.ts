@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { eq } from 'drizzle-orm/pg-core';
+import { eq } from 'drizzle-orm';
 import { users, projects } from '@/lib/schema';
 
 export async function getClientById(id: string) {

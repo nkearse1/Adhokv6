@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { useRouter } from 'next/navigation';
 
 import ClientProjectsList from '@/components/ClientProjectsList';
@@ -11,7 +11,6 @@ import BudgetTracker from '@/components/BudgetTracker';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { useMockData } from '@/lib/useMockData';
 
 interface Project {
   id: string;
@@ -24,7 +23,6 @@ interface Project {
 
 
 export default function ClientDashboard() {
-  const { projects: allProjects, clients } = useMockData();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -38,6 +36,15 @@ export default function ClientDashboard() {
   } = useAuth();
 
   useEffect(() => {
+    if (
+      !authLoading &&
+      (!authUser || (authUser.user_role !== 'client' && !authUser.isClient))
+    ) {
+      router.replace('/');
+    }
+  }, [authLoading, authUser, router]);
+
+  useEffect(() => {
     if (!authLoading && isAuthenticated && userId) {
       fetchProjects();
     }
@@ -47,9 +54,12 @@ export default function ClientDashboard() {
     try {
       setLoading(true);
 
-      const me = clients.find(c => c.id === userId) || clients[0];
-      const userProjects = allProjects.filter(p => p.client.id === me.id);
-      setProjects(userProjects as unknown as Project[]);
+      const res = await fetch(`/api/clients/${userId}/projects`);
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Request failed');
+      }
+      setProjects(json.projects || []);
 
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -58,6 +68,10 @@ export default function ClientDashboard() {
       setLoading(false);
     }
   };
+
+  if (authLoading || !authUser) {
+    return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  }
 
   if (loading) {
     return (
@@ -86,8 +100,14 @@ export default function ClientDashboard() {
     <div className="max-w-5xl mx-auto p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-indigo-900">Client Dashboard</h1>
-        <Button 
-          onClick={() => router.push('/upload')} 
+        <Button
+          onClick={() => {
+            if (isAuthenticated && userRole === 'client') {
+              router.push('/client/upload');
+            } else {
+              router.push('/');
+            }
+          }}
           className="w-full sm:w-auto bg-[#00D1C1] text-white hover:bg-[#00b4ab]"
         >
           <Plus className="mr-2 w-4 h-4" /> Post New Project

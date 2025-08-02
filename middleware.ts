@@ -1,13 +1,7 @@
-import { authMiddleware } from '@clerk/nextjs/server';
-import {
-  NextResponse,
-  type NextRequest,
-  type NextFetchEvent,
-} from 'next/server';
-import type { AuthObject } from '@clerk/backend';
-import type { SessionClaimsWithRole } from '@/lib/types';
-
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+import { NextResponse, type NextRequest } from 'next/server';
+import { headers } from 'next/headers';
+import { eq } from 'drizzle-orm';
+import { resolveUserId } from '@/lib/server/loadUserSession';
 
 function safeRedirect(path: string, req: NextRequest) {
   const url = new URL(path, req.url);
@@ -17,62 +11,51 @@ function safeRedirect(path: string, req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-const middleware = isMock
-  ? function middlewareMock(req: NextRequest) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          '[middleware] MOCK MODE ACTIVE — skipping Clerk auth enforcement',
-        );
-      }
-      return NextResponse.next();
+export async function middleware(req: NextRequest) {
+  await headers();
+  const pathname = req.nextUrl.pathname;
+  const userId = await resolveUserId(req);
+
+  let user_role: string | undefined;
+  if (userId) {
+    try {
+      const { db } = await import('@/db');
+      const { users } = await import('@/db/schema');
+      const result = await db
+        .select({ user_role: users.user_role })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      user_role = result[0]?.user_role;
+    } catch (err) {
+      console.error('[middleware] role lookup failed', err);
     }
-  : authMiddleware({
-      publicRoutes: [
-        '/',
-        '/sign-in',
-        '/sign-up',
-        '/waitlist',
-        '/sign-in-callback',
-      ],
+  }
 
-  afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
-    const pathname = req.nextUrl.pathname;
-
-    const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as
-      string | undefined;
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[middleware]', {
-        userId: auth.userId,
-        role,
-        pathname,
-      });
-    }
-
-    if (!auth.userId) return NextResponse.next();
-
-    if (auth.userId && !role && pathname !== '/') {
-      return safeRedirect('/', req);
-    }
-
-    const validRoles = ['admin', 'client', 'talent'];
-    if (!role || !validRoles.includes(role)) return NextResponse.next();
-
-    if (pathname.startsWith('/admin') && role !== 'admin') {
-      return safeRedirect('/', req);
-    }
-
-    if (pathname.startsWith('/client') && role !== 'client') {
-      return safeRedirect('/', req);
-    }
-
-    if (pathname.startsWith('/talent/dashboard') && role !== 'talent') {
-      return safeRedirect('/', req);
-    }
-
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[middleware]', { userId, user_role, pathname });
     return NextResponse.next();
-  },
-});
+  }
+
+  if (!userId || !user_role) return NextResponse.next();
+
+  const validRoles = ['admin', 'client', 'talent'];
+  if (!validRoles.includes(user_role)) return NextResponse.next();
+
+  if (pathname.startsWith('/admin') && user_role !== 'admin') {
+    return safeRedirect('/', req);
+  }
+
+  if (pathname.startsWith('/client') && user_role !== 'client') {
+    return safeRedirect('/', req);
+  }
+
+  if (pathname.startsWith('/talent/dashboard') && user_role !== 'talent') {
+    return safeRedirect('/', req);
+  }
+
+  return NextResponse.next();
+}
 
 export default middleware;
 

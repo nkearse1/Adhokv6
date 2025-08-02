@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { db } from '@/lib/db';
-import { eq } from 'drizzle-orm/pg-core';
+import { eq } from 'drizzle-orm';
 import { talentProfiles } from '@/lib/schema';
 
 export async function getTalentById(id: string) {

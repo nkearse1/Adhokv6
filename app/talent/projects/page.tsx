@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
 
 interface Project {
@@ -112,6 +112,11 @@ export default function ProjectsPage() {
   const handleSubmitBid = async () => {
     if (!selectedProject || !userId || !bidAmount) {
       toast.error('Please enter a valid bid amount');
+      return;
+    }
+
+    if (new Date(selectedProject.deadline) < new Date()) {
+      toast.error('Bidding has closed for this project');
       return;
     }
 

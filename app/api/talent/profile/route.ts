@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import { updateUser } from '@/lib/db/users';
 import { getFullTalentProfile } from '@/lib/db/talentProfiles';
+import { resolveUserId } from '@/lib/server/loadUserSession';
 
 const bodySchema = z.object({
   fullName: z.string().optional(),
@@ -14,8 +14,13 @@ const bodySchema = z.object({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const paramId = searchParams.get('id');
-  const { userId } = await auth();
-  const id = paramId || userId;
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
+  const id = paramId || userId || (await resolveUserId(req));
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -30,8 +35,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) {
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
+  const id = userId || (await resolveUserId(req));
+  if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   let data;
@@ -41,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
   try {
-    const user = await updateUser(userId, data);
+    const user = await updateUser(id, data);
     return NextResponse.json({ user });
   } catch (err) {
     console.error('Failed to update user', err);

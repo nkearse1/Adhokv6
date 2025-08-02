@@ -1,8 +1,8 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
 import {
   BadgeCheck,
@@ -20,10 +20,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectStatusCard from '@/components/ProjectStatusCard';
 import TalentAssignmentBox from '@/components/TalentAssignmentBox';
-import { useMockData } from '@/lib/useMockData';
 
 export default function ClientProjectDetail() {
   const params = useParams();
+  const router = useRouter();
   const project_id = params.project_id as string;
   const [project, setProject] = useState<any>(null);
   const [talentProfile, setTalentProfile] = useState<any>(null);
@@ -37,19 +37,38 @@ export default function ClientProjectDetail() {
     loading: authLoading,
   } = useAuth();
 
-  const { getProjectById } = useMockData();
+  useEffect(() => {
+    if (!authLoading && (!authUser || authUser.user_role !== 'client')) {
+      router.replace('/');
+    }
+  }, [authLoading, authUser, router]);
 
   useEffect(() => {
-    if (project_id) {
-      const proj = getProjectById(project_id);
-      if (proj) {
-        setProject(proj);
-        if (proj.talent) setTalentProfile(proj.talent);
+    async function load() {
+      try {
+        if (!project_id) return;
+        const res = await fetch(`/api/db?table=projects&id=${project_id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
+        if (proj) {
+          setProject(proj);
+          if (proj.talentId) {
+            const profRes = await fetch(`/api/talent/profile?id=${proj.talentId}`);
+            const profJson = await profRes.json();
+            if (profJson.profile) setTalentProfile(profJson.profile);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading project', err);
+        toast.error('Failed to load project');
       }
     }
-  }, [project_id, getProjectById]);
+    load();
+  }, [project_id]);
 
-  if (authLoading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  if (authLoading || !authUser) {
+    return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  }
   if (!project) return <p className="p-6 text-center text-gray-600">Loading project details...</p>;
 
   const totalBudget = project.estimated_hours * project.hourly_rate;

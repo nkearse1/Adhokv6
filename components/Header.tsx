@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useClerk } from '@clerk/nextjs';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Trophy, Medal, ArrowLeft } from 'lucide-react';
@@ -13,13 +13,36 @@ import NotificationBell from './NotificationBell';
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  const { userId, userRole, username, isAuthenticated, authUser } = useAuth();
+  const {
+    userId,
+    userRole,
+    username,
+    isAuthenticated,
+    authUser,
+    loading,
+    refreshSession,
+  } = useAuth();
   const fullName = authUser?.fullName || username;
   const expertiseLevel = authUser?.publicMetadata?.expertiseLevel as string;
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { signOut } = isMock ? { signOut: () => {} } : useClerk();
+  const { signOut: clerkSignOut } = clerkActive ? useClerk() : { signOut: () => Promise.resolve() };
+
+  const handleSignOut = async () => {
+    if (clerkActive) {
+      try {
+        await clerkSignOut();
+      } catch (err) {
+        console.error('Clerk signOut failed', err);
+      }
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('adhok_active_user');
+    }
+    await refreshSession();
+    router.push('/');
+  };
 
   const dashboardPaths: { [key: string]: string } = {
     client: `/client/dashboard`,
@@ -27,11 +50,28 @@ export function Header() {
     admin: `/admin/panel`,
   };
 
-  const getDashboardPath = () => dashboardPaths[userRole] || '/';
+  const getDashboardPath = () => {
+    if (authUser?.isClient && userRole === 'talent') {
+      return pathname.startsWith('/client')
+        ? '/talent/dashboard'
+        : '/client/dashboard';
+    }
+    if (authUser?.isClient && userRole === 'client') {
+      return pathname.startsWith('/talent')
+        ? '/client/dashboard'
+        : '/talent/dashboard';
+    }
+    return (userRole ? dashboardPaths[userRole] : undefined) || '/';
+  };
 
   const shouldShowDashboard = () => {
     if (!isAuthenticated) return false;
-    const current = dashboardPaths[userRole];
+    if (authUser?.isClient && (userRole === 'talent' || userRole === 'client')) {
+      const talentPath = '/talent/dashboard';
+      const clientPath = '/client/dashboard';
+      return pathname !== talentPath && pathname !== clientPath;
+    }
+    const current = userRole ? dashboardPaths[userRole] : undefined;
     return current && pathname !== current;
   };
 
@@ -88,7 +128,7 @@ export function Header() {
           )}
         </div>
 
-        {isAuthenticated ? (
+        {!loading && isAuthenticated ? (
           <div className="flex items-center gap-4">
             <NotificationBell />
             {fullName && (
@@ -103,12 +143,12 @@ export function Header() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => signOut(() => router.push('/'))}
+              onClick={handleSignOut}
             >
               Sign out
             </Button>
           </div>
-        ) : (
+        ) : !loading ? (
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -125,7 +165,7 @@ export function Header() {
               Sign up
             </Button>
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   );

@@ -3,9 +3,7 @@ import '@/styles/globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/Header';
-import { AuthProvider } from '@/lib/useAuth';
-import { MockDataProvider } from '@/lib/useMockData';
-import DevRoleSwitcher from '@/components/dev/DevRoleSwitcher';
+import { AuthProvider } from '@/lib/client/useAuthContext';
 import TestUserBadge from '@/components/dev/TestUserBadge';
 import NeonUserSwitcher from '@/components/dev/NeonUserSwitcher';
 
@@ -22,16 +20,13 @@ const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const inner = (
-    <MockDataProvider>
-      <AuthProvider>
-        <Header />
-        {children}
-        <Toaster />
-        <DevRoleSwitcher />
-        <NeonUserSwitcher />
-        <TestUserBadge />
-      </AuthProvider>
-    </MockDataProvider>
+    <AuthProvider>
+      <Header />
+      {children}
+      <Toaster />
+      <NeonUserSwitcher />
+      <TestUserBadge />
+    </AuthProvider>
   );
 
   return (

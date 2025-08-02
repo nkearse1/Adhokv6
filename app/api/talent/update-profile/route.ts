@@ -1,10 +1,15 @@
-import { auth } from '@clerk/nextjs';
 import { updateTalentProfile } from '@/lib/db/talent';
+import { resolveUserId } from '@/lib/server/loadUserSession';
+import type { NextRequest } from 'next/server';
 
-export async function POST(req: Request) {
-  const { userId } = auth();
-  const overrideId = process.env.NEXT_PUBLIC_SELECTED_USER_ID;
-  const idToUse = userId || overrideId;
+export async function POST(req: NextRequest) {
+  const clerkActive = !!process.env.CLERK_SECRET_KEY;
+  let userId: string | undefined;
+  if (clerkActive) {
+    const { auth } = await import('@clerk/nextjs/server');
+    userId = (await auth()).userId;
+  }
+  const idToUse = userId || (await resolveUserId(req));
 
   if (!idToUse) return new Response('Unauthorized', { status: 401 });
 
