@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Package } from 'lucide-react';
 import { ProjectReviewCard } from '@/components/ProjectReviewCard';
 import { calculateEstimatedHours, expertiseRates } from '@/lib/estimation';
 
@@ -44,8 +43,11 @@ const projectPresets: { [key: string]: Array<{ title: string; description: strin
 
 export function ProjectUploadFlow() {
   const router = useRouter();
+  useEffect(() => {
+    router.prefetch('/client/dashboard');
+  }, [router]);
   const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     briefFile: null as File | null,
     title: '',
@@ -100,7 +102,7 @@ export function ProjectUploadFlow() {
   };
 
   const handleSubmit = async () => {
-    setSubmitting(true);
+    setIsSubmitting(true);
     try {
       const res = await fetch('/api/upload-project', {
         method: 'POST',
@@ -117,14 +119,15 @@ export function ProjectUploadFlow() {
       if (!res.ok) {
         throw new Error('Request failed');
       }
-
-      toast.success('Project submitted successfully!');
-      setStep(1);
+      const json = await res.json();
+      const projectId = json?.project?.id;
+      toast.success(`Project submitted! ID: ${projectId}`);
+      router.push('/client/dashboard');
     } catch (err) {
       console.error('upload error', err);
-      toast.error('Failed to submit project');
+      toast.error('Project submission failed.');
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -377,8 +380,8 @@ export function ProjectUploadFlow() {
                   <Button variant="outline" onClick={() => setStep(3)}>
                     Back
                   </Button>
-                  <Button onClick={handleSubmit} disabled={submitting}>
-                    {submitting ? 'Submitting...' : 'Submit Project'}
+                  <Button onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit Project'}
                   </Button>
                 </div>
               </div>
