@@ -16,7 +16,10 @@ export async function GET(req: NextRequest) {
   try {
     const user = await loadUserSession(override);
     if (!user) {
-      return NextResponse.json({ user: null });
+      if (override) {
+        console.warn('[api/session] no user found for override', override);
+      }
+      return NextResponse.json({ user: { id: null, user_role: null } });
     }
     return NextResponse.json({ user });
   } catch (err) {
