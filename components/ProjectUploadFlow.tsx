@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Package } from 'lucide-react';
+import { ProjectReviewCard } from '@/components/ProjectReviewCard';
 import { calculateEstimatedHours, expertiseRates } from '@/lib/estimation';
 
 const projectPresets: { [key: string]: Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }> } = {
@@ -366,10 +367,12 @@ export function ProjectUploadFlow() {
 
             {step === 4 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Review Your Project</h2>
-                <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-                  {JSON.stringify(form, null, 2)}
-                </pre>
+                <ProjectReviewCard
+                  project={{
+                    ...form,
+                    briefFile: form.briefFile ? form.briefFile.name : null,
+                  }}
+                />
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setStep(3)}>
                     Back
