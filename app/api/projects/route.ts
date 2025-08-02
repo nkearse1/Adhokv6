@@ -1,22 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { db } from '@/lib/db';
+import { projects } from '@/lib/schema';
 
 export async function GET(_req: NextRequest) {
-  const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  let userId: string | undefined;
-  let sessionClaims: { metadata?: { user_role?: string } } | undefined;
-  if (clerkActive) {
-    const { auth } = await import('@clerk/nextjs/server');
-    const result = await auth();
-    userId = result.userId;
-    sessionClaims = result.sessionClaims as any;
+  try {
+    const rows = await db.select().from(projects).limit(100);
+    console.log('[GET /api/projects] fetched', rows.length, 'projects from Neon');
+    if (rows.length === 0) {
+      console.warn('[GET /api/projects] no projects found');
+    }
+    return NextResponse.json({ projects: rows });
+  } catch (error) {
+    console.error('[GET /api/projects] database error', error);
+    return NextResponse.json({ error: 'Failed to load projects' }, { status: 500 });
   }
-
-  const user_role = sessionClaims?.metadata?.user_role;
-
-  if (clerkActive && (!userId || user_role !== 'admin')) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  return NextResponse.json({ message: 'Admin access granted' });
 }

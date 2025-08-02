@@ -107,12 +107,12 @@ export function ProjectUploadFlow() {
     try {
       if (!form.deadline) {
         toast.error('Please select a deadline');
-        setSubmitting(false);
+        setIsSubmitting(false);
         return;
       }
       if (new Date(form.deadline) < new Date()) {
         toast.error('Deadline must be in the future');
-        setSubmitting(false);
+        setIsSubmitting(false);
         return;
       }
       const res = await fetch('/api/upload-project', {
