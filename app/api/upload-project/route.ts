@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { title, description, clientName, company, email } = body || {};
-  if (!title || !description || !email) {
+  const { title, description, clientName, company, email, deadline } = body || {};
+  if (!title || !description || !email || !deadline) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       .values({
         title,
         description,
+        deadline: new Date(deadline),
         clientId: user.id,
         createdBy: user.id,
       })

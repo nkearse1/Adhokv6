@@ -115,6 +115,11 @@ export default function ProjectsPage() {
       return;
     }
 
+    if (new Date(selectedProject.deadline) < new Date()) {
+      toast.error('Bidding has closed for this project');
+      return;
+    }
+
     const ratePerHour = parseFloat(bidAmount);
     if (isNaN(ratePerHour) || ratePerHour <= 0) {
       toast.error('Please enter a valid hourly rate');
