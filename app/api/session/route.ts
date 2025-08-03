@@ -15,15 +15,15 @@ export async function GET(req: NextRequest) {
   console.log('[api/session] incoming', { headerId, queryId, override });
   try {
     const user = await loadUserSession(override);
-    if (!user) {
+    if (!user || ('userId' in user && user.userId === null)) {
       if (override) {
         console.warn('[api/session] no user found for override', override);
       }
-      return NextResponse.json({ user: { id: null, user_role: null } });
+      return NextResponse.json({ user: null, isAuthenticated: false });
     }
-    return NextResponse.json({ user });
+    return NextResponse.json({ user, isAuthenticated: true });
   } catch (err) {
     console.error('[api/session] failed to load session', err);
-    return NextResponse.json({ user: null });
+    return NextResponse.json({ user: null, isAuthenticated: false });
   }
 }
