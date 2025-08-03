@@ -71,16 +71,15 @@ export async function loadUserSession(
     return null;
   }
 
-  const id = await resolveUserId(overrideOrReq);
+  const override = await resolveUserId(overrideOrReq);
   if (process.env.NODE_ENV === 'development') {
-    console.log('[loadUserSession] resolved id', id);
+    console.log('[loadUserSession] resolved id', override);
   }
-  if (!id) {
+  if (!override) {
     if (process.env.NODE_ENV === 'development') {
       console.warn('[loadUserSession] Unable to resolve user ID');
     }
-    // Return an empty object so callers using Object.entries don't crash
-    return {};
+    return { userId: null, user_role: null };
   }
 
   try {
@@ -95,19 +94,20 @@ export async function loadUserSession(
         user_role: users.user_role,
       })
       .from(users)
-      .where(eq(users.id, id))
+      .where(eq(users.id, override))
       .limit(1);
     const user = result[0];
+    console.log('User query result:', user);
     if (!user) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[loadUserSession] User not found for override:', id);
-      }
-      return {};
+      console.warn(
+        `WARNING: loadUserSession could not find user for ID ${override}`
+      );
+      return { userId: null, user_role: null };
     }
     const hasProfile = await db
       .select({ id: clientProfiles.id })
       .from(clientProfiles)
-      .where(eq(clientProfiles.id, id))
+      .where(eq(clientProfiles.id, override))
       .limit(1);
     // Guard against undefined user before spreading
     const session = { ...(user ?? {}), isClient: hasProfile.length > 0 };
@@ -117,6 +117,6 @@ export async function loadUserSession(
     return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
-    return {};
+    return { userId: null, user_role: null };
   }
 }
