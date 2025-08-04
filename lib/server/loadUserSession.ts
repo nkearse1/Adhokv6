@@ -10,7 +10,6 @@ import { headers } from 'next/headers';
  * when configured).
  */
 
- 
 export async function resolveUserId(
   overrideOrReq?: string | Request | NextRequest
 ): Promise<string | undefined> {
@@ -97,7 +96,6 @@ export async function loadUserSession(
     const { db } = await import('@/lib/db');
     const { users, clientProfiles } = await import('@/lib/schema');
 
-    // Target the users table and filter by the UUID id field
     const rows = await db
       .select({
         id: users.id,
@@ -110,10 +108,8 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
-    // Log the raw result array to confirm the shape
     console.log('[loadUserSession] DB query rows', rows);
 
-    // Destructure the first row returned by Drizzle
     const [rawUser] = rows;
     if (!rawUser) {
       console.warn(
@@ -122,7 +118,6 @@ export async function loadUserSession(
       return fallback();
     }
 
-    // Only run Object.entries if the user exists
     const user = Object.fromEntries(Object.entries(rawUser));
     console.log('[loadUserSession] DB query result', user);
 
