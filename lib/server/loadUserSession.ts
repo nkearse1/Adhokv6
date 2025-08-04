@@ -98,7 +98,7 @@ export async function loadUserSession(
     const { users, clientProfiles } = await import('@/lib/schema');
 
     // Target the users table and filter by the UUID id field
-    const result = await db
+    const rows = await db
       .select({
         id: users.id,
         username: users.username,
@@ -110,21 +110,20 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
-    // Ensure we have a user before performing any further operations
-    if (result.length === 0) {
+    // Log the raw result array to confirm the shape
+    console.log('[loadUserSession] DB query rows', rows);
+
+    // Destructure the first row returned by Drizzle
+    const [rawUser] = rows;
+    if (!rawUser) {
       console.warn(
         `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
       return fallback();
     }
 
-    const user = result[0];
-    if (!user) {
-      console.warn(
-        `[loadUserSession] DB query returned empty user for ID ${override}`
-      );
-      return fallback();
-    }
+    // Only run Object.entries if the user exists
+    const user = Object.fromEntries(Object.entries(rawUser));
     console.log('[loadUserSession] DB query result', user);
 
     const hasProfile = await db
@@ -133,8 +132,7 @@ export async function loadUserSession(
       .where(eq(clientProfiles.id, override))
       .limit(1);
 
-    // Guard against undefined user before spreading
-    const session = { ...(user ?? {}), isClient: hasProfile.length > 0 };
+    const session = { ...user, isClient: hasProfile.length > 0 };
 
     if (process.env.NODE_ENV === 'development') {
       console.log('[loadUserSession] session', session);
