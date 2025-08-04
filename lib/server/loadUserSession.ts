@@ -10,7 +10,6 @@ import { headers } from 'next/headers';
  * when configured).
  */
 
- 
 export async function resolveUserId(
   overrideOrReq?: string | Request | NextRequest
 ): Promise<string | undefined> {
@@ -97,8 +96,7 @@ export async function loadUserSession(
     const { db } = await import('@/lib/db');
     const { users, clientProfiles } = await import('@/lib/schema');
 
-    // Target the users table and filter by the UUID id field
-    const result = await db
+    const rows = await db
       .select({
         id: users.id,
         username: users.username,
@@ -110,25 +108,17 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[loadUserSession] raw DB query result', result);
-    }
+    console.log('[loadUserSession] DB query rows', rows);
 
-    // Ensure we have a user before performing any further operations
-    if (result.length === 0) {
+    const [rawUser] = rows;
+    if (!rawUser) {
       console.warn(
         `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
       return fallback();
     }
 
-    const user = result[0];
-    if (!user) {
-      console.warn(
-        `[loadUserSession] DB query returned empty user for ID ${override}`
-      );
-      return fallback();
-    }
+    const user = Object.fromEntries(Object.entries(rawUser));
     console.log('[loadUserSession] DB query result', user);
 
     const hasProfile = await db
@@ -137,8 +127,7 @@ export async function loadUserSession(
       .where(eq(clientProfiles.id, override))
       .limit(1);
 
-    // Guard against undefined user before spreading
-    const session = { ...(user ?? {}), isClient: hasProfile.length > 0 };
+    const session = { ...user, isClient: hasProfile.length > 0 };
 
     if (process.env.NODE_ENV === 'development') {
       console.log('[loadUserSession] session', session);
