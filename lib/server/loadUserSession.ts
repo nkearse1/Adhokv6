@@ -66,6 +66,17 @@ export async function resolveUserId(
 export async function loadUserSession(
   overrideOrReq?: string | Request | NextRequest
 ) {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[loadUserSession] patched version invoked');
+  }
+
+  const fallback = () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[loadUserSession] returning fallback session');
+    }
+    return { userId: null, user_role: null } as const;
+  };
+
   if (typeof window !== 'undefined') {
     console.warn('[loadUserSession] Called on the client - returning null');
     return null;
@@ -79,7 +90,7 @@ export async function loadUserSession(
     if (process.env.NODE_ENV === 'development') {
       console.warn('[loadUserSession] Unable to resolve user ID');
     }
-    return { userId: null, user_role: null };
+    return fallback();
   }
 
   try {
@@ -104,7 +115,7 @@ export async function loadUserSession(
       console.warn(
         `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
-      return { userId: null, user_role: null };
+      return fallback();
     }
 
     const user = result[0];
@@ -112,7 +123,7 @@ export async function loadUserSession(
       console.warn(
         `[loadUserSession] DB query returned empty user for ID ${override}`
       );
-      return { userId: null, user_role: null };
+      return fallback();
     }
     console.log('[loadUserSession] DB query result', user);
 
@@ -132,6 +143,6 @@ export async function loadUserSession(
     return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
-    return { userId: null, user_role: null };
+    return fallback();
   }
 }
