@@ -110,6 +110,10 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[loadUserSession] raw DB query result', result);
+    }
+
     // Ensure we have a user before performing any further operations
     if (result.length === 0) {
       console.warn(
