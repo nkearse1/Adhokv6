@@ -15,12 +15,21 @@ export async function GET(req: NextRequest) {
   console.log('[api/session] incoming', { headerId, queryId, override });
   try {
     const user = await loadUserSession(override);
-    if (!user || ('userId' in user && user.userId === null)) {
+
+    if (
+      !user ||
+      Object.keys(user).length === 0 ||
+      ('userId' in user && (user.userId === null || user.userId === undefined))
+    ) {
       if (override) {
         console.warn('[api/session] no user found for override', override);
+      } else {
+        console.warn('[api/session] no user resolved - returning guest session');
       }
+
       return NextResponse.json({ user: null, isAuthenticated: false });
     }
+
     return NextResponse.json({ user, isAuthenticated: true });
   } catch (err) {
     console.error('[api/session] failed to load session', err);
