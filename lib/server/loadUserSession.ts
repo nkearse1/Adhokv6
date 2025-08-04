@@ -99,15 +99,23 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
-    const user = result[0];
-    console.log('[loadUserSession] DB query result', user);
-
-    if (!user || (typeof user === 'object' && Object.keys(user).length === 0)) {
+    // Ensure we have a user before performing any further operations
+    if (result.length === 0) {
       console.warn(
         `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
       return { userId: null, user_role: null };
     }
+
+    const user = result[0];
+    if (!user) {
+      console.warn(
+        `[loadUserSession] DB query returned empty user for ID ${override}`
+      );
+      return { userId: null, user_role: null };
+    }
+    console.log('[loadUserSession] DB query result', user);
+
     const hasProfile = await db
       .select({ id: clientProfiles.id })
       .from(clientProfiles)
