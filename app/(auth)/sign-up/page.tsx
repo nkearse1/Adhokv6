@@ -2,9 +2,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TalentSignUpForm } from '@/components/TalentSignUpForm';
+import { useSearchParams } from 'next/navigation';
 
 export default function TalentSignUpPage() {
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const roleIntent = searchParams.get('as');
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-white p-4">
@@ -26,7 +29,11 @@ export default function TalentSignUpPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <TalentSignUpForm loading={loading} setLoading={setLoading} />
+            <TalentSignUpForm
+              loading={loading}
+              setLoading={setLoading}
+              roleIntent={roleIntent}
+            />
           </CardContent>
         </Card>
       </div>
