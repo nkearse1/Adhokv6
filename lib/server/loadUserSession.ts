@@ -85,6 +85,8 @@ export async function loadUserSession(
   try {
     const { db } = await import('@/lib/db');
     const { users, clientProfiles } = await import('@/lib/schema');
+
+    // Target the users table and filter by the UUID id field
     const result = await db
       .select({
         id: users.id,
@@ -96,11 +98,13 @@ export async function loadUserSession(
       .from(users)
       .where(eq(users.id, override))
       .limit(1);
+
     const user = result[0];
-    console.log('User query result:', user);
-    if (!user) {
+    console.log('[loadUserSession] DB query result', user);
+
+    if (!user || (typeof user === 'object' && Object.keys(user).length === 0)) {
       console.warn(
-        `WARNING: loadUserSession could not find user for ID ${override}`
+        `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
       return { userId: null, user_role: null };
     }
@@ -109,11 +113,14 @@ export async function loadUserSession(
       .from(clientProfiles)
       .where(eq(clientProfiles.id, override))
       .limit(1);
+
     // Guard against undefined user before spreading
     const session = { ...(user ?? {}), isClient: hasProfile.length > 0 };
+
     if (process.env.NODE_ENV === 'development') {
       console.log('[loadUserSession] session', session);
     }
+
     return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
