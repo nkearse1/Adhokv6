@@ -33,7 +33,10 @@ export default function Home() {
               <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Professional</h2>
               <div className="space-y-4">
                 <FindProjectsButton />
-                <Link href="/talent/sign-up">
+                <p className="text-sm text-[#2F2F2F]">
+                  Sign up as Adhok Talent to view all projects
+                </p>
+                <Link href="/sign-up?as=talent">
                   <Button
                     variant="outline"
                     className="w-full border-[#2E3A8C] text-[#2E3A8C] hover:bg-[#2E3A8C]/10"
