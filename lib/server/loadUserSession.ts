@@ -116,24 +116,24 @@ export async function loadUserSession(
         `[loadUserSession] No user found for ID ${override} - returning fallback`
       );
       return fallback();
+    } else {
+      const user = Object.fromEntries(Object.entries(rawUser)) as typeof rawUser;
+      console.log('[loadUserSession] DB query result', user);
+
+      const hasProfile = await db
+        .select({ id: clientProfiles.id })
+        .from(clientProfiles)
+        .where(eq(clientProfiles.id, override))
+        .limit(1);
+
+      const session = { ...user, isClient: hasProfile.length > 0 };
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[loadUserSession] session', session);
+      }
+
+      return session;
     }
-
-    const user = Object.fromEntries(Object.entries(rawUser));
-    console.log('[loadUserSession] DB query result', user);
-
-    const hasProfile = await db
-      .select({ id: clientProfiles.id })
-      .from(clientProfiles)
-      .where(eq(clientProfiles.id, override))
-      .limit(1);
-
-    const session = { ...user, isClient: hasProfile.length > 0 };
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[loadUserSession] session', session);
-    }
-
-    return session;
   } catch (err) {
     console.error('loadUserSession db error', err);
     return fallback();
