@@ -28,13 +28,14 @@ export default function ProjectWorkspace() {
   const { authUser } = useAuth();
   const [projectName] = useState("SEO Optimization");
   const [projectDeadline, setProjectDeadline] = useState<Date | null>(null);
-  const [projectStartDate] = useState(new Date());
+  const [projectStartDate, setProjectStartDate] = useState<Date | null>(null);
   const [estimatedHours] = useState(40);
   const [hourlyRate] = useState(75);
   const [estimatedBudget] = useState(estimatedHours * hourlyRate);
   const [activeTab, setActiveTab] = useState('chat');
 
   useEffect(() => {
+    setProjectStartDate(new Date());
     setProjectDeadline(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000));
   }, []);
 
@@ -271,17 +272,19 @@ export default function ProjectWorkspace() {
           </TabsContent>
 
           <TabsContent value="deliverables">
-            <DeliverablesPanel 
-              role="talent"
-              deliverables={deliverables as unknown as PanelDeliverable[]}
-              editable
-              showForm
-              projectDeadline={projectDeadline ?? new Date()}
-              projectStartDate={projectStartDate}
-              onAddDeliverable={addDeliverable}
-              onStatusChange={updateDeliverableStatus}
-              onUpdateDeliverable={updateDeliverable}
-            />
+            {projectDeadline && projectStartDate && (
+              <DeliverablesPanel
+                role="talent"
+                deliverables={deliverables as unknown as PanelDeliverable[]}
+                editable
+                showForm
+                projectDeadline={projectDeadline}
+                projectStartDate={projectStartDate}
+                onAddDeliverable={addDeliverable}
+                onStatusChange={updateDeliverableStatus}
+                onUpdateDeliverable={updateDeliverable}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="upload">
