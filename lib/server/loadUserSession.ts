@@ -65,9 +65,7 @@ export async function resolveUserId(
 export async function loadUserSession(
   overrideOrReq?: string | Request | NextRequest
 ) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[loadUserSession] patched version invoked');
-  }
+  console.warn('🎉 patched loadUserSession loaded');
 
   const fallback = () => {
     if (process.env.NODE_ENV === 'development') {
