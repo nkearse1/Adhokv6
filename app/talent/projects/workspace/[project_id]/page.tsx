@@ -118,8 +118,8 @@ export default function ProjectWorkspace() {
   } = useAuth();
   const [project, setProject] = useState<any | null>(null);
   const [projectName, setProjectName] = useState('Project');
-  const [projectDeadline, setProjectDeadline] = useState(new Date());
-  const [projectStartDate] = useState(new Date());
+  const [projectDeadline, setProjectDeadline] = useState<Date | null>(null);
+  const [projectStartDate, setProjectStartDate] = useState<Date | null>(null);
   const [estimatedHours, setEstimatedHours] = useState(0);
   const [hourlyRate, setHourlyRate] = useState(0);
   const [estimatedBudget, setEstimatedBudget] = useState(0);
@@ -134,6 +134,7 @@ export default function ProjectWorkspace() {
           setProject(proj);
           setProjectName(proj.title || 'Project');
           setProjectDeadline(new Date(proj.deadline || Date.now()));
+          setProjectStartDate(new Date());
           const hours = Array.isArray(proj.deliverables)
             ? proj.deliverables.reduce((a: number, d: any) => a + (d.estimatedHours || 0), 0)
             : proj.estimatedHours || 0;
@@ -234,7 +235,9 @@ export default function ProjectWorkspace() {
                   {projectStatus}
                 </Badge>
                 <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
-                  Due {formatDistanceToNow(projectDeadline, { addSuffix: true })}
+                  {projectDeadline
+                    ? `Due ${formatDistanceToNow(projectDeadline, { addSuffix: true })}`
+                    : 'Loading...'}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
                   Escrow: {escrowStatus}
@@ -250,7 +253,9 @@ export default function ProjectWorkspace() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="w-4 h-4 text-[#2E3A8C]" />
-                    <span>Deadline: {format(projectDeadline, 'PPP')}</span>
+                    <span>
+                      Deadline: {projectDeadline ? format(projectDeadline, 'PPP') : 'TBD'}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -363,17 +368,19 @@ export default function ProjectWorkspace() {
           </TabsContent>
 
           <TabsContent value="deliverables">
-            <DeliverablesPanel 
-              role="talent"
-              deliverables={deliverables}
-              editable
-              showForm
-              projectDeadline={projectDeadline}
-              projectStartDate={projectStartDate}
-              onAddDeliverable={addDeliverable}
-              onStatusChange={updateDeliverableStatus}
-              onUpdateDeliverable={updateDeliverable}
-            />
+            {projectDeadline && projectStartDate && (
+              <DeliverablesPanel
+                role="talent"
+                deliverables={deliverables}
+                editable
+                showForm
+                projectDeadline={projectDeadline}
+                projectStartDate={projectStartDate}
+                onAddDeliverable={addDeliverable}
+                onStatusChange={updateDeliverableStatus}
+                onUpdateDeliverable={updateDeliverable}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="upload">

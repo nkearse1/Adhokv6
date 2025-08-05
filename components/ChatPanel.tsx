@@ -42,21 +42,23 @@ const accessibleStatuses = [
 ];
 
 // Mock implementation of useChatMessages hook
+const initialMessages: Message[] = [
+  {
+    id: '1',
+    sender: 'client',
+    text: 'Hi there! Looking forward to working with you on this project.',
+    timestamp: new Date('2024-01-01T12:00:00Z'),
+  },
+  {
+    id: '2',
+    sender: 'talent',
+    text: "Thanks for the opportunity! I've reviewed the brief and I'm excited to get started.",
+    timestamp: new Date('2024-01-01T12:30:00Z'),
+  },
+];
+
 const useChatMessages = (projectId: string) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      sender: 'client',
-      text: 'Hi there! Looking forward to working with you on this project.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-    },
-    {
-      id: '2',
-      sender: 'talent',
-      text: 'Thanks for the opportunity! I\'ve reviewed the brief and I\'m excited to get started.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isTyping, setIsTyping] = useState(false);
   
   const sendMessage = (text: string, deliverableId?: string) => {
@@ -216,7 +218,7 @@ const ChatPanel: FC<ChatPanelProps> = ({
                     )}
                     <p className="text-sm">{message.text}</p>
                     <p className="text-xs mt-1 opacity-75">
-                      {new Date(message.timestamp).toLocaleTimeString([], {
+                      {new Date(message.timestamp).toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
