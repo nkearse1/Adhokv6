@@ -6,10 +6,8 @@ import { headers } from 'next/headers';
  * Resolve the current user ID. The optional override always wins.
  * When running in the browser we read `adhok_active_user` from localStorage
  * so developers can easily switch between seeded users. On the server we
- * rely solely on runtime overrides or the production auth provider (Clerk
- * when configured).
+ * rely solely on runtime overrides or the production auth provider.
  */
-
 export async function resolveUserId(
   overrideOrReq?: string | Request | NextRequest
 ): Promise<string | undefined> {
@@ -25,39 +23,33 @@ export async function resolveUserId(
       const hdrs = await headers();
       override = hdrs.get('adhok_active_user') || undefined;
       if (!override && process.env.NODE_ENV === 'development') {
-        console.warn('[resolveUserId] headers missing adhok_active_user');
+        console.warn('[resolveUserId] no override header in dev');
       }
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn('[resolveUserId] unable to read headers()', err);
+        console.warn('[resolveUserId] cannot read headers()', err);
       }
     }
   }
 
   if (process.env.NODE_ENV === 'development') {
-    console.log('[resolveUserId] override', override);
+    console.log('[resolveUserId] override:', override);
   }
-
   if (override) return override;
   if (typeof window !== 'undefined') {
     return localStorage.getItem('adhok_active_user') || undefined;
   }
-
-  if (
-    process.env.NODE_ENV === 'production' &&
-    process.env.CLERK_SECRET_KEY
-  ) {
+  if (process.env.NODE_ENV === 'production' && process.env.CLERK_SECRET_KEY) {
     try {
       const { auth } = await import('@clerk/nextjs/server');
       const { userId } = await auth();
       if (userId) return userId;
     } catch {
-      // ignore and fall through
+      // ignore
     }
   }
-
   if (process.env.NODE_ENV === 'development') {
-    console.warn('[resolveUserId] No user ID could be resolved');
+    console.warn('[resolveUserId] no user ID resolved');
   }
   return undefined;
 }
@@ -65,28 +57,24 @@ export async function resolveUserId(
 export async function loadUserSession(
   overrideOrReq?: string | Request | NextRequest
 ) {
+  // Debug marker to confirm this version is running
   console.warn('🎉 patched loadUserSession loaded');
 
   const fallback = () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[loadUserSession] returning fallback session');
-    }
-    return { userId: null, user_role: null, isClient: false } as const;
+    console.warn('🔄 loadUserSession fallback');
+    return { userId: null, user_role: null } as const;
   };
 
+  // Never run server logic on the client
   if (typeof window !== 'undefined') {
-    console.warn('[loadUserSession] Called on the client - returning null');
+    console.warn('[loadUserSession] called on client');
     return null;
   }
 
   const override = await resolveUserId(overrideOrReq);
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[loadUserSession] resolved id', override);
-  }
+  console.log('[loadUserSession] override ID:', override);
   if (!override) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[loadUserSession] Unable to resolve user ID');
-    }
+    console.warn('[loadUserSession] no override — using fallback');
     return fallback();
   }
 
@@ -94,6 +82,7 @@ export async function loadUserSession(
     const { db } = await import('@/lib/db');
     const { users, clientProfiles } = await import('@/lib/schema');
 
+    // Drizzle returns an array; get first row explicitly
     const rows = await db
       .select({
         id: users.id,
@@ -106,34 +95,30 @@ export async function loadUserSession(
       .where(eq(users.id, override))
       .limit(1);
 
-    console.log('[loadUserSession] DB query rows', rows);
-
-    if (!rows || rows.length === 0) {
-      console.warn(
-        `[loadUserSession] No user found for ID ${override} - returning fallback`
-      );
+    console.log('[loadUserSession] DB rows:', rows);
+    const [rawUser] = rows;
+    if (!rawUser) {
+      console.warn(`[loadUserSession] no user found for ID ${override}`);
       return fallback();
     }
 
-    const rawUser = rows[0];
+    // Safely build user object
     const user = { ...rawUser };
-    console.log('[loadUserSession] DB query result', user);
+    console.log('[loadUserSession] user record:', user);
 
-    const hasProfile = await db
+    // Check client profile existence
+    const profileRows = await db
       .select({ id: clientProfiles.id })
       .from(clientProfiles)
       .where(eq(clientProfiles.id, override))
       .limit(1);
 
-    const session = { ...user, isClient: hasProfile.length > 0 };
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[loadUserSession] session', session);
-    }
-
+    const isClient = profileRows.length > 0;
+    const session = { ...user, isClient };
+    console.log('[loadUserSession] session:', session);
     return session;
   } catch (err) {
-    console.error('loadUserSession db error', err);
+    console.error('[loadUserSession] db error:', err);
     return fallback();
   }
 }
