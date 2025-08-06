@@ -8,8 +8,12 @@ import { AuthProvider } from '@/lib/client/useAuthContext';
 import TestUserBadge from '@/components/dev/TestUserBadge';
 import NeonUserSwitcher from '@/components/dev/NeonUserSwitcher';
 
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
+const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '';
+const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API || '';
+
+if (!clerkKey || !clerkApi) {
+  console.warn('Missing Clerk environment variables, running in mock mode');
+}
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

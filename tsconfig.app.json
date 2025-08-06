@@ -40,8 +40,6 @@
     "middleware.ts"
   ],
   "exclude": [
-    "node_modules/drizzle-orm/mysql-core",
-    "node_modules/drizzle-orm/sqlite-core",
     "node_modules/bun-types"
   ]
 }

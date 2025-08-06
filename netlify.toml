@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build"
+  command = "yarn type-check && next build"
   publish = ".next"
 
 [build.environment]
