@@ -14,6 +14,7 @@ if (currentMajor < MIN_NODE_MAJOR) {
 const paths = [
   'node_modules/drizzle-orm/mysql-core',
   'node_modules/drizzle-orm/sqlite-core',
+  'node_modules/@types/better-sqlite3',
   'node_modules/bun-types',
   'node_modules/@netlify/plugin-nextjs'
 ];

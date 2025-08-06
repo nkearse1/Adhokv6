@@ -74,6 +74,7 @@
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.344.0",
+    "pdf-lib": "1.17.1",
     "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-day-picker": "^8.9.4",
@@ -91,13 +92,14 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@empty/canvas": "link:./empty-canvas",
     "@eslint/js": "^8.57.1",
     "@testing-library/react": "^14.1.2",
-    "@types/lodash": "^4.14.202",
+    "@types/lodash": "4.14.202",
     "@types/node": "22.15.33",
     "@types/pg": "8.11.6",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
     "autoprefixer": "^10.4.17",
@@ -115,7 +117,9 @@
   "resolutions": {
     "react-day-picker": "^8.9.4",
     "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1"
+    "react-dnd-html5-backend": "^16.0.1",
+    "canvas": "@empty/canvas@0.0.0",
+    "pdfjs-dist/canvas": "@empty/canvas@0.0.0"
   },
   "eslintConfig": {
     "extends": [
