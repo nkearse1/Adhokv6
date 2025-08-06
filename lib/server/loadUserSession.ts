@@ -102,8 +102,8 @@ export async function loadUserSession(
       return fallback();
     }
 
-    // Safely build user object
-    const user = { ...rawUser };
+    // Safely build user object and guard against missing metadata
+    const user = { ...(rawUser as any), metadata: (rawUser as any).metadata ?? {} };
     console.log('[loadUserSession] user record:', user);
 
     // Check client profile existence

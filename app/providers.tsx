@@ -10,22 +10,29 @@ import NeonUserSwitcher from '@/components/dev/NeonUserSwitcher';
 
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '';
 const clerkApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API || '';
+const hasClerk = Boolean(clerkKey && clerkApi);
 
-if (!clerkKey || !clerkApi) {
+if (!hasClerk) {
   console.warn('Missing Clerk environment variables, running in mock mode');
 }
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  return (
+  const content = (
+    <AuthProvider>
+      <Header />
+      {children}
+      <Toaster />
+      <NeonUserSwitcher />
+      <TestUserBadge />
+    </AuthProvider>
+  );
+
+  return hasClerk ? (
     <ClerkProvider publishableKey={clerkKey} frontendApi={clerkApi}>
-      <AuthProvider>
-        <Header />
-        {children}
-        <Toaster />
-        <NeonUserSwitcher />
-        <TestUserBadge />
-      </AuthProvider>
+      {content}
     </ClerkProvider>
+  ) : (
+    content
   );
 }
 
