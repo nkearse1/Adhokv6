@@ -57,9 +57,6 @@ export async function resolveUserId(
 export async function loadUserSession(
   overrideOrReq?: string | Request | NextRequest
 ) {
-  // Debug marker to confirm this version is running
-  console.warn('🎉 patched loadUserSession loaded');
-
   const fallback = () => {
     console.warn('🔄 loadUserSession fallback');
     return { userId: null, user_role: null } as const;
