@@ -11,12 +11,18 @@ if (currentMajor < MIN_NODE_MAJOR) {
 }
 
 
+// These modules are installed as transitive dependencies by some packages
+// but are not needed in this project. Removing them keeps the production
+// bundle smaller and avoids accidentally bundling native drivers.
 const paths = [
-  'node_modules/drizzle-orm/mysql-core',
-  'node_modules/drizzle-orm/sqlite-core',
+  // Unused type packages or helpers
   'node_modules/@types/better-sqlite3',
+  'node_modules/@types/mysql',
+  'node_modules/@types/sqlite3',
   'node_modules/bun-types',
-  'node_modules/@netlify/plugin-nextjs'
+
+  // Netlify plugin automatically added by Next.js in some setups
+  'node_modules/@netlify/plugin-nextjs',
 ];
 
 for (const p of paths) {
