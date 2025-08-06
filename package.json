@@ -117,9 +117,7 @@
   "resolutions": {
     "react-day-picker": "^8.9.4",
     "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
-    "canvas": "@empty/canvas@0.0.0",
-    "pdfjs-dist/canvas": "@empty/canvas@0.0.0"
+    "react-dnd-html5-backend": "^16.0.1"
   },
   "eslintConfig": {
     "extends": [
