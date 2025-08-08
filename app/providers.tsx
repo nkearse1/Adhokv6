@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Header } from '@/components/Header';
+import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/lib/client/useAuthContext';
 import TestUserBadge from '@/components/dev/TestUserBadge';

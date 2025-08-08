@@ -24,8 +24,8 @@ import { eq } from 'drizzle-orm';
 export async function GET(request: NextRequest) {
   // Support optional mock user override via header or query param
   const userId =
-    request.headers.get('x-user-override') ||
-    new URL(request.url).searchParams.get('x-user-override') ||
+    request.headers.get('x-override-user-id') ||
+    new URL(request.url).searchParams.get('override') ||
     undefined;
 
   try {

@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { updateUser } from '@/lib/db/users';
 import { getFullTalentProfile } from '@/lib/db/talentProfiles';
-import { resolveUserId } from '@/lib/server/loadUserSession';
+import { loadUserSession } from '@/lib/loadUserSession';
 
 const bodySchema = z.object({
   fullName: z.string().optional(),
@@ -18,9 +18,13 @@ export async function GET(req: NextRequest) {
   let userId: string | undefined;
   if (clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
-    userId = (await auth()).userId;
+    userId = (await auth()).userId || undefined;
   }
-  const id = paramId || userId || (await resolveUserId(req));
+  if (!userId) {
+    const session = await loadUserSession();
+    userId = session?.userId;
+  }
+  const id = paramId || userId;
   if (!id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -39,12 +43,16 @@ export async function POST(req: NextRequest) {
   let userId: string | undefined;
   if (clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
-    userId = (await auth()).userId;
+    userId = (await auth()).userId || undefined;
   }
-  const id = userId || (await resolveUserId(req));
-  if (!id) {
+  if (!userId) {
+    const session = await loadUserSession();
+    userId = session?.userId;
+  }
+  if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const id = userId;
   let data;
   try {
     data = bodySchema.parse(await req.json());

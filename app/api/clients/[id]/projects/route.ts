@@ -1,7 +1,7 @@
 import { getClientProjects } from '@/lib/apiHandlers/clients';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { loadUserSession } from '@/lib/server/loadUserSession';
+import { loadUserSession } from '@/lib/loadUserSession';
 import { db } from '@/lib/db';
 import { projects, clientProfiles } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -45,16 +45,16 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
 }
 
 export async function POST(req: NextRequest, ctx: RouteContext) {
-  const sessionUser = await loadUserSession(req);
+  const sessionUser = await loadUserSession();
   if (
     !sessionUser ||
-    (sessionUser.user_role !== 'client' && sessionUser.user_role !== 'talent')
+    (sessionUser.userRole !== 'client' && sessionUser.userRole !== 'talent')
   ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await ctx.params;
-  if (sessionUser.id !== id) {
+  if (sessionUser.userId !== id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -69,16 +69,16 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  if (sessionUser.user_role === 'talent') {
+  if (sessionUser.userRole === 'talent') {
     const existing = await db
       .select()
       .from(clientProfiles)
-      .where(eq(clientProfiles.id, sessionUser.id))
+      .where(eq(clientProfiles.id, sessionUser.userId))
       .limit(1);
     if (existing.length === 0) {
       await db.insert(clientProfiles).values({
-        id: sessionUser.id,
-        email: sessionUser.email ?? null,
+        id: sessionUser.userId,
+        email: null,
         companyName: '',
       });
     }
@@ -91,8 +91,8 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
         title: data.title,
         description: data.description,
         deadline: new Date(data.deadline),
-        clientId: sessionUser.id,
-        createdBy: sessionUser.id,
+        clientId: sessionUser.userId,
+        createdBy: sessionUser.userId,
       })
       .returning();
     return NextResponse.json({ project });
