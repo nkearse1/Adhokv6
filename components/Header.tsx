@@ -1,12 +1,16 @@
 'use client';
 
-import HeaderMock from './HeaderMock';
-import HeaderClerk from './HeaderClerk';
-
-const IS_MOCK =
-  !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-  process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+import { useAuth } from '@/lib/client/useAuthContext';
 
 export default function Header() {
-  return IS_MOCK ? <HeaderMock /> : <HeaderClerk />;
+  const { username, userId, isAuthenticated } = useAuth();
+
+  return (
+    <header className="w-full px-4 py-2 border-b flex items-center justify-between">
+      <div className="font-semibold">Adhok</div>
+      <div className="text-sm">
+        {isAuthenticated ? (username || userId) : 'Guest'}
+      </div>
+    </header>
+  );
 }
