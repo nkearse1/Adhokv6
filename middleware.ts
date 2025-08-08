@@ -1,64 +1,38 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { headers } from 'next/headers';
-import { eq } from 'drizzle-orm';
-import { resolveUserId } from '@/lib/server/loadUserSession';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-function safeRedirect(path: string, req: NextRequest) {
-  const url = new URL(path, req.url);
-  if (req.nextUrl.pathname === url.pathname) {
-    return NextResponse.next();
+export function middleware(req: NextRequest) {
+  const url = req.nextUrl;
+  const qsOverride = url.searchParams.get('override');
+  const cookieOverride = req.cookies.get('adhok_override')?.value ?? undefined;
+
+  const effective = (qsOverride ?? cookieOverride)?.trim() || undefined;
+
+  const headers = new Headers(req.headers);
+  if (effective) {
+    headers.set('x-override-user-id', effective);
+  } else {
+    headers.delete('x-override-user-id');
   }
-  return NextResponse.redirect(url);
-}
 
-export async function middleware(req: NextRequest) {
-  await headers();
-  const pathname = req.nextUrl.pathname;
-  const userId = await resolveUserId(req);
+  const res = NextResponse.next({ request: { headers } });
 
-  let user_role: string | undefined;
-  if (userId) {
-    try {
-      const { db } = await import('@/db');
-      const { users } = await import('@/db/schema');
-      const result = await db
-        .select({ user_role: users.user_role })
-        .from(users)
-        .where(eq(users.id, userId))
-        .limit(1);
-      user_role = result[0]?.user_role;
-    } catch (err) {
-      console.error('[middleware] role lookup failed', err);
+  // Persist override as a client-readable cookie so a full reload keeps it
+  if (qsOverride !== null) {
+    if (effective) {
+      res.cookies.set('adhok_override', effective, {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+      });
+    } else {
+      res.cookies.delete('adhok_override');
     }
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[middleware]', { userId, user_role, pathname });
-    return NextResponse.next();
-  }
-
-  if (!userId || !user_role) return NextResponse.next();
-
-  const validRoles = ['admin', 'client', 'talent'];
-  if (!validRoles.includes(user_role)) return NextResponse.next();
-
-  if (pathname.startsWith('/admin') && user_role !== 'admin') {
-    return safeRedirect('/', req);
-  }
-
-  if (pathname.startsWith('/client') && user_role !== 'client') {
-    return safeRedirect('/', req);
-  }
-
-  if (pathname.startsWith('/talent/dashboard') && user_role !== 'talent') {
-    return safeRedirect('/', req);
-  }
-
-  return NextResponse.next();
+  return res;
 }
 
-export default middleware;
-
 export const config = {
-  matcher: ['/((?!_next|.*\\..*|favicon.ico).*)', '/(api|trpc)(.*)'],
+  matcher: ['/((?!_next|.*\\..*|favicon.ico).*)'],
 };

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import {
   Select,
   SelectContent,
@@ -19,9 +20,11 @@ interface NeonUser {
 export default function NeonUserSwitcher() {
   const [users, setUsers] = useState<NeonUser[]>([]);
   const [value, setValue] = useState('');
-  const [pendingId, setPendingId] = useState<string | null>(null);
   const [switching, setSwitching] = useState(false);
-  const { authUser, userId, refreshSession } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const { refreshSession, authUser } = useAuth();
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') return;
@@ -37,30 +40,20 @@ export default function NeonUserSwitcher() {
       }
     }
     load();
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('adhok_active_user');
-      if (stored) setValue(stored);
-    }
-  }, []);
+    setValue(search?.get('override') || '');
+  }, [search]);
 
   const handleChange = async (val: string) => {
     setValue(val);
-    setPendingId(val);
     setSwitching(true);
-    localStorage.setItem('adhok_active_user', val);
-    console.log('[NeonUserSwitcher] set adhok_active_user', val);
-    await refreshSession({ userId: val });
-    console.log('[NeonUserSwitcher] refreshSession called');
+    const params = new URLSearchParams(search?.toString());
+    if (val) params.set('override', val);
+    else params.delete('override');
+    router.push(`${pathname}?${params.toString()}`);
+    router.refresh();
+    await refreshSession();
+    setSwitching(false);
   };
-
-  useEffect(() => {
-    if (!switching || !pendingId) return;
-    if (userId === pendingId) {
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      }
-    }
-  }, [switching, pendingId, userId]);
 
   if (process.env.NODE_ENV !== 'development') return null;
 
@@ -87,9 +80,9 @@ export default function NeonUserSwitcher() {
       {authUser && (
         <p
           className="text-xs text-gray-500 mt-2"
-          title={`Resolved user: ${authUser.username || authUser.full_name || authUser.id}`}
+          title={`Resolved user: ${authUser.userId}`}
         >
-          Resolved: {authUser.username || authUser.full_name || authUser.id}
+          Resolved: {authUser.userId}
         </p>
       )}
     </div>

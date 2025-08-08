@@ -18,7 +18,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   authUser: any;
-  refreshSession: (opts?: { userId?: string }) => Promise<void>;
+  refreshSession: () => Promise<void>;
 }
 
 const defaultState: AuthState = {
@@ -50,24 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const hasFetchedOnce = useRef(false);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-      if (!window.localStorage.getItem('adhok_active_user')) {
-        window.localStorage.setItem('adhok_active_user', 'client1');
-        console.log('[AuthProvider] default adhok_active_user=client1');
-      }
-    }
-  }, []);
-
-  const fetchSession = useCallback(async (overrideId?: string) => {
-    const headers: Record<string, string> = {};
-    const override =
-      overrideId ??
-      (typeof window !== 'undefined'
-        ? window.localStorage.getItem('adhok_active_user') || undefined
-        : undefined);
-    if (override) headers['adhok_active_user'] = override;
-    const res = await fetch('/api/session', { headers });
+  const fetchSession = useCallback(async () => {
+    const res = await fetch('/api/session');
     if (!res.ok) throw new Error('no session');
     const { user } = await res.json();
     if (process.env.NODE_ENV === 'development') {
@@ -76,45 +60,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return user as any | null;
   }, []);
 
-  const refreshSession = useCallback(
-    async (opts?: { userId?: string }) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[refreshSession] start', opts);
-      }
-      try {
-        if (opts?.userId && typeof window !== 'undefined') {
-          window.localStorage.setItem('adhok_active_user', opts.userId);
-        }
-        const user = await fetchSession(opts?.userId);
-        if (!user) {
-          console.warn('[AuthProvider] Session resolved as null');
-          setState({
-            userId: null,
-            username: null,
-            userRole: null,
-            isClient: false,
-            isAdmin: false,
-            isAuthenticated: false,
-            loading: false,
-            authUser: null,
-          });
-          return;
-        }
-        setState({
-          userId: user.id,
-          username: user.username || user.id,
-          userRole: user.user_role,
-          isClient: user.user_role === 'client',
-          isAdmin: user.user_role === 'admin',
-          isAuthenticated: true,
-          loading: false,
-          authUser: user,
-        });
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[refreshSession] updated state', user);
-        }
-      } catch (err) {
-        console.error('Failed loading session', err);
+  const refreshSession = useCallback(async () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[refreshSession] start');
+    }
+    try {
+      const user = await fetchSession();
+      if (!user) {
+        console.warn('[AuthProvider] Session resolved as null');
         setState({
           userId: null,
           username: null,
@@ -125,10 +78,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           loading: false,
           authUser: null,
         });
+        return;
       }
-    },
-    [fetchSession]
-  );
+      setState({
+        userId: user.userId,
+        username: null,
+        userRole: user.userRole,
+        isClient: user.userRole === 'client',
+        isAdmin: user.userRole === 'admin',
+        isAuthenticated: true,
+        loading: false,
+        authUser: user,
+      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[refreshSession] updated state', user);
+      }
+    } catch (err) {
+      console.error('Failed loading session', err);
+      setState({
+        userId: null,
+        username: null,
+        userRole: null,
+        isClient: false,
+        isAdmin: false,
+        isAuthenticated: false,
+        loading: false,
+        authUser: null,
+      });
+    }
+  }, [fetchSession]);
 
   useEffect(() => {
     if (hasFetchedOnce.current) return;

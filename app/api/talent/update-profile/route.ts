@@ -1,5 +1,5 @@
 import { updateTalentProfile } from '@/lib/db/talent';
-import { resolveUserId } from '@/lib/server/loadUserSession';
+import { loadUserSession } from '@/lib/loadUserSession';
 import type { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -7,15 +7,18 @@ export async function POST(req: NextRequest) {
   let userId: string | undefined;
   if (clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
-    userId = (await auth()).userId;
+    userId = (await auth()).userId || undefined;
   }
-  const idToUse = userId || (await resolveUserId(req));
+  if (!userId) {
+    const session = await loadUserSession();
+    userId = session?.userId;
+  }
 
-  if (!idToUse) return new Response('Unauthorized', { status: 401 });
+  if (!userId) return new Response('Unauthorized', { status: 401 });
 
   const body = await req.json();
   try {
-    await updateTalentProfile(idToUse, body);
+    await updateTalentProfile(userId, body);
     return new Response('OK', { status: 200 });
   } catch (err) {
     console.error('Failed to update profile:', err);

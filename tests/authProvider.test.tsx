@@ -11,7 +11,7 @@ function TestComponent({ onRefresh }: { onRefresh: () => void }) {
       <button
         data-testid="refresh"
         onClick={() => {
-          refreshSession({ userId: 'u2' });
+          refreshSession();
           onRefresh();
         }}
       />
@@ -24,11 +24,11 @@ describe('AuthProvider', () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { id: 'u1', username: 'u1', user_role: 'client' } }),
+        json: async () => ({ user: { userId: 'u1', userRole: 'client', metadata: {} } }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { id: 'u2', username: 'u2', user_role: 'client' } }),
+        json: async () => ({ user: { userId: 'u2', userRole: 'client', metadata: {} } }),
       });
     // @ts-ignore
     global.fetch = fetchMock;
@@ -50,16 +50,14 @@ describe('AuthProvider', () => {
       expect(screen.getByTestId('uid').textContent).toBe('u2');
     });
     expect(refreshSpy).toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/session', {
-      headers: { adhok_active_user: 'u2' },
-    });
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/session');
   });
 
   it('keeps previous user if refresh resolves with null', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { id: 'u1', username: 'u1', user_role: 'client' } }),
+        json: async () => ({ user: { userId: 'u1', userRole: 'client', metadata: {} } }),
       })
       .mockResolvedValueOnce({
         ok: true,
