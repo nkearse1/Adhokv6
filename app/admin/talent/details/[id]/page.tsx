@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { AlertTriangle, CheckCircle, Flag, RefreshCw, User, Mail, MapPin, Briefcase, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import TrustScoreCard from '@/components/admin/TrustScoreCard';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import QualificationHistoryTimeline, { type QualificationEntry } from '@/components/QualificationHistoryTimeline';
 
 interface TalentProfile {
@@ -81,44 +81,13 @@ export default function AdminTalentDetails() {
     try {
       setLoading(true);
       
-      // This would be replaced with a fetch to your API
-      // For now, we'll use mock data
-      setTimeout(() => {
-        const mockTalent: TalentProfile = {
-          id,
-          fullName: 'Alex Rivera',
-          email: 'alex.rivera@example.com',
-          username: 'alex_rivera',
-          phone: '+1 (555) 123-4567',
-          location: 'Austin, TX',
-          linkedin: 'https://linkedin.com/in/alexrivera',
-          portfolio: 'https://alexrivera.dev',
-          bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth. Specialized in technical SEO, content strategy, and conversion optimization.',
-          expertise: 'SEO & Content Strategy',
-          experienceBadge: 'Expert Talent',
-          isQualified: true,
-          qualificationReason: 'manual',
-          qualificationHistory: [
-            { reason: 'invited', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString() },
-            { reason: 'manual', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString() }
-          ],
-          trustScore: 85,
-          trustScoreUpdatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-          trustScoreFactors: {
-            completedProjects: 12,
-            adminComplaints: 0,
-            missedDeadlines: 1,
-            positiveRatings: 10,
-            responseTime: 2,
-            clientRetention: 3
-          }
-        };
-
-        mockTalent.qualificationHistory = sanitizeHistory(mockTalent.qualificationHistory);
-
-        setTalent(mockTalent);
-        setLoading(false);
-      }, 1000);
+      const res = await fetch(`/api/talent/profile?id=${id}`);
+      const json = await res.json();
+      if (res.ok) {
+        json.profile.qualificationHistory = sanitizeHistory(json.profile.qualificationHistory);
+        setTalent(json.profile);
+      }
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching talent details:', error);
       toast.error('Failed to load talent details');

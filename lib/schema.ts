@@ -7,7 +7,6 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   username: text('username').unique(),
   userRole: text('user_role').notNull().default('talent'),
-  role: text('role').notNull().default('talent'),
   companyId: uuid('company_id').references(() => companies.id),
   trustScore: integer('trust_score'),
   createdAt: timestamp('created_at').defaultNow(),
