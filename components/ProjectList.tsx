@@ -1,15 +1,16 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import DurationBadge from '@/components/DurationBadge';
 import { calculateEstimatedHours } from '@/lib/estimation';
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
+import { toast } from 'sonner';
 
 interface Project {
   auction_end?: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   deadline: string;
@@ -17,6 +18,7 @@ interface Project {
   bidCount?: number;
   projectBudget?: number;
   status?: string;
+  category?: string;
   overview?: string;
   deliverables?: string;
   target_audience?: string;
@@ -49,60 +51,47 @@ const TEAL_HIGHLIGHT = '#00A499';
 export default function ProjectList() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [sortKey, setSortKey] = useState<'bid' | 'expertise' | 'deadline'>('bid');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const projects: Project[] = [
-    {
-      id: 1,
-      title: 'SEO Optimization Campaign',
-      description: 'Improve search rankings for e-commerce website',
-      deadline: '2025-06-15T00:00:00.000Z',
-      expertiseLevel: 'Mid-Level',
-      bidCount: 30,
-      projectBudget: 1500,
-      status: 'open',
-      overview: 'Help an e-comm brand rank for new seasonal collections.',
-      deliverables: '3-5 keyword-optimized landing pages',
-      target_audience: 'DTC Gen Z consumers',
-      platforms: 'Shopify + Google Search Console',
-      preferred_tools: 'SEMRush + Jasper',
-      brand_voice: 'Trendy but concise',
-      inspiration_links: 'https://glossier.com | https://alo.com',
-    },
-    {
-      id: 2,
-      title: 'Social Media Strategy',
-      description: 'Develop comprehensive social media plan',
-      deadline: '2025-07-01T00:00:00.000Z',
-      expertiseLevel: 'Expert',
-      bidCount: 75,
-      projectBudget: 5000,
-      status: 'open',
-      overview: 'Create a viral playbook for product launch.',
-      deliverables: '15 content ideas, 7 draft captions, 1 calendar',
-      target_audience: 'Beauty creators + skincare lovers',
-      platforms: 'Instagram, TikTok',
-      preferred_tools: 'Canva, Meta Planner',
-      brand_voice: 'Bold, Gen Z, cheeky',
-      inspiration_links: 'https://starface.world | https://topicals.com',
-    },
-    {
-      id: 3,
-      title: 'Content Marketing Plan',
-      description: 'Create monthly blog content strategy',
-      deadline: '2025-07-15T00:00:00.000Z',
-      expertiseLevel: 'Entry Level',
-      bidCount: 15,
-      projectBudget: 800,
-      status: 'open',
-      overview: 'Support organic visibility by establishing topic clusters.',
-      deliverables: '1 blog strategy, 10 topic outlines',
-      target_audience: 'Small business owners + startup founders',
-      platforms: 'WordPress, Notion',
-      preferred_tools: 'Ahrefs, SurferSEO',
-      brand_voice: 'Helpful and professional',
-      inspiration_links: 'https://zapier.com/blog | https://buffer.com/resources',
-    },
-  ];
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/projects');
+      const json = await res.json();
+      if (!res.ok) {
+        console.error('Error fetching projects:', json.error);
+        toast.error('Failed to load projects');
+        return;
+      }
+
+      const formattedProjects: Project[] = (json.projects || [])
+        .filter((p: any) => p.status === 'open')
+        .map((project: any) => ({
+          ...project,
+          expertiseLevel: project.minimumBadge || 'Mid-Level',
+          bidCount: 0,
+          overview: project.description,
+          deliverables: project.metadata?.marketing?.deliverables,
+          target_audience: project.metadata?.marketing?.target_audience,
+          platforms: project.metadata?.marketing?.platforms,
+          preferred_tools: project.metadata?.marketing?.preferred_tools,
+          brand_voice: project.metadata?.marketing?.brand_voice,
+          inspiration_links: project.metadata?.marketing?.inspiration_links,
+        })) || [];
+
+      setProjects(formattedProjects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      toast.error('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const activeBids = projects.filter((p) => p.status === 'open');
   const popularActiveBids = activeBids
@@ -141,6 +130,14 @@ export default function ProjectList() {
     format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
   const timeRemaining = (isoDate: string) =>
     formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading projects...</div>;
+  }
+
+  if (projects.length === 0) {
+    return <div className="p-6 text-center">No projects available.</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6">
