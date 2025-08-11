@@ -7,6 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/client/useAuthContext';
+
+interface Bid {
+  id: string;
+  ratePerHour: number;
+  createdAt?: string;
+}
 
 interface Project {
   auction_end?: string;
@@ -16,6 +23,7 @@ interface Project {
   deadline: string;
   expertiseLevel: string;
   bidCount?: number;
+  activeBid?: number;
   projectBudget?: number;
   status?: string;
   category?: string;
@@ -49,10 +57,13 @@ const experienceBadgeMap: Record<string, string> = {
 const TEAL_HIGHLIGHT = '#00A499';
 
 export default function ProjectList() {
+  const { userId } = useAuth();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [sortKey, setSortKey] = useState<'bid' | 'expertise' | 'deadline'>('bid');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bidValue, setBidValue] = useState('');
+  const [bids, setBids] = useState<Bid[]>([]);
 
   useEffect(() => {
     fetchProjects();
@@ -84,12 +95,131 @@ export default function ProjectList() {
           inspiration_links: project.metadata?.marketing?.inspiration_links,
         })) || [];
 
-      setProjects(formattedProjects);
+      try {
+        const bidsRes = await fetch('/api/db?table=project_bids');
+        const bidsJson = await bidsRes.json();
+        const bidsData = bidsJson.data || [];
+        const projectsWithBids = formattedProjects.map((p) => {
+          const projectBids = bidsData.filter(
+            (b: any) => b.projectId === p.id && (!p.auction_end || !b.createdAt || new Date(b.createdAt) <= new Date(p.auction_end))
+          );
+          const activeBid =
+            projectBids.length > 0
+              ? Math.min(...projectBids.map((b: any) => b.ratePerHour))
+              : undefined;
+          return {
+            ...p,
+            bidCount: projectBids.length,
+            activeBid,
+          };
+        });
+        setProjects(projectsWithBids);
+      } catch (err) {
+        console.error('Error loading bids for projects', err);
+        setProjects(formattedProjects);
+      }
     } catch (error) {
       console.error('Error fetching projects:', error);
       toast.error('Failed to load projects');
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadBids = async () => {
+      if (!selectedProject) {
+        setBids([]);
+        return;
+      }
+      try {
+        const res = await fetch('/api/db?table=project_bids');
+        const json = await res.json();
+        const allProjectBids = (json.data || []).filter(
+          (b: any) => b.projectId === selectedProject.id
+        );
+        const userBids = allProjectBids.filter(
+          (b: any) => b.professionalId === userId
+        );
+        setBids(userBids);
+        const validBids = allProjectBids.filter(
+          (b: any) =>
+            !selectedProject.auction_end ||
+            !b.createdAt ||
+            new Date(b.createdAt) <= new Date(selectedProject.auction_end!)
+        );
+        const activeBid =
+          validBids.length > 0
+            ? Math.min(...validBids.map((b: any) => b.ratePerHour))
+            : undefined;
+        setProjects((prev) =>
+          prev.map((p) =>
+            p.id === selectedProject.id
+              ? { ...p, bidCount: allProjectBids.length, activeBid }
+              : p
+          )
+        );
+        setSelectedProject((prev) =>
+          prev ? { ...prev, bidCount: allProjectBids.length, activeBid } : prev
+        );
+      } catch (err) {
+        console.error('Failed to load bids', err);
+      }
+    };
+    loadBids();
+  }, [selectedProject, userId]);
+
+  const handleSubmitBid = async () => {
+    if (!selectedProject || !userId || !bidValue) return;
+    try {
+      const res = await fetch('/api/db', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          table: 'project_bids',
+          data: {
+            projectId: selectedProject.id,
+            professionalId: userId,
+            ratePerHour: Number(bidValue),
+          },
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to submit bid');
+      toast.success('Bid submitted');
+      const newBid = json.data?.[0];
+      if (newBid) {
+        setBids((prev) => [...prev, newBid]);
+      }
+      const bidRate = Number(bidValue);
+      const newActiveBid =
+        selectedProject.activeBid !== undefined
+          ? Math.min(selectedProject.activeBid, bidRate)
+          : bidRate;
+      setBidValue('');
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === selectedProject.id
+            ? {
+                ...p,
+                bidCount: (p.bidCount || 0) + 1,
+                activeBid: newActiveBid,
+              }
+            : p
+        )
+      );
+      setSelectedProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              bidCount: (prev.bidCount || 0) + 1,
+              activeBid: newActiveBid,
+            }
+          : prev
+      );
+    } catch (error) {
+      console.error('Error submitting bid:', error);
+      toast.error('Failed to submit bid');
     }
   };
 
@@ -118,7 +248,9 @@ export default function ProjectList() {
       );
     } else if (sortKey === 'deadline') {
       baseSorted.sort(
-        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+        (a, b) =>
+          new Date(a.auction_end ?? a.deadline).getTime() -
+          new Date(b.auction_end ?? b.deadline).getTime()
       );
     }
     return baseSorted;
@@ -126,10 +258,10 @@ export default function ProjectList() {
 
   const displayActiveBids = [...popularActiveBids, ...sortedOtherActiveBids];
   const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
-  const formatDueDate = (isoDate: string) =>
-    format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
-  const timeRemaining = (isoDate: string) =>
-    formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  const formatDueDate = (isoDate?: string) =>
+    isoDate ? format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa") : '';
+  const timeRemaining = (isoDate?: string) =>
+    isoDate ? formatDistanceToNow(new Date(isoDate), { addSuffix: true }) : '';
 
   if (loading) {
     return <div className="p-6 text-center">Loading projects...</div>;
@@ -158,9 +290,12 @@ export default function ProjectList() {
             <div className="mt-2 text-xs text-gray-500">
               <span>{project.bidCount} bids</span> ·{' '}
               <span>
-                Last bid: ${startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}/hr
+                Active bid: $
+                {project.activeBid ??
+                  startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}
+                /hr
               </span>{' '}
-              · <span>{timeRemaining(project.deadline)}</span>
+              · <span>{timeRemaining(project.auction_end ?? project.deadline)}</span>
               <DurationBadge
                 className="ml-2"
                 estimatedHours={calculateEstimatedHours({
@@ -205,7 +340,7 @@ export default function ProjectList() {
                   <p className="text-gray-700">{project.description}</p>
                   <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
                     <Clock className="w-4 h-4" />
-                    <span>Ends in {timeRemaining(project.deadline)}</span>
+                    <span>Ends in {timeRemaining(project.auction_end ?? project.deadline)}</span>
                   </div>
                 </div>
                 <Badge
@@ -224,7 +359,10 @@ export default function ProjectList() {
               <div className="mt-2 text-xs text-gray-500">
                 <span>{project.bidCount} bids</span> ·{' '}
                 <span>
-                  Last bid: ${startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}/hr
+                  Active bid: $
+                  {project.activeBid ??
+                    startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}
+                  /hr
                 </span>
               </div>
             </div>
@@ -251,7 +389,9 @@ export default function ProjectList() {
               <Clock className="w-4 h-4" />
               <span>Due {formatDueDate(selectedProject.deadline)}</span>
               <span className="ml-auto font-medium text-gray-800">
-                Ends in {timeRemaining(selectedProject.deadline)}
+                Ends in {timeRemaining(
+                  selectedProject.auction_end ?? selectedProject.deadline
+                )}
               </span>
               <DurationBadge
                 estimatedHours={calculateEstimatedHours({
@@ -261,24 +401,67 @@ export default function ProjectList() {
                 }) || undefined}
               />
             </div>
-            <div className="flex gap-4 items-center mb-4">
+            <div className="flex gap-4 items-center flex-wrap mb-4">
               <span className="text-sm text-gray-700 mr-2">
                 Starting Bid: ${
                   startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50
                 }
                 /hr
               </span>
+              <span className="text-sm text-gray-700 mr-2">
+                Active Bid: $
+                {selectedProject.activeBid ??
+                  (startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50)}
+                /hr
+              </span>
               <input
                 type="number"
                 placeholder="Your Bid"
                 className="flex-1 border border-gray-300 rounded px-3 py-2"
-                max={startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50}
+                max={
+                  selectedProject.activeBid ??
+                  (startingBidsByExpertise[
+                    formatExpertise(selectedProject.expertiseLevel)
+                  ] || 50)
+                }
                 min={0}
+                value={bidValue}
+                onChange={(e) => setBidValue(e.target.value)}
               />
-              <Button className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white">
+              <Button
+                className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white"
+                onClick={handleSubmitBid}
+                disabled={!bidValue}
+              >
                 Submit Bid &rarr;
               </Button>
             </div>
+            {bids.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-medium mb-2">Your Previous Bids</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  {bids
+                    .slice()
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt ?? 0).getTime() -
+                        new Date(a.createdAt ?? 0).getTime()
+                    )
+                    .map((bid) => (
+                      <li key={bid.id} className="flex justify-between">
+                        <span>${bid.ratePerHour}/hr</span>
+                        {bid.createdAt && (
+                          <span className="text-gray-500">
+                            {formatDistanceToNow(new Date(bid.createdAt), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
             <div className="text-sm space-y-1">
               {selectedProject.overview && (
                 <p>
