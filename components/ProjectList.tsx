@@ -7,6 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/client/useAuthContext';
+
+interface Bid {
+  id: string;
+  ratePerHour: number;
+  createdAt?: string;
+}
 
 interface Project {
   auction_end?: string;
@@ -49,10 +56,13 @@ const experienceBadgeMap: Record<string, string> = {
 const TEAL_HIGHLIGHT = '#00A499';
 
 export default function ProjectList() {
+  const { userId } = useAuth();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [sortKey, setSortKey] = useState<'bid' | 'expertise' | 'deadline'>('bid');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bidValue, setBidValue] = useState('');
+  const [bids, setBids] = useState<Bid[]>([]);
 
   useEffect(() => {
     fetchProjects();
@@ -90,6 +100,65 @@ export default function ProjectList() {
       toast.error('Failed to load projects');
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadBids = async () => {
+      if (!selectedProject || !userId) {
+        setBids([]);
+        return;
+      }
+      try {
+        const res = await fetch('/api/db?table=project_bids');
+        const json = await res.json();
+        const projectBids = (json.data || []).filter(
+          (b: any) => b.projectId === selectedProject.id && b.professionalId === userId
+        );
+        setBids(projectBids);
+      } catch (err) {
+        console.error('Failed to load bids', err);
+      }
+    };
+    loadBids();
+  }, [selectedProject, userId]);
+
+  const handleSubmitBid = async () => {
+    if (!selectedProject || !userId || !bidValue) return;
+    try {
+      const res = await fetch('/api/db', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          table: 'project_bids',
+          data: {
+            projectId: selectedProject.id,
+            professionalId: userId,
+            ratePerHour: Number(bidValue),
+          },
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to submit bid');
+      toast.success('Bid submitted');
+      const newBid = json.data?.[0];
+      if (newBid) {
+        setBids((prev) => [...prev, newBid]);
+      }
+      setBidValue('');
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === selectedProject.id
+            ? { ...p, bidCount: (p.bidCount || 0) + 1 }
+            : p
+        )
+      );
+      setSelectedProject((prev) =>
+        prev ? { ...prev, bidCount: (prev.bidCount || 0) + 1 } : prev
+      );
+    } catch (error) {
+      console.error('Error submitting bid:', error);
+      toast.error('Failed to submit bid');
     }
   };
 
@@ -274,11 +343,34 @@ export default function ProjectList() {
                 className="flex-1 border border-gray-300 rounded px-3 py-2"
                 max={startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50}
                 min={0}
+                value={bidValue}
+                onChange={(e) => setBidValue(e.target.value)}
               />
-              <Button className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white">
+              <Button
+                className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white"
+                onClick={handleSubmitBid}
+                disabled={!bidValue}
+              >
                 Submit Bid &rarr;
               </Button>
             </div>
+            {bids.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-medium mb-2">Your Previous Bids</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  {bids.map((bid) => (
+                    <li key={bid.id} className="flex justify-between">
+                      <span>${bid.ratePerHour}/hr</span>
+                      {bid.createdAt && (
+                        <span className="text-gray-500">
+                          {formatDistanceToNow(new Date(bid.createdAt), { addSuffix: true })}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="text-sm space-y-1">
               {selectedProject.overview && (
                 <p>
