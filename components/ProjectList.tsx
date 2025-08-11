@@ -263,7 +263,9 @@ export default function ProjectList() {
       );
     } else if (sortKey === 'deadline') {
       baseSorted.sort(
-        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+        (a, b) =>
+          new Date(a.auction_end ?? a.deadline).getTime() -
+          new Date(b.auction_end ?? b.deadline).getTime()
       );
     }
     return baseSorted;
@@ -271,10 +273,10 @@ export default function ProjectList() {
 
   const displayActiveBids = [...popularActiveBids, ...sortedOtherActiveBids];
   const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
-  const formatDueDate = (isoDate: string) =>
-    format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
-  const timeRemaining = (isoDate: string) =>
-    formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+  const formatDueDate = (isoDate?: string) =>
+    isoDate ? format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa") : '';
+  const timeRemaining = (isoDate?: string) =>
+    isoDate ? formatDistanceToNow(new Date(isoDate), { addSuffix: true }) : '';
 
   if (loading) {
     return <div className="p-6 text-center">Loading projects...</div>;
@@ -306,7 +308,7 @@ export default function ProjectList() {
                   startingBidsByExpertise[formatExpertise(project.expertiseLevel)]}
                 /hr
               </span>{' '}
-              · <span>{timeRemaining(project.deadline)}</span>
+              · <span>{timeRemaining(project.auction_end ?? project.deadline)}</span>
               <DurationBadge
                 className="ml-2"
                 estimatedHours={
@@ -351,7 +353,7 @@ export default function ProjectList() {
                   <p className="text-gray-700">{project.description}</p>
                   <div className="flex items-center gap-2 mt-2 text-sm text-gray-600">
                     <Clock className="w-4 h-4" />
-                    <span>Ends in {timeRemaining(project.deadline)}</span>
+                    <span>Ends in {timeRemaining(project.auction_end ?? project.deadline)}</span>
                   </div>
                 </div>
                 <Badge
@@ -399,3 +401,115 @@ export default function ProjectList() {
             <div className="flex items-center gap-4 text-gray-600 mb-6">
               <Clock className="w-4 h-4" />
               <span>Due {formatDueDate(selectedProject.deadline)}</span>
+              <span className="ml-auto font-medium text-gray-800">
+                Ends in {timeRemaining(selectedProject.auction_end ?? selectedProject.deadline)}
+              </span>
+              <DurationBadge
+                estimatedHours={
+                  calculateEstimatedHours({
+                    budget: selectedProject.projectBudget,
+                    expertiseLevel: formatExpertise(selectedProject.expertiseLevel),
+                    title: selectedProject.title,
+                  }) || undefined
+                }
+              />
+            </div>
+            <div className="flex gap-4 items-center flex-wrap mb-4">
+              <span className="text-sm text-gray-700 mr-2">
+                Starting Bid: $
+                {startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50}
+                /hr
+              </span>
+              <span className="text-sm text-gray-700 mr-2">
+                Active Bid: $
+                {selectedProject.activeBid ??
+                  (startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50)}
+                /hr
+              </span>
+              <input
+                type="number"
+                placeholder="Your Bid"
+                className="flex-1 border border-gray-300 rounded px-3 py-2"
+                max={
+                  selectedProject.activeBid ??
+                  (startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50)
+                }
+                min={0}
+                value={bidValue}
+                onChange={(e) => setBidValue(e.target.value)}
+              />
+              <Button
+                className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white"
+                onClick={handleSubmitBid}
+                disabled={!bidValue}
+              >
+                Submit Bid &rarr;
+              </Button>
+            </div>
+            {bids.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-medium mb-2">Your Previous Bids</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  {bids
+                    .slice()
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt ?? 0).getTime() -
+                        new Date(a.createdAt ?? 0).getTime()
+                    )
+                    .map((bid) => (
+                      <li key={bid.id} className="flex justify-between">
+                        <span>${bid.ratePerHour}/hr</span>
+                        {bid.createdAt && (
+                          <span className="text-gray-500">
+                            {formatDistanceToNow(new Date(b.createdAt), { addSuffix: true })}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+            <div className="text-sm space-y-1">
+              {selectedProject.overview && (
+                <p>
+                  <strong>Overview:</strong> {selectedProject.overview}
+                </p>
+              )}
+              {selectedProject.deliverables && (
+                <p>
+                  <strong>Deliverables:</strong> {selectedProject.deliverables}
+                </p>
+              )}
+              {selectedProject.target_audience && (
+                <p>
+                  <strong>Target Audience:</strong> {selectedProject.target_audience}
+                </p>
+              )}
+              {selectedProject.platforms && (
+                <p>
+                  <strong>Platforms:</strong> {selectedProject.platforms}
+                </p>
+              )}
+              {selectedProject.preferred_tools && (
+                <p>
+                  <strong>Preferred Tools:</strong> {selectedProject.preferred_tools}
+                </p>
+              )}
+              {selectedProject.brand_voice && (
+                <p>
+                  <strong>Brand Voice:</strong> {selectedProject.brand_voice}
+                </p>
+              )}
+              {selectedProject.inspiration_links && (
+                <p>
+                  <strong>Inspiration:</strong> {selectedProject.inspiration_links}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
