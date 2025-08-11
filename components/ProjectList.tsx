@@ -1,15 +1,23 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import DurationBadge from '@/components/DurationBadge';
 import { calculateEstimatedHours } from '@/lib/estimation';
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
+import { toast } from 'sonner';
+import { useAuth } from '@/lib/client/useAuthContext';
+
+interface Bid {
+  id: string;
+  ratePerHour: number;
+  createdAt?: string;
+}
 
 interface Project {
   auction_end?: string;
-  id: number;
+  id: string;
   title: string;
   description: string;
   deadline: string;
@@ -17,6 +25,7 @@ interface Project {
   bidCount?: number;
   projectBudget?: number;
   status?: string;
+  category?: string;
   overview?: string;
   deliverables?: string;
   target_audience?: string;
@@ -47,62 +56,111 @@ const experienceBadgeMap: Record<string, string> = {
 const TEAL_HIGHLIGHT = '#00A499';
 
 export default function ProjectList() {
+  const { userId } = useAuth();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [sortKey, setSortKey] = useState<'bid' | 'expertise' | 'deadline'>('bid');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [bidValue, setBidValue] = useState('');
+  const [bids, setBids] = useState<Bid[]>([]);
 
-  const projects: Project[] = [
-    {
-      id: 1,
-      title: 'SEO Optimization Campaign',
-      description: 'Improve search rankings for e-commerce website',
-      deadline: '2025-06-15T00:00:00.000Z',
-      expertiseLevel: 'Mid-Level',
-      bidCount: 30,
-      projectBudget: 1500,
-      status: 'open',
-      overview: 'Help an e-comm brand rank for new seasonal collections.',
-      deliverables: '3-5 keyword-optimized landing pages',
-      target_audience: 'DTC Gen Z consumers',
-      platforms: 'Shopify + Google Search Console',
-      preferred_tools: 'SEMRush + Jasper',
-      brand_voice: 'Trendy but concise',
-      inspiration_links: 'https://glossier.com | https://alo.com',
-    },
-    {
-      id: 2,
-      title: 'Social Media Strategy',
-      description: 'Develop comprehensive social media plan',
-      deadline: '2025-07-01T00:00:00.000Z',
-      expertiseLevel: 'Expert',
-      bidCount: 75,
-      projectBudget: 5000,
-      status: 'open',
-      overview: 'Create a viral playbook for product launch.',
-      deliverables: '15 content ideas, 7 draft captions, 1 calendar',
-      target_audience: 'Beauty creators + skincare lovers',
-      platforms: 'Instagram, TikTok',
-      preferred_tools: 'Canva, Meta Planner',
-      brand_voice: 'Bold, Gen Z, cheeky',
-      inspiration_links: 'https://starface.world | https://topicals.com',
-    },
-    {
-      id: 3,
-      title: 'Content Marketing Plan',
-      description: 'Create monthly blog content strategy',
-      deadline: '2025-07-15T00:00:00.000Z',
-      expertiseLevel: 'Entry Level',
-      bidCount: 15,
-      projectBudget: 800,
-      status: 'open',
-      overview: 'Support organic visibility by establishing topic clusters.',
-      deliverables: '1 blog strategy, 10 topic outlines',
-      target_audience: 'Small business owners + startup founders',
-      platforms: 'WordPress, Notion',
-      preferred_tools: 'Ahrefs, SurferSEO',
-      brand_voice: 'Helpful and professional',
-      inspiration_links: 'https://zapier.com/blog | https://buffer.com/resources',
-    },
-  ];
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/projects');
+      const json = await res.json();
+      if (!res.ok) {
+        console.error('Error fetching projects:', json.error);
+        toast.error('Failed to load projects');
+        return;
+      }
+
+      const formattedProjects: Project[] = (json.projects || [])
+        .filter((p: any) => p.status === 'open')
+        .map((project: any) => ({
+          ...project,
+          expertiseLevel: project.minimumBadge || 'Mid-Level',
+          bidCount: 0,
+          overview: project.description,
+          deliverables: project.metadata?.marketing?.deliverables,
+          target_audience: project.metadata?.marketing?.target_audience,
+          platforms: project.metadata?.marketing?.platforms,
+          preferred_tools: project.metadata?.marketing?.preferred_tools,
+          brand_voice: project.metadata?.marketing?.brand_voice,
+          inspiration_links: project.metadata?.marketing?.inspiration_links,
+        })) || [];
+
+      setProjects(formattedProjects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      toast.error('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const loadBids = async () => {
+      if (!selectedProject || !userId) {
+        setBids([]);
+        return;
+      }
+      try {
+        const res = await fetch('/api/db?table=project_bids');
+        const json = await res.json();
+        const projectBids = (json.data || []).filter(
+          (b: any) => b.projectId === selectedProject.id && b.professionalId === userId
+        );
+        setBids(projectBids);
+      } catch (err) {
+        console.error('Failed to load bids', err);
+      }
+    };
+    loadBids();
+  }, [selectedProject, userId]);
+
+  const handleSubmitBid = async () => {
+    if (!selectedProject || !userId || !bidValue) return;
+    try {
+      const res = await fetch('/api/db', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          table: 'project_bids',
+          data: {
+            projectId: selectedProject.id,
+            professionalId: userId,
+            ratePerHour: Number(bidValue),
+          },
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to submit bid');
+      toast.success('Bid submitted');
+      const newBid = json.data?.[0];
+      if (newBid) {
+        setBids((prev) => [...prev, newBid]);
+      }
+      setBidValue('');
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === selectedProject.id
+            ? { ...p, bidCount: (p.bidCount || 0) + 1 }
+            : p
+        )
+      );
+      setSelectedProject((prev) =>
+        prev ? { ...prev, bidCount: (prev.bidCount || 0) + 1 } : prev
+      );
+    } catch (error) {
+      console.error('Error submitting bid:', error);
+      toast.error('Failed to submit bid');
+    }
+  };
 
   const activeBids = projects.filter((p) => p.status === 'open');
   const popularActiveBids = activeBids
@@ -141,6 +199,14 @@ export default function ProjectList() {
     format(new Date(isoDate), "MMM d, yyyy 'at' h:mm aa");
   const timeRemaining = (isoDate: string) =>
     formatDistanceToNow(new Date(isoDate), { addSuffix: true });
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading projects...</div>;
+  }
+
+  if (projects.length === 0) {
+    return <div className="p-6 text-center">No projects available.</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -277,11 +343,34 @@ export default function ProjectList() {
                 className="flex-1 border border-gray-300 rounded px-3 py-2"
                 max={startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50}
                 min={0}
+                value={bidValue}
+                onChange={(e) => setBidValue(e.target.value)}
               />
-              <Button className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white">
+              <Button
+                className="flex-1 bg-[#2E3A8C] hover:bg-[#1B276F] text-white"
+                onClick={handleSubmitBid}
+                disabled={!bidValue}
+              >
                 Submit Bid &rarr;
               </Button>
             </div>
+            {bids.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-medium mb-2">Your Previous Bids</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  {bids.map((bid) => (
+                    <li key={bid.id} className="flex justify-between">
+                      <span>${bid.ratePerHour}/hr</span>
+                      {bid.createdAt && (
+                        <span className="text-gray-500">
+                          {formatDistanceToNow(new Date(bid.createdAt), { addSuffix: true })}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="text-sm space-y-1">
               {selectedProject.overview && (
                 <p>
