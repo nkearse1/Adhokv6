@@ -13,6 +13,8 @@ interface Bid {
   id: string;
   ratePerHour: number;
   createdAt?: string;
+  projectId?: string;
+  professionalId?: string;
 }
 
 interface Project {
@@ -72,7 +74,7 @@ export default function ProjectList() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/projects');
+      const res = await fetch('/api/projects', { cache: 'no-store' });
       const json = await res.json();
       if (!res.ok) {
         console.error('Error fetching projects:', json.error);
@@ -80,28 +82,32 @@ export default function ProjectList() {
         return;
       }
 
-      const formattedProjects: Project[] = (json.projects || [])
-        .filter((p: any) => p.status === 'open')
-        .map((project: any) => ({
-          ...project,
-          expertiseLevel: project.minimumBadge || 'Mid-Level',
-          bidCount: 0,
-          overview: project.description,
-          deliverables: project.metadata?.marketing?.deliverables,
-          target_audience: project.metadata?.marketing?.target_audience,
-          platforms: project.metadata?.marketing?.platforms,
-          preferred_tools: project.metadata?.marketing?.preferred_tools,
-          brand_voice: project.metadata?.marketing?.brand_voice,
-          inspiration_links: project.metadata?.marketing?.inspiration_links,
-        })) || [];
+      const formattedProjects: Project[] =
+        (json.projects || [])
+          .filter((p: any) => p.status === 'open')
+          .map((project: any) => ({
+            ...project,
+            expertiseLevel: project.minimumBadge || 'Mid-Level',
+            bidCount: 0,
+            overview: project.description,
+            deliverables: project.metadata?.marketing?.deliverables,
+            target_audience: project.metadata?.marketing?.target_audience,
+            platforms: project.metadata?.marketing?.platforms,
+            preferred_tools: project.metadata?.marketing?.preferred_tools,
+            brand_voice: project.metadata?.marketing?.brand_voice,
+            inspiration_links: project.metadata?.marketing?.inspiration_links,
+          })) || [];
 
       try {
-        const bidsRes = await fetch('/api/db?table=project_bids');
+        const bidsRes = await fetch('/api/db?table=project_bids', { cache: 'no-store' });
         const bidsJson = await bidsRes.json();
-        const bidsData = bidsJson.data || [];
+        const bidsData: Bid[] = bidsJson.data || [];
+
         const projectsWithBids = formattedProjects.map((p) => {
           const projectBids = bidsData.filter(
-            (b: any) => b.projectId === p.id && (!p.auction_end || !b.createdAt || new Date(b.createdAt) <= new Date(p.auction_end))
+            (b: any) =>
+              b.projectId === p.id &&
+              (!p.auction_end || !b.createdAt || new Date(b.createdAt) <= new Date(p.auction_end))
           );
           const activeBid =
             projectBids.length > 0
@@ -128,20 +134,24 @@ export default function ProjectList() {
 
   useEffect(() => {
     const loadBids = async () => {
-      if (!selectedProject) {
+      if (!selectedProject || !userId) {
         setBids([]);
         return;
       }
       try {
-        const res = await fetch('/api/db?table=project_bids');
+        const res = await fetch('/api/db?table=project_bids', { cache: 'no-store' });
         const json = await res.json();
-        const allProjectBids = (json.data || []).filter(
+
+        // All bids for the selected project
+        const allProjectBids: Bid[] = (json.data || []).filter(
           (b: any) => b.projectId === selectedProject.id
         );
-        const userBids = allProjectBids.filter(
-          (b: any) => b.professionalId === userId
-        );
+
+        // Current user's bids for the selected project
+        const userBids = allProjectBids.filter((b: any) => b.professionalId === userId);
         setBids(userBids);
+
+        // Valid bids within auction window (if auction_end is set)
         const validBids = allProjectBids.filter(
           (b: any) =>
             !selectedProject.auction_end ||
@@ -152,6 +162,8 @@ export default function ProjectList() {
           validBids.length > 0
             ? Math.min(...validBids.map((b: any) => b.ratePerHour))
             : undefined;
+
+        // Update counts/active bid on the project list and the selected project
         setProjects((prev) =>
           prev.map((p) =>
             p.id === selectedProject.id
@@ -186,16 +198,19 @@ export default function ProjectList() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to submit bid');
+
       toast.success('Bid submitted');
-      const newBid = json.data?.[0];
+      const newBid: Bid | undefined = json.data?.[0];
       if (newBid) {
         setBids((prev) => [...prev, newBid]);
       }
+
       const bidRate = Number(bidValue);
       const newActiveBid =
         selectedProject.activeBid !== undefined
           ? Math.min(selectedProject.activeBid, bidRate)
           : bidRate;
+
       setBidValue('');
       setProjects((prev) =>
         prev.map((p) =>
@@ -279,9 +294,7 @@ export default function ProjectList() {
         {popularActiveBids.map((project) => (
           <div
             key={project.id}
-            className={`border-2 rounded-lg p-4 cursor-pointer hover:shadow-md ${
-              selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'
-            }`}
+            className="border-2 rounded-lg p-4 cursor-pointer hover:shadow-md border-gray-200"
             onClick={() => setSelectedProject(project)}
             style={{ borderColor: selectedProject?.id === project.id ? TEAL_HIGHLIGHT : undefined }}
           >
@@ -298,11 +311,13 @@ export default function ProjectList() {
               · <span>{timeRemaining(project.auction_end ?? project.deadline)}</span>
               <DurationBadge
                 className="ml-2"
-                estimatedHours={calculateEstimatedHours({
-                  budget: project.projectBudget,
-                  expertiseLevel: formatExpertise(project.expertiseLevel),
-                  title: project.title,
-                }) || undefined}
+                estimatedHours={
+                  calculateEstimatedHours({
+                    budget: project.projectBudget,
+                    expertiseLevel: formatExpertise(project.expertiseLevel),
+                    title: project.title,
+                  }) || undefined
+                }
               />
             </div>
           </div>
@@ -328,9 +343,7 @@ export default function ProjectList() {
           {displayActiveBids.map((project) => (
             <div
               key={project.id}
-              className={`border-2 rounded-lg p-4 mb-4 cursor-pointer hover:shadow-md ${
-                selectedProject?.id === project.id ? `border-[${TEAL_HIGHLIGHT}]` : 'border-gray-200'
-              }`}
+              className="border-2 rounded-lg p-4 mb-4 cursor-pointer hover:shadow-md border-gray-200"
               onClick={() => setSelectedProject(project)}
               style={{ borderColor: selectedProject?.id === project.id ? TEAL_HIGHLIGHT : undefined }}
             >
@@ -389,23 +402,22 @@ export default function ProjectList() {
               <Clock className="w-4 h-4" />
               <span>Due {formatDueDate(selectedProject.deadline)}</span>
               <span className="ml-auto font-medium text-gray-800">
-                Ends in {timeRemaining(
-                  selectedProject.auction_end ?? selectedProject.deadline
-                )}
+                Ends in {timeRemaining(selectedProject.auction_end ?? selectedProject.deadline)}
               </span>
               <DurationBadge
-                estimatedHours={calculateEstimatedHours({
-                  budget: selectedProject.projectBudget,
-                  expertiseLevel: formatExpertise(selectedProject.expertiseLevel),
-                  title: selectedProject.title,
-                }) || undefined}
+                estimatedHours={
+                  calculateEstimatedHours({
+                    budget: selectedProject.projectBudget,
+                    expertiseLevel: formatExpertise(selectedProject.expertiseLevel),
+                    title: selectedProject.title,
+                  }) || undefined
+                }
               />
             </div>
             <div className="flex gap-4 items-center flex-wrap mb-4">
               <span className="text-sm text-gray-700 mr-2">
-                Starting Bid: ${
-                  startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50
-                }
+                Starting Bid: $
+                {startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50}
                 /hr
               </span>
               <span className="text-sm text-gray-700 mr-2">
@@ -420,9 +432,7 @@ export default function ProjectList() {
                 className="flex-1 border border-gray-300 rounded px-3 py-2"
                 max={
                   selectedProject.activeBid ??
-                  (startingBidsByExpertise[
-                    formatExpertise(selectedProject.expertiseLevel)
-                  ] || 50)
+                  (startingBidsByExpertise[formatExpertise(selectedProject.expertiseLevel)] || 50)
                 }
                 min={0}
                 value={bidValue}
@@ -452,9 +462,7 @@ export default function ProjectList() {
                         <span>${bid.ratePerHour}/hr</span>
                         {bid.createdAt && (
                           <span className="text-gray-500">
-                            {formatDistanceToNow(new Date(bid.createdAt), {
-                              addSuffix: true,
-                            })}
+                            {formatDistanceToNow(new Date(b.createdAt), { addSuffix: true })}
                           </span>
                         )}
                       </li>
@@ -505,4 +513,3 @@ export default function ProjectList() {
     </div>
   );
 }
-
