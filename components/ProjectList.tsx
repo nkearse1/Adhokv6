@@ -13,8 +13,8 @@ interface Bid {
   id: string;
   ratePerHour: number;
   createdAt?: string;
-  projectId?: string;
-  professionalId?: string;
+  projectId: string;
+  professionalId: string;
 }
 
 interface Project {
@@ -103,18 +103,20 @@ export default function ProjectList() {
         const bidsJson = await bidsRes.json();
         const bidsData: Bid[] = bidsJson.data || [];
 
-        const projectsWithBids = formattedProjects.map((p) => {
+        const projectsWithBids = formattedProjects.map((proj) => {
           const projectBids = bidsData.filter(
-            (b: any) =>
-              b.projectId === p.id &&
-              (!p.auction_end || !b.createdAt || new Date(b.createdAt) <= new Date(p.auction_end))
+            (bidRow: any) =>
+              bidRow.projectId === proj.id &&
+              (!proj.auction_end ||
+                (bidRow.createdAt &&
+                  new Date(bidRow.createdAt) <= new Date(proj.auction_end)))
           );
           const activeBid =
             projectBids.length > 0
-              ? Math.min(...projectBids.map((b: any) => b.ratePerHour))
+              ? Math.min(...projectBids.map((row: any) => row.ratePerHour))
               : undefined;
           return {
-            ...p,
+            ...proj,
             bidCount: projectBids.length,
             activeBid,
           };
@@ -153,14 +155,15 @@ export default function ProjectList() {
 
         // Valid bids within auction window (if auction_end is set)
         const validBids = allProjectBids.filter(
-          (b: any) =>
+          (bidRow: any) =>
             !selectedProject.auction_end ||
-            !b.createdAt ||
-            new Date(b.createdAt) <= new Date(selectedProject.auction_end!)
+            (bidRow.createdAt &&
+              new Date(bidRow.createdAt) <=
+                new Date(selectedProject.auction_end!))
         );
         const activeBid =
           validBids.length > 0
-            ? Math.min(...validBids.map((b: any) => b.ratePerHour))
+            ? Math.min(...validBids.map((row: any) => row.ratePerHour))
             : undefined;
 
         // Update counts/active bid on the project list and the selected project
@@ -238,38 +241,60 @@ export default function ProjectList() {
     }
   };
 
-  const activeBids = projects.filter((p) => p.status === 'open');
+  const activeBids = projects.filter((proj) => proj.status === 'open');
   const popularActiveBids = activeBids
-    .filter((p) => (p.bidCount ?? 0) > 0)
-    .sort((a, b) => (b.bidCount ?? 0) - (a.bidCount ?? 0))
+    .filter((proj) => (proj.bidCount ?? 0) > 0)
+    .sort((p1, p2) => (p2.bidCount ?? 0) - (p1.bidCount ?? 0))
     .slice(0, 3);
   const otherActiveBids = activeBids.filter(
-    (p) => !popularActiveBids.some((pop) => pop.id === p.id)
+    (proj) => !popularActiveBids.some((pop) => pop.id === proj.id)
   );
 
   const sortedOtherActiveBids = useMemo(() => {
     let baseSorted = [...otherActiveBids];
     if (sortKey === 'bid') {
-      baseSorted.sort(
-        (a, b) =>
-          (startingBidsByExpertise[experienceBadgeMap[b.expertiseLevel] ?? b.expertiseLevel] ?? 0) -
-          (startingBidsByExpertise[experienceBadgeMap[a.expertiseLevel] ?? a.expertiseLevel] ?? 0)
-      );
+      baseSorted.sort((p1, p2) => {
+        const rate1 =
+          startingBidsByExpertise[
+            experienceBadgeMap[p1.expertiseLevel] ?? p1.expertiseLevel
+          ] ?? 0;
+        const rate2 =
+          startingBidsByExpertise[
+            experienceBadgeMap[p2.expertiseLevel] ?? p2.expertiseLevel
+          ] ?? 0;
+        return rate2 - rate1;
+      });
     } else if (sortKey === 'expertise') {
-      baseSorted.sort(
-        (a, b) =>
-          (expertiseOrder[experienceBadgeMap[b.expertiseLevel] ?? b.expertiseLevel] ?? 0) -
-          (expertiseOrder[experienceBadgeMap[a.expertiseLevel] ?? a.expertiseLevel] ?? 0)
-      );
+      baseSorted.sort((p1, p2) => {
+        const rank1 =
+          expertiseOrder[
+            experienceBadgeMap[p1.expertiseLevel] ?? p1.expertiseLevel
+          ] ?? 0;
+        const rank2 =
+          expertiseOrder[
+            experienceBadgeMap[p2.expertiseLevel] ?? p2.expertiseLevel
+          ] ?? 0;
+        return rank2 - rank1;
+      });
     } else if (sortKey === 'deadline') {
       baseSorted.sort(
-        (a, b) =>
-          new Date(a.auction_end ?? a.deadline).getTime() -
-          new Date(b.auction_end ?? b.deadline).getTime()
+        (p1, p2) =>
+          new Date(p1.auction_end ?? p1.deadline).getTime() -
+          new Date(p2.auction_end ?? p2.deadline).getTime()
       );
     }
     return baseSorted;
   }, [otherActiveBids, sortKey]);
+
+  const sortedBids = useMemo(
+    () =>
+      [...bids].sort(
+        (bid1, bid2) =>
+          new Date(bid2.createdAt ?? 0).getTime() -
+          new Date(bid1.createdAt ?? 0).getTime()
+      ),
+    [bids]
+  );
 
   const displayActiveBids = [...popularActiveBids, ...sortedOtherActiveBids];
   const formatExpertise = (exp: string) => experienceBadgeMap[exp] ?? exp;
@@ -446,30 +471,23 @@ export default function ProjectList() {
                 Submit Bid &rarr;
               </Button>
             </div>
-            {bids.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-medium mb-2">Your Previous Bids</h3>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  {bids
-                    .slice()
-                    .sort(
-                      (a, b) =>
-                        new Date(b.createdAt ?? 0).getTime() -
-                        new Date(a.createdAt ?? 0).getTime()
-                    )
-                    .map((bid) => (
-                      <li key={bid.id} className="flex justify-between">
-                        <span>${bid.ratePerHour}/hr</span>
-                        {bid.createdAt && (
+              {bids.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="font-medium mb-2">Your Previous Bids</h3>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    {sortedBids.map((bidRow) => (
+                      <li key={bidRow.id} className="flex justify-between">
+                        <span>${bidRow.ratePerHour}/hr</span>
+                        {bidRow.createdAt && (
                           <span className="text-gray-500">
-                            {formatDistanceToNow(new Date(b.createdAt), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(bidRow.createdAt), { addSuffix: true })}
                           </span>
                         )}
                       </li>
                     ))}
-                </ul>
-              </div>
-            )}
+                  </ul>
+                </div>
+              )}
             <div className="text-sm space-y-1">
               {selectedProject.overview && (
                 <p>

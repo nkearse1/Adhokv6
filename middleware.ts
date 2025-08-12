@@ -8,6 +8,11 @@ export function middleware(req: NextRequest) {
 
   const effective = (qsOverride ?? cookieOverride)?.trim() || undefined;
 
+  const debug = process.env.NEXT_PUBLIC_DEBUG_AUTH === '1';
+  if (debug) {
+    console.log('[middleware] override', { qsOverride, cookieOverride, effective });
+  }
+
   const headers = new Headers(req.headers);
   if (effective) {
     headers.set('x-override-user-id', effective);

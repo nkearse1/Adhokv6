@@ -8,115 +8,125 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 
-export interface AuthState {
-  userId: string | null;
-  username: string | null;
-  userRole: string | null;
-  isClient?: boolean;
-  isAdmin: boolean;
-  isAuthenticated: boolean;
+interface AuthState {
   loading: boolean;
-  authUser: any;
+  isAuthenticated: boolean;
+  userId: string | null;
+  userRole: string | null;
+  username: string | null;
+  fullName: string | null;
+  authUser: any | null;
+  isAdmin: boolean;
+  isClient: boolean;
+}
+
+interface AuthContextValue extends AuthState {
   refreshSession: () => Promise<void>;
 }
 
-const defaultState: AuthState = {
-  userId: null,
-  username: null,
-  userRole: null,
-  isClient: false,
-  isAdmin: false,
-  isAuthenticated: false,
+const defaultState: AuthContextValue = {
   loading: true,
+  isAuthenticated: false,
+  userId: null,
+  userRole: null,
+  username: null,
+  fullName: null,
   authUser: null,
+  isAdmin: false,
+  isClient: false,
   refreshSession: async () => {},
 };
 
-const AuthContext = createContext<AuthState>(defaultState);
+const AuthContext = createContext<AuthContextValue>(defaultState);
 
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<Omit<AuthState, 'refreshSession'>>({
-    userId: null,
-    username: null,
-    userRole: null,
-    isClient: false,
-    isAdmin: false,
-    isAuthenticated: false,
+  const [state, setState] = useState<AuthState>({
     loading: true,
+    isAuthenticated: false,
+    userId: null,
+    userRole: null,
+    username: null,
+    fullName: null,
     authUser: null,
+    isAdmin: false,
+    isClient: false,
   });
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   const hasFetchedOnce = useRef(false);
 
   const fetchSession = useCallback(async () => {
-    const res = await fetch('/api/session');
-    if (!res.ok) throw new Error('no session');
-    const { user } = await res.json();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[fetchSession] resolved user', user);
+    const res = await fetch('/api/session', { cache: 'no-store' });
+    const { session } = await res.json();
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === '1') {
+      console.log('[fetchSession] session', session);
     }
-    return user as any | null;
+    return session as any | null;
   }, []);
 
   const refreshSession = useCallback(async () => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[refreshSession] start');
-    }
     try {
-      const user = await fetchSession();
-      if (!user) {
-        console.warn('[AuthProvider] Session resolved as null');
+      const session = await fetchSession();
+      if (!session) {
         setState({
-          userId: null,
-          username: null,
-          userRole: null,
-          isClient: false,
-          isAdmin: false,
-          isAuthenticated: false,
           loading: false,
+          isAuthenticated: false,
+          userId: null,
+          userRole: null,
+          username: null,
+          fullName: null,
           authUser: null,
+          isAdmin: false,
+          isClient: false,
         });
         return;
       }
       setState({
-        userId: user.userId,
-        username: null,
-        userRole: user.userRole,
-        isClient: user.userRole === 'client',
-        isAdmin: user.userRole === 'admin',
-        isAuthenticated: true,
         loading: false,
-        authUser: user,
+        isAuthenticated: true,
+        userId: session.userId,
+        userRole: session.userRole ?? null,
+        username: session.username ?? null,
+        fullName: session.fullName ?? null,
+        authUser: session,
+        isAdmin: session.userRole === 'admin',
+        isClient: session.userRole === 'client',
       });
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[refreshSession] updated state', user);
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === '1') {
+        console.log('[refreshSession] updated state', session);
       }
     } catch (err) {
-      console.error('Failed loading session', err);
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === '1') {
+        console.error('[refreshSession] failed', err);
+      }
       setState({
-        userId: null,
-        username: null,
-        userRole: null,
-        isClient: false,
-        isAdmin: false,
-        isAuthenticated: false,
         loading: false,
+        isAuthenticated: false,
+        userId: null,
+        userRole: null,
+        username: null,
+        fullName: null,
         authUser: null,
+        isAdmin: false,
+        isClient: false,
       });
     }
   }, [fetchSession]);
 
   useEffect(() => {
-    if (hasFetchedOnce.current) return;
-    hasFetchedOnce.current = true;
-    refreshSession();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[AuthProvider] initial refreshSession');
+    if (hasFetchedOnce.current) {
+      refreshSession();
+    } else {
+      hasFetchedOnce.current = true;
+      refreshSession();
     }
-  }, [refreshSession]);
+  }, [pathname, search, refreshSession]);
 
-  const value = { ...state, refreshSession };
+  const value: AuthContextValue = { ...state, refreshSession };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
