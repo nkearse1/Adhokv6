@@ -7,13 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/client/useAuthContext";
-import {
-  Clock,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import TalentEarnings from "@/components/TalentEarnings";
 import CaseStudyModal from "@/components/CaseStudyModal";
 import RevenuePanel from "@/components/RevenuePanel";
 import { CompletedProjectsList } from "@/components/CompletedProjectsList";
@@ -27,11 +21,6 @@ import type { TalentProfile } from "@/lib/types/talent";
 
 const TEAL_COLOR = "#00A499";
 
-const experienceBadgeMap: Record<string, string> = {
-  "Entry Level": "Specialist",
-  "Mid-Level": "Pro Talent",
-  "Expert": "Expert Talent",
-};
 
 interface Deliverable {
   id: string;
@@ -106,6 +95,8 @@ export default function TalentDashboard() {
   const [editOpen, setEditOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loadedProfile, setLoadedProfile] = useState<TalentProfile | null>(null);
+  const [activeBidCount, setActiveBidCount] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -116,6 +107,21 @@ export default function TalentDashboard() {
         const all = json.data || [];
         const assigned = all.filter((p: any) => p.talentId === userId);
         setProjects(assigned as Project[]);
+
+        const completed = assigned.filter((p: any) => p.status === 'complete');
+        const earnings = completed.reduce(
+          (sum: number, p: any) =>
+            sum + (p.projectBudget || p.metadata?.marketing?.budget || 0),
+          0,
+        );
+        setTotalEarnings(earnings);
+
+        const bidRes = await fetch('/api/db?table=project_bids');
+        const bidJson = await bidRes.json();
+        const userBids = (bidJson.data || []).filter(
+          (b: any) => b.professionalId === userId,
+        );
+        setActiveBidCount(userBids.length);
 
         const profRes = await fetch(`/api/talent/profile?id=${userId}`);
         const profJson = await profRes.json();
@@ -136,21 +142,24 @@ export default function TalentDashboard() {
     load();
   }, [userId]);
 
+  const filteredProjects = projects.filter(p => p.status === 'complete');
+  const wonProjects = projects.filter(
+    (p) => p.status === 'awarded' || p.status === 'complete',
+  );
+
   const statLabelMap: Record<string, string> = {
-    activeBids: "Active Bids",
-    earnings: "Revenue Overview",
-    portfolio: "Completed Projects",
-    won: "Won Projects",
+    activeBids: 'Active Bids',
+    earnings: 'Revenue Overview',
+    portfolio: 'Completed Projects',
+    won: 'Won Projects',
   };
 
   const statValueMap: Record<string, string | number> = {
-    activeBids: 1,
-    earnings: "$7,200",
-    portfolio: 1,
-    won: projects.filter(p => p.status === 'awarded' || p.status === 'complete').length,
+    activeBids: activeBidCount,
+    earnings: `$${totalEarnings.toLocaleString()}`,
+    portfolio: filteredProjects.length,
+    won: wonProjects.length,
   };
-  const filteredProjects = projects.filter(p => p.status === 'complete');
-  const wonProjects = projects.filter(p => p.status === 'awarded' || p.status === 'complete');
 
   const handleSaveCaseStudy = (projectId: string, updated: CaseStudy) => {
     const updatedProjects = projects.map(p =>
