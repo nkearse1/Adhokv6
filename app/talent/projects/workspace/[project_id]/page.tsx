@@ -1,9 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/lib/client/useAuthContext';
-import { CalendarIcon, Clock, ExternalLink, AlertTriangle, MessageSquare, CreditCard } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { CalendarIcon, Clock, AlertTriangle, MessageSquare, CreditCard } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -17,106 +15,13 @@ import FileUpload from '@/components/FileUpload';
 import WorkspaceTabs from '@/components/WorkspaceTabs';
 import DeliverableUpload from '@/components/DeliverableUpload';
 import ClientFeedbackCard from '@/components/ClientFeedbackCard';
-
-// Mock hooks to replace the ones that used Supabase
-const useProjectStatus = (projectId: string) => {
-  const [deliverables, setDeliverables] = useState<any[]>([
-    {
-      id: '1',
-      title: 'Technical SEO Audit',
-      description: 'Comprehensive technical audit to identify crawlability, indexation, and speed issues.',
-      problem: 'Site has poor indexation and crawl efficiency',
-      kpis: ['Improve crawl rate by 30%', 'Fix all critical technical issues'],
-      status: 'in_progress' as const,
-      estimatedHours: 8,
-      actualHours: 4,
-      timeEntries: [{ startTime: new Date(), endTime: new Date(), hoursLogged: 4 }]
-    },
-    {
-      id: '2',
-      title: 'Keyword Strategy',
-      description: 'Develop comprehensive keyword targeting strategy',
-      problem: 'Current keyword targeting is too broad',
-      kpis: ['Identify 50+ high-value keywords', 'Create keyword mapping document'],
-      status: 'recommended' as const,
-      estimatedHours: 6,
-      actualHours: 0,
-      timeEntries: []
-    }
-  ]);
-  
-  const [activityLog, setActivityLog] = useState<string[]>([
-    'Project started',
-    'Initial deliverables proposed',
-    'Technical SEO audit started'
-  ]);
-  
-  return {
-    projectStatus: 'In Progress',
-    deliverables,
-    activityLog,
-    loading: false,
-    statusReady: true,
-    canAccess: true,
-    hasTrackingInfo: false,
-    updateDeliverableStatus: async (id: string, status: any) => {
-      setDeliverables(prev => prev.map(d => (d.id === id ? { ...d, status } : d)));
-      setActivityLog(prev => [...prev, `Deliverable "${deliverables.find(d => d.id === id)?.title}" status updated to ${status}`]);
-    },
-    addDeliverable: async (deliverable: any) => {
-      setDeliverables(prev => [
-        ...prev,
-        { ...deliverable, id: Date.now().toString(), actualHours: 0, timeEntries: [] },
-      ]);
-      setActivityLog(prev => [...prev, `New deliverable "${deliverable.title}" added`]);
-    },
-    updateDeliverable: (id: string, updates: any) => {
-      setDeliverables(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));
-      setActivityLog(prev => [...prev, `Deliverable "${deliverables.find(d => d.id === id)?.title}" updated`]);
-    },
-    addActivityLogEntry: (entry: string) => {
-      setActivityLog(prev => [...prev, entry]);
-    },
-    getApprovalProgress: () => {
-      const total = deliverables.length;
-      const approved = deliverables.filter(d => d.status === 'approved').length;
-      return { approved, total, percentage: total > 0 ? (approved / total) * 100 : 0 };
-    }
-  };
-};
-
-const useEscrow = (projectId: string) => {
-  const [status, setStatus] = useState('idle');
-  
-  return {
-    escrowStatus: status,
-    requestEscrowRelease: () => {
-      setStatus('requested');
-    },
-    approveEscrowRelease: () => {
-      setStatus('approved');
-    },
-    rejectEscrowRelease: () => {
-      setStatus('rejected');
-    },
-    overrideEscrow: () => {}
-  };
-};
+import { useProjectStatus } from '@/hooks/useProjectStatus';
+import { useEscrow } from '@/hooks/useEscrow';
 
 export default function ProjectWorkspace() {
   const params = useParams();
   const router = useRouter();
-  const pathname = usePathname();
   const project_id = params.project_id as string;
-  const {
-    userId,
-    userRole,
-    username,
-    authUser,
-    loading: authLoading,
-    isAuthenticated,
-  } = useAuth();
-  const [project, setProject] = useState<any | null>(null);
   const [projectName, setProjectName] = useState('Project');
   const [projectDeadline, setProjectDeadline] = useState<Date | null>(null);
   const [projectStartDate, setProjectStartDate] = useState<Date | null>(null);
@@ -131,16 +36,12 @@ export default function ProjectWorkspace() {
         const json = await res.json();
         const proj = json.data?.[0];
         if (proj) {
-          setProject(proj);
           setProjectName(proj.title || 'Project');
           setProjectDeadline(new Date(proj.deadline || Date.now()));
           setProjectStartDate(new Date());
-          const hours = Array.isArray(proj.deliverables)
-            ? proj.deliverables.reduce((a: number, d: any) => a + (d.estimatedHours || 0), 0)
-            : proj.estimatedHours || 0;
-          setEstimatedHours(hours);
           setHourlyRate(proj.hourlyRate || 0);
-          setEstimatedBudget(hours * (proj.hourlyRate || 0));
+          setEstimatedHours(proj.estimatedHours || 0);
+          setEstimatedBudget((proj.estimatedHours || 0) * (proj.hourlyRate || 0));
         }
       } catch (err) {
         console.error('Failed loading project', err);
@@ -171,6 +72,12 @@ export default function ProjectWorkspace() {
     rejectEscrowRelease,
     overrideEscrow
   } = useEscrow(project_id);
+
+  useEffect(() => {
+    const hours = deliverables.reduce((sum, d) => sum + (d.estimatedHours || 0), 0);
+    setEstimatedHours(hours);
+    setEstimatedBudget(hours * hourlyRate);
+  }, [deliverables, hourlyRate]);
 
   useEffect(() => {
     if (projectStatus === 'Picked Up') {
@@ -393,7 +300,7 @@ export default function ProjectWorkspace() {
           <TabsContent value="activity">
             <ActivityLog
               role="talent"
-              deliverables={deliverables}
+              deliverables={deliverables as any}
               activityLog={activityLog}
             />
           </TabsContent>
