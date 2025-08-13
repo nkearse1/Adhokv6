@@ -51,7 +51,7 @@ interface ProjectStatusResult {
   canAccess: boolean;
   updateDeliverableStatus: (id: string, newStatus: Deliverable['status']) => Promise<void>;
   addDeliverable: (deliverable: Partial<Deliverable>) => Promise<void>;
-  updateDeliverable: (id: string, updates: Partial<Deliverable>) => void;
+  updateDeliverable: (id: string, updates: Partial<Deliverable>) => Promise<void>;
   addActivityLogEntry: (message: string) => void;
   addTrackingInfo: (trackingData: any) => void;
   getApprovalProgress: () => { approved: number; total: number; percentage: number };
@@ -132,53 +132,173 @@ export function useProjectStatus(projectId?: string): ProjectStatusResult {
 
   const canAccess = statusReady && accessibleStatuses.includes(projectStatus);
 
-  const updateDeliverableStatus = useCallback(async (id: string, newStatus: Deliverable['status']) => {
-    try {
-      setDeliverables(prev => {
-        const updated = prev.map(d => d.id === id ? { ...d, status: newStatus } : d);
-        const newProjectStatus = calculateProjectStatus(updated, hasTrackingInfo, isArchived, isAssignedToTalent);
-        setProjectStatus(newProjectStatus);
-        return updated;
-      });
-      
-      setActivityLog(prev => [...prev, `Deliverable status updated: ${newStatus}`]);
-    } catch (error) {
-      console.error('Error updating deliverable status:', error);
-    }
-  }, [calculateProjectStatus, hasTrackingInfo, isArchived, isAssignedToTalent]);
+  const updateDeliverableStatus = useCallback(
+    async (id: string, newStatus: Deliverable['status']) => {
+      try {
+        const res = await fetch('/api/db', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'project_deliverables',
+            id,
+            data: { status: newStatus }
+          })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Update failed');
 
-  const addDeliverable = useCallback(async (deliverable: Partial<Deliverable>) => {
-    try {
-      const newDeliverable: Deliverable = {
-        id: Date.now().toString(),
-        title: deliverable.title || '',
-        description: deliverable.description || '',
-        problem: deliverable.problem || '',
-        kpis: deliverable.kpis || [],
-        status: 'recommended',
-        estimatedHours: deliverable.estimatedHours || 8,
-        actualHours: 0,
-        timeEntries: [],
-        files: []
-      };
+        const logMessage = `Deliverable status updated: ${newStatus}`;
+        const logRes = await fetch('/api/db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'activity_logs',
+            data: { projectId, actorId: userId, action: logMessage }
+          })
+        });
+        const logJson = await logRes.json();
+        if (!logRes.ok) throw new Error(logJson.error || 'Log insert failed');
 
-      setDeliverables(prev => {
-        const updated = [...prev, newDeliverable];
-        const newProjectStatus = calculateProjectStatus(updated, hasTrackingInfo, isArchived, isAssignedToTalent);
-        setProjectStatus(newProjectStatus);
-        return updated;
-      });
-      
-      setActivityLog(prev => [...prev, `New deliverable added: ${newDeliverable.title}`]);
-    } catch (error) {
-      console.error('Error adding deliverable:', error);
-    }
-  }, [calculateProjectStatus, hasTrackingInfo, isArchived, isAssignedToTalent]);
+        setDeliverables(prev => {
+          const updated = prev.map(d =>
+            d.id === id ? { ...d, status: json.data?.[0]?.status ?? newStatus } : d
+          );
+          const newProjectStatus = calculateProjectStatus(
+            updated,
+            hasTrackingInfo,
+            isArchived,
+            isAssignedToTalent
+          );
+          setProjectStatus(newProjectStatus);
+          return updated;
+        });
 
-  const updateDeliverable = useCallback((id: string, updates: Partial<Deliverable>) => {
-    setDeliverables(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));
-    setActivityLog(prev => [...prev, 'Deliverable updated']);
-  }, []);
+        setActivityLog(prev => [...prev, logJson.data?.[0]?.action ?? logMessage]);
+      } catch (error) {
+        console.error('Error updating deliverable status:', error);
+      }
+    },
+    [
+      calculateProjectStatus,
+      hasTrackingInfo,
+      isArchived,
+      isAssignedToTalent,
+      projectId,
+      userId
+    ]
+  );
+
+  const addDeliverable = useCallback(
+    async (deliverable: Partial<Deliverable>) => {
+      try {
+        const res = await fetch('/api/db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'project_deliverables',
+            data: {
+              projectId,
+              title: deliverable.title || '',
+              description: deliverable.description || '',
+              status: 'recommended'
+            }
+          })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Insert failed');
+
+        const inserted = json.data?.[0];
+        const newDeliverable: Deliverable = {
+          id: inserted?.id || Date.now().toString(),
+          title: inserted?.title || deliverable.title || '',
+          description: inserted?.description || deliverable.description || '',
+          problem: deliverable.problem || '',
+          kpis: deliverable.kpis || [],
+          status: inserted?.status || 'recommended',
+          estimatedHours: deliverable.estimatedHours || 8,
+          actualHours: 0,
+          timeEntries: [],
+          files: []
+        };
+
+        const logMessage = `New deliverable added: ${newDeliverable.title}`;
+        const logRes = await fetch('/api/db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'activity_logs',
+            data: { projectId, actorId: userId, action: logMessage }
+          })
+        });
+        const logJson = await logRes.json();
+        if (!logRes.ok) throw new Error(logJson.error || 'Log insert failed');
+
+        setDeliverables(prev => {
+          const updated = [...prev, newDeliverable];
+          const newProjectStatus = calculateProjectStatus(
+            updated,
+            hasTrackingInfo,
+            isArchived,
+            isAssignedToTalent
+          );
+          setProjectStatus(newProjectStatus);
+          return updated;
+        });
+
+        setActivityLog(prev => [...prev, logJson.data?.[0]?.action ?? logMessage]);
+      } catch (error) {
+        console.error('Error adding deliverable:', error);
+      }
+    },
+    [
+      calculateProjectStatus,
+      hasTrackingInfo,
+      isArchived,
+      isAssignedToTalent,
+      projectId,
+      userId
+    ]
+  );
+
+  const updateDeliverable = useCallback(
+    async (id: string, updates: Partial<Deliverable>) => {
+      try {
+        const dbUpdates: Record<string, unknown> = {};
+        if (updates.title !== undefined) dbUpdates.title = updates.title;
+        if (updates.description !== undefined) dbUpdates.description = updates.description;
+        if (updates.status !== undefined) dbUpdates.status = updates.status;
+
+        if (Object.keys(dbUpdates).length > 0) {
+          const res = await fetch('/api/db', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: 'project_deliverables', id, data: dbUpdates })
+          });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error || 'Update failed');
+        }
+
+        const logRes = await fetch('/api/db', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'activity_logs',
+            data: { projectId, actorId: userId, action: 'Deliverable updated' }
+          })
+        });
+        const logJson = await logRes.json();
+        if (!logRes.ok) throw new Error(logJson.error || 'Log insert failed');
+
+        setDeliverables(prev =>
+          prev.map(d => (d.id === id ? { ...d, ...updates } : d))
+        );
+        setActivityLog(prev => [...prev, logJson.data?.[0]?.action || 'Deliverable updated']);
+      } catch (error) {
+        console.error('Error updating deliverable:', error);
+      }
+    },
+    [projectId, userId]
+  );
 
   const addActivityLogEntry = useCallback((message: string) => {
     setActivityLog(prev => [...prev, message]);
