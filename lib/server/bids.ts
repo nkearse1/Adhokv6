@@ -1,34 +1,7 @@
 import { db } from '@/lib/db';
 import { projectBids, projects, notifications } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
-
-export async function hasAcceptBidForProject(
-  { bidId, clientId }: { bidId: string; clientId: string },
-): Promise<boolean> {
-  const bidRows = await db
-    .select({ projectId: projectBids.projectId })
-    .from(projectBids)
-    .where(eq(projectBids.id, bidId))
-    .limit(1);
-  if (bidRows.length === 0) return false;
-
-  const projectRows = await db
-    .select({ clientId: projects.clientId, status: projects.status })
-    .from(projects)
-    .where(eq(projects.id, bidRows[0].projectId))
-    .limit(1);
-  if (projectRows.length === 0) return false;
-
-  return projectRows[0].clientId === clientId && projectRows[0].status !== 'awarded';
-}
-
-export async function hasFeatureForClient(
-  clientId: string,
-  _feature = 'accept-bid',
-): Promise<boolean> {
-  // Placeholder for feature flag check
-  return !!clientId;
-}
+export { hasAcceptBidForProject, hasFeatureForClient } from '@/lib/featureFlags';
 
 export async function acceptBid(
   { bidId, clientId }: { bidId: string; clientId: string },
