@@ -1,15 +1,4 @@
--- Create client_tiers table
-CREATE TABLE IF NOT EXISTS client_tiers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
-    description TEXT,
-    monthly_price INTEGER NOT NULL,
-    features JSONB NOT NULL DEFAULT '{}'::jsonb,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Add indexes for client_tiers
+-- Ensure client_tiers has indexes
 CREATE UNIQUE INDEX IF NOT EXISTS idx_client_tiers_name ON client_tiers (name);
 
 -- Extend clients table with tier information
