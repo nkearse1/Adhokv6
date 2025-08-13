@@ -182,10 +182,17 @@ export const waitlist = pgTable('waitlist', {
   signedUpAt: timestamp('signed_up_at').defaultNow()
 });
 
+export const clientTiers = pgTable('client_tiers', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+});
+export type ClientTier = typeof clientTiers.$inferSelect;
 
 export const clientProfiles = pgTable('client_profiles', {
   id: uuid('id').primaryKey(),
   email: text('email'),
   companyName: text('company_name'),
+  tierId: integer('tier_id').references(() => clientTiers.id),
+  tierExpiresAt: timestamp('tier_expires_at'),
 });
 

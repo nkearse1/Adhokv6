@@ -3674,6 +3674,7 @@ __metadata:
     react-resizable-panels: "npm:^2.0.11"
     recharts: "npm:^2.12.0"
     sonner: "npm:^1.4.0"
+    stripe: "npm:^18.4.0"
     svix: "npm:^1.20.0"
     tailwind-merge: "npm:^2.2.1"
     tailwindcss: "npm:^3.4.1"
@@ -8262,6 +8263,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qs@npm:^6.11.0":
+  version: 6.14.0
+  resolution: "qs@npm:6.14.0"
+  dependencies:
+    side-channel: "npm:^1.1.0"
+  checksum: 10c0/8ea5d91bf34f440598ee389d4a7d95820e3b837d3fd9f433871f7924801becaa0cd3b3b4628d49a7784d06a8aea9bc4554d2b6d8d584e2d221dc06238a42909c
+  languageName: node
+  linkType: hard
+
 "querystringify@npm:^2.1.1":
   version: 2.2.0
   resolution: "querystringify@npm:2.2.0"
@@ -9355,6 +9365,20 @@ __metadata:
   dependencies:
     js-tokens: "npm:^9.0.1"
   checksum: 10c0/66a7353f5ba1ae6a4fb2805b4aba228171847200640083117c41512692e6b2c020e18580402984f55c0ae69c30f857f9a55abd672863e4ca8fdb463fdf93ba19
+  languageName: node
+  linkType: hard
+
+"stripe@npm:^18.4.0":
+  version: 18.4.0
+  resolution: "stripe@npm:18.4.0"
+  dependencies:
+    qs: "npm:^6.11.0"
+  peerDependencies:
+    "@types/node": ">=12.x.x"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/abfae24fdc8a4cd96eb494f7582418c49e4db6e8dde21a9db6af8ee0ec02565f89fcf7c41902e0a555d4a733b5162702358114b3b5475343026965cb9b9f8529
   languageName: node
   linkType: hard
 
