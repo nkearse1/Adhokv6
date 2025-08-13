@@ -1,5 +1,7 @@
 import { pgTable, serial, text, timestamp, uuid, boolean, jsonb, integer } from 'drizzle-orm/pg-core';
 
+export type ClientTierFeature = 'accept_bid';
+
 // Users table
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -63,6 +65,7 @@ export const projects = pgTable('projects', {
   hourlyRate: integer('hourly_rate'),
   minimumBadge: text('minimum_badge'),
   flagged: boolean('flagged').default(false),
+  acceptBidEnabled: boolean('accept_bid_enabled').default(false),
   clientId: uuid('client_id').references(() => users.id),
   talentId: uuid('talent_id').references(() => users.id),
   createdBy: uuid('created_by').references(() => users.id),
@@ -73,6 +76,8 @@ export const projects = pgTable('projects', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow()
 });
+
+export type Project = typeof projects.$inferSelect;
 
 // Project bids table
 export const projectBids = pgTable('project_bids', {
@@ -188,4 +193,27 @@ export const clientProfiles = pgTable('client_profiles', {
   email: text('email'),
   companyName: text('company_name'),
 });
+
+export const clientTiers = pgTable('client_tiers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  description: text('description'),
+  monthlyPrice: integer('monthly_price').notNull().default(0),
+  features: jsonb('features')
+    .notNull()
+    .default({} as Record<ClientTierFeature, boolean>),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const clients = pgTable('clients', {
+  id: uuid('id').primaryKey().references(() => users.id),
+  tierId: uuid('tier_id').references(() => clientTiers.id),
+  tierExpiresAt: timestamp('tier_expires_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type ClientTier = typeof clientTiers.$inferSelect;
+export type Client = typeof clients.$inferSelect;
 
