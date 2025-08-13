@@ -5,43 +5,19 @@ import { projectBids, projects } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
 import { notifyBidAccepted } from '@/lib/server/notifications';
 
-export async function hasAcceptBidForProject(
-  { bidId, clientId }: { bidId: string; clientId: string },
-): Promise<boolean> {
-  const bidRows = await db
-    .select({ projectId: projectBids.projectId })
-    .from(projectBids)
-    .where(eq(projectBids.id, bidId))
-    .limit(1);
-  if (bidRows.length === 0) return false;
-
-  const projectRows = await db
-    .select({ clientId: projects.clientId, status: projects.status })
-    .from(projects)
-    .where(eq(projects.id, bidRows[0].projectId))
-    .limit(1);
-  if (projectRows.length === 0) return false;
-
-  return projectRows[0].clientId === clientId && projectRows[0].status !== 'awarded';
-}
-
-export async function hasFeatureForClient(
-  clientId: string,
-  _feature = 'accept-bid',
-): Promise<boolean> {
-  // Placeholder for feature flag check
-  return !!clientId;
-}
+// Re-export feature gates from the single source of truth
+export { hasAcceptBidForProject, hasFeatureForClient } from '@/lib/featureFlags';
 
 export async function acceptBid(
   { bidId, clientId }: { bidId: string; clientId: string },
 ): Promise<void> {
-  await db.transaction(async (tx: typeof db) => {
+  await db.transaction(async (tx) => {
     const bidRes = await tx
       .select()
       .from(projectBids)
       .where(eq(projectBids.id, bidId))
       .limit(1);
+
     if (bidRes.length === 0) {
       throw new Error('Bid not found');
     }
@@ -52,6 +28,7 @@ export async function acceptBid(
       .from(projects)
       .where(eq(projects.id, bid.projectId))
       .limit(1);
+
     if (projectRes.length === 0) {
       throw new Error('Project not found');
     }
@@ -66,7 +43,7 @@ export async function acceptBid(
       .set({
         status: 'awarded',
         talentId: bid.professionalId,
-        metadata: { ...(project.metadata as any || {}), bidId },
+        metadata: { ...((project as any).metadata ?? {}), bidId },
       })
       .where(eq(projects.id, project.id));
 
