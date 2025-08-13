@@ -11,6 +11,7 @@ export interface ClientProject {
   deadline: string;
   projectBudget: number;
   bids?: number;
+  acceptBidEnabled?: boolean;
 }
 
 interface Props {
@@ -99,6 +100,13 @@ export default function ClientProjectsList({ projects }: Props) {
             <div className="flex items-center gap-1">
               {getStatusIcon(proj.status)}
               {getStatusDisplay(proj.status)}
+            </div>
+            <div className="flex items-center gap-1">
+              {proj.acceptBidEnabled ? (
+                <Badge variant="success">Accept Bid</Badge>
+              ) : (
+                <Badge variant="secondary">No Accept Bid</Badge>
+              )}
             </div>
           </div>
         </div>
