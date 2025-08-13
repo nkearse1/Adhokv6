@@ -1,23 +1,15 @@
 'use client';
-import React, { useState } from 'react';
-import type { FC, KeyboardEvent } from 'react';
+import { useState, type FC, type KeyboardEvent } from 'react';
 import { Send, Paperclip, Smile } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useChatMessages } from '@/hooks/useChatMessages';
 
 interface Deliverable {
   id: string;
   title: string;
-}
-
-interface Message {
-  id: string;
-  sender: 'client' | 'talent';
-  text: string;
-  timestamp: Date;
-  deliverableId?: string;
 }
 
 interface ChatPanelProps {
@@ -41,57 +33,6 @@ const accessibleStatuses = [
   'Complete'
 ];
 
-// Mock implementation of useChatMessages hook
-const initialMessages: Message[] = [
-  {
-    id: '1',
-    sender: 'client',
-    text: 'Hi there! Looking forward to working with you on this project.',
-    timestamp: new Date('2024-01-01T12:00:00Z'),
-  },
-  {
-    id: '2',
-    sender: 'talent',
-    text: "Thanks for the opportunity! I've reviewed the brief and I'm excited to get started.",
-    timestamp: new Date('2024-01-01T12:30:00Z'),
-  },
-];
-
-const useChatMessages = (projectId: string) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [isTyping, setIsTyping] = useState(false);
-  
-  const sendMessage = (text: string, deliverableId?: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      sender: 'talent',
-      text,
-      timestamp: new Date(),
-      deliverableId
-    };
-    setMessages(prev => [...prev, newMessage]);
-    
-    // Simulate client response
-    setTimeout(() => {
-      setIsTyping(true);
-      
-      setTimeout(() => {
-        setIsTyping(false);
-        const responseMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          sender: 'client',
-          text: 'Thanks for the update! Looking good so far.',
-          timestamp: new Date(),
-          deliverableId
-        };
-        setMessages(prev => [...prev, responseMessage]);
-      }, 3000);
-    }, 1000);
-  };
-  
-  return { messages, setMessages, sendMessage, isTyping };
-};
-
 const ChatPanel: FC<ChatPanelProps> = ({
   role, 
   projectId,
@@ -103,7 +44,7 @@ const ChatPanel: FC<ChatPanelProps> = ({
   const [newMessage, setNewMessage] = useState('');
   const [selectedDeliverableId, setSelectedDeliverableId] = useState<string | null>(null);
 
-  const { messages, setMessages, sendMessage, isTyping } = useChatMessages(projectId);
+  const { messages, sendMessage, isTyping } = useChatMessages(projectId);
 
   const canSendMessages = accessibleStatuses.some(
     (status) => status.toLowerCase() === projectStatus.toLowerCase()
@@ -112,7 +53,7 @@ const ChatPanel: FC<ChatPanelProps> = ({
   const handleSendMessage = () => {
     if (!newMessage.trim() || !canSendMessages) return;
     const text = newMessage.trim();
-    sendMessage(text, selectedDeliverableId || undefined);
+    void sendMessage(text, selectedDeliverableId || undefined);
     onActivity?.(`Sent message: ${text.slice(0, 50)}${text.length > 50 ? '...' : ''}`);
     setNewMessage('');
   };
@@ -120,7 +61,7 @@ const ChatPanel: FC<ChatPanelProps> = ({
   const handleKeyPress = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      void handleSendMessage();
     }
   };
 
