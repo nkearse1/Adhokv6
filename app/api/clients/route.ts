@@ -19,7 +19,7 @@ export async function GET(
   ctx: { params: { id?: string } }
 ) {
   try {
-    const hdrs = headers(); // ✅ request scope
+    const hdrs = await headers(); // ✅ request scope
     const url = new URL(req.url);
 
     // Preferred source is the dynamic segment, but support query/override too
