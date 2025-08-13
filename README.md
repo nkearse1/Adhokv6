@@ -29,6 +29,18 @@ yarn install
 yarn setup-mock-data
 ```
 
+#### Seeding tiers
+
+Control how much demo content is loaded by setting the `TIER` environment variable:
+
+```bash
+# Minimal authentication records only
+TIER=basic yarn setup-mock-data
+
+# Auth records plus example projects and bids
+TIER=full yarn setup-mock-data
+```
+
 5. Start the development server:
 
 ```bash
@@ -39,6 +51,16 @@ Before pushing changes, run the verification suite:
 
 ```bash
 yarn verify
+```
+
+### Triggering Stripe test events
+
+Install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and forward events to your local webhook handler:
+
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+# Simulate a successful payment
+stripe trigger payment_intent.succeeded
 ```
 
 ### Neon User Switcher
@@ -52,6 +74,13 @@ Preview deployments (e.g. StackBlitz) can still use a mock authentication flow
 by setting `NEXT_PUBLIC_USE_MOCK=true` in the environment. This bypasses Clerk
 and loads a test user via the `/api/test-user` route so you can interact with
 authentic data while the login flow itself is mocked.
+
+### Per-project unlock toggle
+
+Project workspaces are normally read-only until unlocked. For local development you can:
+
+- Unlock all projects by setting `NEXT_PUBLIC_UNLOCK_ALL_PROJECTS=true` in `.env`.
+- Unlock a single project by appending `?unlock=<projectId>` to the project URL.
 
 ### Favicon
 
