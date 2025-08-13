@@ -20,6 +20,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ProjectStatusCard from '@/components/ProjectStatusCard';
 import TalentAssignmentBox from '@/components/TalentAssignmentBox';
+import BidFlow from '@/components/BidFlow';
+import AcceptBidUpsellModal from '@/components/upsell/AcceptBidUpsellModal';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 export default function ClientProjectDetail() {
   const params = useParams();
@@ -29,6 +32,7 @@ export default function ClientProjectDetail() {
   const [talentProfile, setTalentProfile] = useState<any>(null);
   const [approving, setApproving] = useState(false);
   const [reviewing, setReviewing] = useState(false);
+  const [upsellOpen, setUpsellOpen] = useState(false);
   const {
     userId,
     userRole,
@@ -74,6 +78,7 @@ export default function ClientProjectDetail() {
   const totalBudget = project.estimated_hours * project.hourly_rate;
   const m = project.metadata?.marketing || {};
   const r = project.metadata?.requestor || {};
+  const acceptBidEnabled = project.metadata?.acceptBidEnabled;
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
@@ -95,6 +100,9 @@ export default function ClientProjectDetail() {
               )}
               {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
             </Badge>
+            {acceptBidEnabled && (
+              <Badge variant="success">Accept Bid Enabled</Badge>
+            )}
           </div>
         </div>
         <div className="text-right w-full sm:w-auto">
@@ -107,148 +115,175 @@ export default function ClientProjectDetail() {
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Briefcase className="w-4 h-4" />
-              Project Details
-            </h3>
-            <div className="space-y-3 text-sm">
-              <p><strong>Description:</strong> {project.description}</p>
-              <p><strong>Problem:</strong> {m.problem}</p>
-              <p><strong>Deliverables:</strong> {m.deliverables}</p>
-              {project.deadline && (
-                <p className="flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4" />
-                  <strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString()}
-                </p>
-              )}
-              {project.brief_url && (
-                <p>
-                  <a
-                    href={project.brief_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-600 hover:underline"
-                  >
-                    <FileText className="w-4 h-4" />
-                    View Project Brief
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              Target Audience & Channels
-            </h3>
-            <div className="space-y-3 text-sm">
-              <p><strong>Target Audience:</strong> {m.target_audience}</p>
-              <p><strong>Platforms:</strong> {m.platforms}</p>
-              <p><strong>Preferred Tools:</strong> {m.preferred_tools}</p>
-              <p><strong>Brand Voice:</strong> {m.brand_voice}</p>
-              {m.inspiration_links && (
-                <div>
-                  <strong>Inspiration:</strong>
-                  <div className="mt-1">
-                    {m.inspiration_links.split(',').map((link: string, i: number) => (
+      <Tabs defaultValue="details" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-white mb-6 rounded-lg border border-[#E6E9F4]">
+          <TabsTrigger value="details" className="data-[state=active]:bg-[#2E3A8C] data-[state=active]:text-white text-xs sm:text-sm">
+            Details
+          </TabsTrigger>
+          <TabsTrigger value="bids" className="data-[state=active]:bg-[#2E3A8C] data-[state=active]:text-white text-xs sm:text-sm">
+            Bids
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="details" className="space-y-6">
+          <Card>
+            <CardContent className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />
+                  Project Details
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <p><strong>Description:</strong> {project.description}</p>
+                  <p><strong>Problem:</strong> {m.problem}</p>
+                  <p><strong>Deliverables:</strong> {m.deliverables}</p>
+                  {project.deadline && (
+                    <p className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4" />
+                      <strong>Deadline:</strong> {new Date(project.deadline).toLocaleDateString()}
+                    </p>
+                  )}
+                  {project.brief_url && (
+                    <p>
                       <a
-                        key={i}
-                        href={link.trim()}
+                        href={project.brief_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-blue-600 hover:underline mb-1"
+                        className="flex items-center gap-1 text-blue-600 hover:underline"
                       >
-                        <LinkIcon className="w-3 h-3" />
-                        {new URL(link.trim()).hostname}
+                        <FileText className="w-4 h-4" />
+                        View Project Brief
                       </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-4 sm:p-6">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Project Team
-          </h3>
-          <TalentAssignmentBox />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-sm font-medium mb-2">Client</h4>
-              <div className="space-y-1 text-sm">
-                <p>{r.name}</p>
-                <p>{r.company}</p>
-                <p className="text-gray-600 break-all">{r.email}</p>
-                <p className="text-gray-600">{r.phone}</p>
-              </div>
-            </div>
-
-            {talentProfile && (
-              <div>
-                <h4 className="text-sm font-medium mb-2">Assigned Talent</h4>
-                <div className="space-y-2">
-                  <p className="text-sm">{talentProfile.fullName}</p>
-                  <span className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold rounded-full ${getBadgeStyle(talentProfile.experienceBadge)}`}>
-                    <BadgeCheck className="w-4 h-4" />
-                    {talentProfile.experienceBadge}
-                  </span>
-                  {talentProfile.portfolioUrl && (
-                    <a
-                      href={talentProfile.portfolioUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
-                    >
-                      <LinkIcon className="w-3 h-3" />
-                      View Portfolio
-                    </a>
+                    </p>
                   )}
                 </div>
               </div>
-            )}
+
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  Target Audience & Channels
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <p><strong>Target Audience:</strong> {m.target_audience}</p>
+                  <p><strong>Platforms:</strong> {m.platforms}</p>
+                  <p><strong>Preferred Tools:</strong> {m.preferred_tools}</p>
+                  <p><strong>Brand Voice:</strong> {m.brand_voice}</p>
+                  {m.inspiration_links && (
+                    <div>
+                      <strong>Inspiration:</strong>
+                      <div className="mt-1">
+                        {m.inspiration_links.split(',').map((link: string, i: number) => (
+                          <a
+                            key={i}
+                            href={link.trim()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-600 hover:underline mb-1"
+                          >
+                            <LinkIcon className="w-3 h-3" />
+                            {new URL(link.trim()).hostname}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-4 sm:p-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Project Team
+              </h3>
+              <TalentAssignmentBox />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Client</h4>
+                  <div className="space-y-1 text-sm">
+                    <p>{r.name}</p>
+                    <p>{r.company}</p>
+                    <p className="text-gray-600 break-all">{r.email}</p>
+                    <p className="text-gray-600">{r.phone}</p>
+                  </div>
+                </div>
+
+                {talentProfile && (
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Assigned Talent</h4>
+                    <div className="space-y-2">
+                      <p className="text-sm">{talentProfile.fullName}</p>
+                      <span className={`inline-flex items-center gap-2 px-3 py-1 text-sm font-semibold rounded-full ${getBadgeStyle(talentProfile.experienceBadge)}`}>
+                        <BadgeCheck className="w-4 h-4" />
+                        {talentProfile.experienceBadge}
+                      </span>
+                      {talentProfile.portfolioUrl && (
+                        <a
+                          href={talentProfile.portfolioUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                        >
+                          <LinkIcon className="w-3 h-3" />
+                          View Portfolio
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {project.client_review && (
+            <Card>
+              <CardContent className="p-4 sm:p-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Your Review
+                </h3>
+                <p className="text-gray-800 break-words">{project.client_review}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              onClick={handleApprove}
+              disabled={approving || project.status === 'approved'}
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+            >
+              {approving ? 'Approving...' : project.status === 'approved' ? 'Work Approved' : 'Approve Work'}
+            </Button>
+            <Button
+              onClick={handleLeaveReview}
+              disabled={reviewing}
+              variant="outline"
+              className="w-full sm:w-auto"
+            >
+              {reviewing ? 'Submitting...' : 'Leave Review'}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {project.client_review && (
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              Your Review
-            </h3>
-            <p className="text-gray-800 break-words">{project.client_review}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          onClick={handleApprove}
-          disabled={approving || project.status === 'approved'}
-          className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-        >
-          {approving ? 'Approving...' : project.status === 'approved' ? 'Work Approved' : 'Approve Work'}
-        </Button>
-        <Button
-          onClick={handleLeaveReview}
-          disabled={reviewing}
-          variant="outline"
-          className="w-full sm:w-auto"
-        >
-          {reviewing ? 'Submitting...' : 'Leave Review'}
-        </Button>
-      </div>
+        </TabsContent>
+        <TabsContent value="bids" className="space-y-6">
+          <BidFlow projectId={project_id} />
+          {acceptBidEnabled ? (
+            <Button className="mt-4">Accept Bid</Button>
+          ) : (
+            <>
+              <Button className="mt-4" onClick={() => setUpsellOpen(true)}>Upgrade</Button>
+              <AcceptBidUpsellModal
+                open={upsellOpen}
+                onOpenChange={setUpsellOpen}
+                projectId={project_id}
+              />
+            </>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

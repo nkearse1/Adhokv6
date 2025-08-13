@@ -19,6 +19,7 @@ interface Project {
   deadline: string;
   projectBudget: number;
   bids?: number;
+  acceptBidEnabled?: boolean;
 }
 
 
@@ -59,7 +60,12 @@ export default function ClientDashboard() {
       if (!res.ok) {
         throw new Error(json.error || 'Request failed');
       }
-      setProjects(json.projects || []);
+      setProjects(
+        (json.projects || []).map((p: any) => ({
+          ...p,
+          acceptBidEnabled: p.acceptBidEnabled ?? p.metadata?.acceptBidEnabled,
+        }))
+      );
 
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -113,6 +119,11 @@ export default function ClientDashboard() {
           <Plus className="mr-2 w-4 h-4" /> Post New Project
         </Button>
       </div>
+      {!authUser?.tier && (
+        <div className="mb-4 p-4 text-center border rounded bg-blue-50 text-blue-800">
+          Upgrade your account to unlock Accept Bid.
+        </div>
+      )}
 
       <InviteTalentBanner />
       <BudgetTracker projects={projects} />
