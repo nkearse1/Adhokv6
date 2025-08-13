@@ -24,11 +24,11 @@ describe('AuthProvider', () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { userId: 'u1', userRole: 'client', metadata: {} } }),
+        json: async () => ({ session: { userId: 'u1', userRole: 'client', username: 'user1', fullName: null } }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { userId: 'u2', userRole: 'client', metadata: {} } }),
+        json: async () => ({ session: { userId: 'u2', userRole: 'client', username: 'user2', fullName: null } }),
       });
     // @ts-ignore
     global.fetch = fetchMock;
@@ -50,18 +50,18 @@ describe('AuthProvider', () => {
       expect(screen.getByTestId('uid').textContent).toBe('u2');
     });
     expect(refreshSpy).toHaveBeenCalled();
-    expect(fetchMock).toHaveBeenLastCalledWith('/api/session');
+    expect(fetchMock).toHaveBeenLastCalledWith('/api/session', { cache: 'no-store' });
   });
 
   it('keeps previous user if refresh resolves with null', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: { userId: 'u1', userRole: 'client', metadata: {} } }),
+        json: async () => ({ session: { userId: 'u1', userRole: 'client', username: 'user1', fullName: null } }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ user: null }),
+        json: async () => ({ session: null }),
       });
     // @ts-ignore
     global.fetch = fetchMock;

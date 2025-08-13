@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const search = searchParams.toString();
+  const search = searchParams?.toString() ?? '';
   const hasFetchedOnce = useRef(false);
 
   const fetchSession = useCallback(async () => {
