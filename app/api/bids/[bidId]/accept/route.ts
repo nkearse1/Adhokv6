@@ -20,8 +20,10 @@ export async function POST(_req: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const hasFeature = await hasFeatureForClient(clientId!);
-  const canAccept = await hasAcceptBidForProject({ bidId, clientId: clientId! });
+  const [hasFeature, canAccept] = await Promise.all([
+    hasFeatureForClient(clientId!),
+    hasAcceptBidForProject({ bidId, clientId: clientId! }),
+  ]);
 
   if (!hasFeature || !canAccept) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

@@ -1,3 +1,5 @@
+'use server';
+
 import { db } from '@/lib/db';
 import { projectBids, projects, notifications } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
