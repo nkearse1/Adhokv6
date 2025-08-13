@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
-import { projectBids, projects, notifications } from '@/lib/schema';
+import { projectBids, projects } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
+import { notifyBidAccepted } from '@/lib/server/notifications';
 
 export async function hasAcceptBidForProject(
   { bidId, clientId }: { bidId: string; clientId: string },
@@ -77,21 +78,14 @@ export async function acceptBid(
       .set({ status: 'outbid' })
       .where(and(eq(projectBids.projectId, project.id), ne(projectBids.id, bidId)));
 
-    await tx.insert(notifications).values([
+    await notifyBidAccepted(
       {
-        userId: project.clientId!,
-        title: 'Bid accepted',
-        message: `You accepted a bid for project ${project.title ?? ''}`,
-        type: 'bid.accepted',
-        metadata: { projectId: project.id, bidId },
+        projectId: project.id,
+        bidId,
+        talentId: bid.professionalId,
+        clientId: project.clientId!,
       },
-      {
-        userId: bid.professionalId,
-        title: 'Bid accepted',
-        message: `Your bid for project ${project.title ?? ''} was accepted`,
-        type: 'bid.accepted',
-        metadata: { projectId: project.id, bidId },
-      },
-    ]);
+      tx,
+    );
   });
 }
