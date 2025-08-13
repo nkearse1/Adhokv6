@@ -103,6 +103,35 @@ All test users have the password: `password123`
 - **Expertise:** Web Design & Development
 - **Badge:** Specialist
 
+## Tier Seeding
+
+Populate default tier data for development by running the seed script:
+
+```bash
+yarn seed:tiers
+```
+
+This loads baseline tiers into the database so the app has meaningful values to work with locally.
+
+## Stripe Test Events
+
+To simulate Stripe webhooks in test mode, use the Stripe CLI helper:
+
+```bash
+yarn stripe:test-event
+```
+
+The command triggers a `payment_intent.succeeded` event against your configured test endpoint.
+
+## Per-Project Unlocks
+
+When experimenting with gated functionality, unlock a specific project:
+
+```bash
+yarn project:unlock <projectId>
+```
+
+Replace `<projectId>` with the target project identifier to enable features on a case-by-case basis.
 
 ## Project Structure
 
