@@ -1,6 +1,7 @@
 import { getClientProjects } from '@/lib/apiHandlers/clients';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getAuth } from '@clerk/nextjs/server';
 import { loadUserSession } from '@/lib/loadUserSession';
 import { db } from '@/lib/db';
 import { projects, clientProfiles } from '@/lib/schema';
@@ -9,14 +10,13 @@ import type { SessionClaimsWithRole } from '@/lib/types';
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, ctx: RouteContext) {
+export async function GET(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
   const clerkActive = !!process.env.CLERK_SECRET_KEY;
   let userId: string | undefined;
   let sessionClaims: SessionClaimsWithRole | undefined;
   if (clerkActive) {
-    const { auth } = await import('@clerk/nextjs/server');
-    const result = await auth();
+    const result = getAuth(req);
     userId = result.userId;
     sessionClaims = result.sessionClaims as SessionClaimsWithRole;
   }
