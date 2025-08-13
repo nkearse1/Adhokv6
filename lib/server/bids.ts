@@ -1,17 +1,23 @@
+'use server';
+
 import { db } from '@/lib/db';
-import { projectBids, projects, notifications } from '@/lib/schema';
+import { projectBids, projects } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
+import { notifyBidAccepted } from '@/lib/server/notifications';
+
+// Re-export feature gates from the single source of truth
 export { hasAcceptBidForProject, hasFeatureForClient } from '@/lib/featureFlags';
 
 export async function acceptBid(
   { bidId, clientId }: { bidId: string; clientId: string },
 ): Promise<void> {
-  await db.transaction(async (tx: typeof db) => {
+  await db.transaction(async (tx) => {
     const bidRes = await tx
       .select()
       .from(projectBids)
       .where(eq(projectBids.id, bidId))
       .limit(1);
+
     if (bidRes.length === 0) {
       throw new Error('Bid not found');
     }
@@ -22,6 +28,7 @@ export async function acceptBid(
       .from(projects)
       .where(eq(projects.id, bid.projectId))
       .limit(1);
+
     if (projectRes.length === 0) {
       throw new Error('Project not found');
     }
@@ -36,7 +43,7 @@ export async function acceptBid(
       .set({
         status: 'awarded',
         talentId: bid.professionalId,
-        metadata: { ...(project.metadata as any || {}), bidId },
+        metadata: { ...((project as any).metadata ?? {}), bidId },
       })
       .where(eq(projects.id, project.id));
 
@@ -50,21 +57,14 @@ export async function acceptBid(
       .set({ status: 'outbid' })
       .where(and(eq(projectBids.projectId, project.id), ne(projectBids.id, bidId)));
 
-    await tx.insert(notifications).values([
+    await notifyBidAccepted(
       {
-        userId: project.clientId!,
-        title: 'Bid accepted',
-        message: `You accepted a bid for project ${project.title ?? ''}`,
-        type: 'bid.accepted',
-        metadata: { projectId: project.id, bidId },
+        projectId: project.id,
+        bidId,
+        talentId: bid.professionalId,
+        clientId: project.clientId!,
       },
-      {
-        userId: bid.professionalId,
-        title: 'Bid accepted',
-        message: `Your bid for project ${project.title ?? ''} was accepted`,
-        type: 'bid.accepted',
-        metadata: { projectId: project.id, bidId },
-      },
-    ]);
+      tx,
+    );
   });
 }
