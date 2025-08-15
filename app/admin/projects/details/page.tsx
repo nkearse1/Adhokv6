@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/useAuth';
+import { useAuth } from '@/lib/client/useAuthContext';
 import { toast } from 'sonner';
 import { 
   BadgeCheck, CalendarIcon, Clock, FileText, Link as LinkIcon, Target, Users, 
@@ -35,99 +35,19 @@ export default function AdminProjectDetail() {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        // This would be replaced with a fetch to your API
-        // For now, we'll use mock data
-        const mockProject = {
-          id,
-          title: 'E-commerce SEO Optimization',
-          description: 'Comprehensive SEO audit and optimization for a growing e-commerce website selling sustainable products.',
-          status: 'in_progress',
-          category: 'SEO',
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          estimated_hours: 40,
-          hourly_rate: 75,
-          flagged: false,
-          metadata: {
-            marketing: {
-              problem: 'Low organic search visibility and poor technical SEO performance affecting customer acquisition',
-              deliverables: 'Technical SEO audit, keyword strategy, content optimization plan, performance tracking setup',
-              target_audience: 'E-commerce shoppers interested in sustainable products',
-              platforms: 'Shopify, Google Search Console, Google Analytics 4',
-              preferred_tools: 'Ahrefs, Screaming Frog, Surfer SEO',
-              brand_voice: 'Professional yet approachable, sustainability-focused',
-              inspiration_links: 'https://patagonia.com, https://allbirds.com'
-            },
-            requestor: {
-              name: 'Sarah Johnson',
-              company: 'EcoShop Inc.',
-              email: 'sarah.johnson@example.com',
-              phone: '+1 (555) 111-2222'
-            }
-          },
-          minimum_badge: 'Expert Talent'
-        };
-        
-        setProject(mockProject);
-        
-        // Mock client data
-        const mockClient = {
-          id: 'client123',
-          full_name: 'Sarah Johnson',
-          email: 'sarah.johnson@example.com',
-          company: 'EcoShop Inc.',
-          createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 3,
-          total_spent: 8500,
-          average_rating: 4.8,
-          verified: true
-        };
-        
-        setClient(mockClient);
-        
-        // Mock talent data
-        const mockTalent = {
-          full_name: 'Alex Rivera',
-          email: 'alex.rivera@example.com',
-          experience_badge: 'Expert Talent',
-          expertise: 'SEO & Content Strategy',
-          location: 'Austin, TX',
-          phone: '+1 (555) 123-4567',
-          linkedin: 'https://linkedin.com/in/alexrivera',
-          portfolio: 'https://alexrivera.dev',
-          bio: 'Senior SEO specialist with 8+ years of experience helping e-commerce brands achieve 200%+ organic traffic growth.',
-          isQualified: true,
-          createdAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString(),
-          total_projects: 12,
-          success_rate: 95,
-          average_rating: 4.9,
-          response_time: '2h',
-          total_earnings: 45000,
-          hourly_rate: 75
-        };
-        
-        setTalent(mockTalent);
-        
-        // Mock reviews
-        const mockReviews = [
-          {
-            id: 'review1',
-            rating: 5,
-            comment: 'Alex did an outstanding job on our SEO strategy. We\'ve seen a 40% increase in organic traffic within just 2 months of implementing his recommendations.',
-            createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Michael Chen' },
-            project_title: 'B2B SaaS SEO Strategy'
-          },
-          {
-            id: 'review2',
-            rating: 4,
-            comment: 'Great work on our technical SEO audit. Very thorough and provided actionable recommendations that were easy to implement.',
-            createdAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-            reviewer: { full_name: 'Emily Rodriguez' },
-            project_title: 'E-commerce Technical SEO'
-          }
-        ];
-        
-        setReviews(mockReviews);
+        const res = await fetch(`/api/db?table=projects&id=${id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
+        if (proj) {
+          setProject(proj);
+          if (proj.client) setClient(proj.client);
+          if (proj.talent) setTalent(proj.talent);
+        }
+
+        const reviewsRes = await fetch('/api/db?table=project_reviews');
+        const reviewsJson = await reviewsRes.json();
+        const projReviews = (reviewsJson.data || []).filter((r: any) => r.projectId === id);
+        setReviews(projReviews);
       } catch (error) {
         console.error('Error fetching project data:', error);
         toast.error('Failed to load project details');

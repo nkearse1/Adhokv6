@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
+import FindProjectsButton from "@/components/FindProjectsButton";
 
 export default function Home() {
   return (
@@ -19,7 +20,7 @@ export default function Home() {
           <div className="rounded-xl border bg-card text-card-foreground shadow">
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Client</h2>
-              <Link href="/upload">
+              <Link href="/client/upload">
                 <Button className="w-full bg-[#2E3A8C] hover:bg-[#2E3A8C]/90 text-white">
                   Create a Project Brief
                 </Button>
@@ -31,12 +32,11 @@ export default function Home() {
             <div className="p-6">
               <h2 className="text-xl font-semibold mb-4 text-[#2F2F2F]">I'm a Professional</h2>
               <div className="space-y-4">
-                <Link href="/sign-in">
-                  <Button className="w-full bg-[#00A499] hover:bg-[#00A499]/90 text-white">
-                    Find Projects
-                  </Button>
-                </Link>
-                <Link href="/talent/sign-up">
+                <FindProjectsButton />
+                <p className="text-sm text-[#2F2F2F]">
+                  Sign up as Adhok Talent to view all projects
+                </p>
+                <Link href="/sign-up?as=talent">
                   <Button
                     variant="outline"
                     className="w-full border-[#2E3A8C] text-[#2E3A8C] hover:bg-[#2E3A8C]/10"

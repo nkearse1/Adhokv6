@@ -1,20 +1,15 @@
 // parseResumeFromPDF.ts
-import { getDocument } from 'pdfjs-dist';
+import { PDFDocument } from 'pdf-lib';
 import { parseResume } from './parseResume';
 
 export async function extractTextFromPDF(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
-  const pdf = await getDocument({ data: arrayBuffer }).promise;
-  let fullText = '';
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const strings = content.items.map((item: any) => item.str);
-    fullText += strings.join(' ') + ' ';
-  }
-
-  return fullText;
+  // Ensure the PDF is valid by loading with pdf-lib
+  await PDFDocument.load(arrayBuffer);
+  // Naive text extraction: pull text between parentheses from the raw file
+  const raw = new TextDecoder().decode(arrayBuffer);
+  const matches = raw.match(/\(([^()]*)\)/g) || [];
+  return matches.map((s) => s.slice(1, -1)).join(' ');
 }
 
 export async function parseResumeFromPDF(file: File): Promise<{ years: number; level: string }> {

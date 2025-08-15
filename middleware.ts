@@ -1,81 +1,43 @@
-import { authMiddleware } from '@clerk/nextjs/server';
-import {
-  NextResponse,
-  type NextRequest,
-  type NextFetchEvent,
-} from 'next/server';
-import type { AuthObject } from '@clerk/backend';
-import type { SessionClaimsWithRole } from '@/lib/types';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-const isMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+export function middleware(req: NextRequest) {
+  const url = req.nextUrl;
+  const qsOverride = url.searchParams.get('override');
+  const cookieOverride = req.cookies.get('adhok_override')?.value ?? undefined;
 
-function safeRedirect(path: string, req: NextRequest) {
-  const url = new URL(path, req.url);
-  if (req.nextUrl.pathname === url.pathname) {
-    return NextResponse.next();
+  const effective = (qsOverride ?? cookieOverride)?.trim() || undefined;
+
+  const debug = process.env.NEXT_PUBLIC_DEBUG_AUTH === '1';
+  if (debug) {
+    console.log('[middleware] override', { qsOverride, cookieOverride, effective });
   }
-  return NextResponse.redirect(url);
+
+  const headers = new Headers(req.headers);
+  if (effective) {
+    headers.set('x-override-user-id', effective);
+  } else {
+    headers.delete('x-override-user-id');
+  }
+
+  const res = NextResponse.next({ request: { headers } });
+
+  // Persist override as a client-readable cookie so a full reload keeps it
+  if (qsOverride !== null) {
+    if (effective) {
+      res.cookies.set('adhok_override', effective, {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+      });
+    } else {
+      res.cookies.delete('adhok_override');
+    }
+  }
+
+  return res;
 }
 
-const middleware = isMock
-  ? function middlewareMock(req: NextRequest) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          '[middleware] MOCK MODE ACTIVE — skipping Clerk auth enforcement',
-        );
-      }
-      return NextResponse.next();
-    }
-  : authMiddleware({
-      publicRoutes: [
-        '/',
-        '/sign-in',
-        '/sign-up',
-        '/waitlist',
-        '/sign-in-callback',
-      ],
-
-  afterAuth(auth: AuthObject, req: NextRequest, _evt: NextFetchEvent) {
-    const pathname = req.nextUrl.pathname;
-
-    const role = (auth.sessionClaims as SessionClaimsWithRole)?.metadata?.role as
-      string | undefined;
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[middleware]', {
-        userId: auth.userId,
-        role,
-        pathname,
-      });
-    }
-
-    if (!auth.userId) return NextResponse.next();
-
-    if (auth.userId && !role && pathname !== '/') {
-      return safeRedirect('/', req);
-    }
-
-    const validRoles = ['admin', 'client', 'talent'];
-    if (!role || !validRoles.includes(role)) return NextResponse.next();
-
-    if (pathname.startsWith('/admin') && role !== 'admin') {
-      return safeRedirect('/', req);
-    }
-
-    if (pathname.startsWith('/client') && role !== 'client') {
-      return safeRedirect('/', req);
-    }
-
-    if (pathname.startsWith('/talent/dashboard') && role !== 'talent') {
-      return safeRedirect('/', req);
-    }
-
-    return NextResponse.next();
-  },
-});
-
-export default middleware;
-
 export const config = {
-  matcher: ['/((?!_next|.*\\..*|favicon.ico).*)', '/(api|trpc)(.*)'],
+  matcher: ['/((?!_next|.*\\..*|favicon.ico).*)'],
 };
