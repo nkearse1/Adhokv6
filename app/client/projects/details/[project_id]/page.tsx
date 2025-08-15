@@ -35,22 +35,15 @@ export default function ClientProjectDetail() {
   const [upsellOpen, setUpsellOpen] = useState(false);
   const {
     userId,
-    userRole,
     username,
     authUser,
     loading: authLoading,
   } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && (!authUser || authUser.user_role !== 'client')) {
-      router.replace('/');
-    }
-  }, [authLoading, authUser, router]);
-
-  useEffect(() => {
     async function load() {
       try {
-        if (!project_id) return;
+        if (!project_id || !authUser || authUser.user_role !== 'client') return;
         const res = await fetch(`/api/db?table=projects&id=${project_id}`);
         const json = await res.json();
         const proj = json.data?.[0];
@@ -81,8 +74,8 @@ export default function ClientProjectDetail() {
         console.error('Error loading bids', err);
       }
     }
-    if (project_id) loadBids();
-  }, [project_id]);
+    if (project_id && authUser?.user_role === 'client') loadBids();
+  }, [project_id, authUser]);
 
   if (authLoading || !authUser) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;
