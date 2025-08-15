@@ -85,7 +85,7 @@ interface Project {
 }
 
 export default function TalentDashboard() {
-  const { userId } = useAuth();
+  const { userId, userRole } = useAuth();
   const router = useRouter();
 
   const [currentTab, setCurrentTab] = useState<'activeBids' | 'earnings' | 'portfolio' | 'won'>('activeBids');
@@ -100,7 +100,7 @@ export default function TalentDashboard() {
 
   useEffect(() => {
     async function load() {
-      if (!userId) return;
+      if (!userId || userRole !== 'talent') return;
       try {
         const res = await fetch('/api/db?table=projects');
         const json = await res.json();
@@ -140,7 +140,7 @@ export default function TalentDashboard() {
       }
     }
     load();
-  }, [userId]);
+  }, [userId, userRole]);
 
   const filteredProjects = projects.filter(p => p.status === 'complete');
   const wonProjects = projects.filter(

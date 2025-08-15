@@ -30,26 +30,17 @@ export default function ClientDashboard() {
   const {
     userId,
     userRole,
-    username,
     authUser,
     loading: authLoading,
     isAuthenticated,
+    isClient,
   } = useAuth();
 
   useEffect(() => {
-    if (
-      !authLoading &&
-      (!authUser || (authUser.user_role !== 'client' && !authUser.isClient))
-    ) {
-      router.replace('/');
-    }
-  }, [authLoading, authUser, router]);
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && userId) {
+    if (!authLoading && isAuthenticated && isClient && userId) {
       fetchProjects();
     }
-  }, [authLoading, isAuthenticated, userId]);
+  }, [authLoading, isAuthenticated, isClient, userId]);
 
   const fetchProjects = async () => {
     try {
