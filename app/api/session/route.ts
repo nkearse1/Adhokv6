@@ -18,10 +18,11 @@ export async function GET() {
       .from(users)
       .where(eq(users.id, overrideId))
       .limit(1);
-    const row = rows[0];
+    const row = rows[0] as any;
     if (!row) {
       return NextResponse.json({ session: null });
     }
+    const metadata = typeof row.metadata === 'object' && row.metadata !== null ? row.metadata : {};
     return NextResponse.json({
       session: {
         userId: row.id,
@@ -29,6 +30,7 @@ export async function GET() {
         username: row.username,
         fullName: row.fullName,
         email: row.email,
+        metadata,
       },
     });
   } catch (err) {

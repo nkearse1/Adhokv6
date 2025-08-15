@@ -104,12 +104,13 @@ export default function ProjectList() {
         const bidsData: Bid[] = bidsJson.data || [];
 
         const projectsWithBids = formattedProjects.map((proj) => {
+          const endDate = proj.auction_end ?? proj.deadline;
           const projectBids = bidsData.filter(
             (bidRow: any) =>
               bidRow.projectId === proj.id &&
-              (!proj.auction_end ||
+              (!endDate ||
                 (bidRow.createdAt &&
-                  new Date(bidRow.createdAt) <= new Date(proj.auction_end)))
+                  new Date(bidRow.createdAt) <= new Date(endDate)))
           );
           const activeBid =
             projectBids.length > 0
@@ -154,12 +155,11 @@ export default function ProjectList() {
         setBids(userBids);
 
         // Valid bids within auction window (if auction_end is set)
+        const endDate = selectedProject.auction_end ?? selectedProject.deadline;
         const validBids = allProjectBids.filter(
           (bidRow: any) =>
-            !selectedProject.auction_end ||
-            (bidRow.createdAt &&
-              new Date(bidRow.createdAt) <=
-                new Date(selectedProject.auction_end!))
+            !endDate ||
+            (bidRow.createdAt && new Date(bidRow.createdAt) <= new Date(endDate))
         );
         const activeBid =
           validBids.length > 0
@@ -244,7 +244,7 @@ export default function ProjectList() {
   const activeBids = projects.filter((proj) => proj.status === 'open');
   const popularActiveBids = activeBids
     .filter((proj) => (proj.bidCount ?? 0) > 0)
-    .sort((p1, p2) => (p2.bidCount ?? 0) - (p1.bidCount ?? 0))
+    .sort((projectA, projectB) => (projectB.bidCount ?? 0) - (projectA.bidCount ?? 0))
     .slice(0, 3);
   const otherActiveBids = activeBids.filter(
     (proj) => !popularActiveBids.some((pop) => pop.id === proj.id)
@@ -253,34 +253,34 @@ export default function ProjectList() {
   const sortedOtherActiveBids = useMemo(() => {
     let baseSorted = [...otherActiveBids];
     if (sortKey === 'bid') {
-      baseSorted.sort((p1, p2) => {
-        const rate1 =
+      baseSorted.sort((projectA, projectB) => {
+        const rateA =
           startingBidsByExpertise[
-            experienceBadgeMap[p1.expertiseLevel] ?? p1.expertiseLevel
+            experienceBadgeMap[projectA.expertiseLevel] ?? projectA.expertiseLevel
           ] ?? 0;
-        const rate2 =
+        const rateB =
           startingBidsByExpertise[
-            experienceBadgeMap[p2.expertiseLevel] ?? p2.expertiseLevel
+            experienceBadgeMap[projectB.expertiseLevel] ?? projectB.expertiseLevel
           ] ?? 0;
-        return rate2 - rate1;
+        return rateB - rateA;
       });
     } else if (sortKey === 'expertise') {
-      baseSorted.sort((p1, p2) => {
-        const rank1 =
+      baseSorted.sort((projectA, projectB) => {
+        const rankA =
           expertiseOrder[
-            experienceBadgeMap[p1.expertiseLevel] ?? p1.expertiseLevel
+            experienceBadgeMap[projectA.expertiseLevel] ?? projectA.expertiseLevel
           ] ?? 0;
-        const rank2 =
+        const rankB =
           expertiseOrder[
-            experienceBadgeMap[p2.expertiseLevel] ?? p2.expertiseLevel
+            experienceBadgeMap[projectB.expertiseLevel] ?? projectB.expertiseLevel
           ] ?? 0;
-        return rank2 - rank1;
+        return rankB - rankA;
       });
     } else if (sortKey === 'deadline') {
       baseSorted.sort(
-        (p1, p2) =>
-          new Date(p1.auction_end ?? p1.deadline).getTime() -
-          new Date(p2.auction_end ?? p2.deadline).getTime()
+        (projectA, projectB) =>
+          new Date((projectA.auction_end ?? projectA.deadline)).getTime() -
+          new Date((projectB.auction_end ?? projectB.deadline)).getTime()
       );
     }
     return baseSorted;
@@ -289,9 +289,9 @@ export default function ProjectList() {
   const sortedBids = useMemo(
     () =>
       [...bids].sort(
-        (bid1, bid2) =>
-          new Date(bid2.createdAt ?? 0).getTime() -
-          new Date(bid1.createdAt ?? 0).getTime()
+        (bidA, bidB) =>
+          new Date(bidB.createdAt ?? 0).getTime() -
+          new Date(bidA.createdAt ?? 0).getTime()
       ),
     [bids]
   );
