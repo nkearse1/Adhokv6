@@ -92,7 +92,10 @@ export default function ClientProjectDetail() {
 
   const handleAccept = async (bidId: string) => {
     try {
-      const res = await fetch(`/api/bids/${bidId}/accept`, { method: 'POST' });
+      const res = await fetch(`/api/bids/${bidId}/accept`, {
+        method: 'POST',
+        cache: 'no-store',
+      });
       if (!res.ok) throw new Error('Request failed');
       toast.success('Bid accepted');
       router.refresh();
