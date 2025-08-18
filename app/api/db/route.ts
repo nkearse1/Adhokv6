@@ -20,7 +20,7 @@ const tableMap = {
   escrow_transactions: escrowTransactions,
   notifications,
 } as const;
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 export async function GET(request: NextRequest) {
   // Support optional mock user override via header or query param
   const userId =
@@ -56,7 +56,15 @@ export async function GET(request: NextRequest) {
     }
 
     let data;
-    if (id) {
+    if (table === 'projects') {
+      if (id) {
+        const result = await db.execute(sql`select * from projects where id = ${id}`);
+        data = result.rows;
+      } else {
+        const result = await db.execute(sql`select * from projects limit 100`);
+        data = result.rows;
+      }
+    } else if (id) {
       data = await db.select().from(tableRef).where(eq(tableRef.id, id));
     } else {
       data = await db.select().from(tableRef).limit(100);

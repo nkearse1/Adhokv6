@@ -12,11 +12,15 @@ const bodySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const paramId = searchParams.get('id');
-  const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  let userId: string | undefined;
-  if (clerkActive) {
+  const url = new URL(req.url);
+  const paramId = url.searchParams.get('id');
+  const override =
+    req.headers.get('x-override-user-id') || url.searchParams.get('override');
+  const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.CLERK_SECRET_KEY && !useMock;
+
+  let userId: string | undefined = override || undefined;
+  if (!userId && clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
     userId = (await auth()).userId || undefined;
   }
@@ -26,7 +30,7 @@ export async function GET(req: NextRequest) {
   }
   const id = paramId || userId;
   if (!id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'No id provided' }, { status: 400 });
   }
   try {
     const profile = await getFullTalentProfile(id);
@@ -39,9 +43,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  let userId: string | undefined;
-  if (clerkActive) {
+  const url = new URL(req.url);
+  const override =
+    req.headers.get('x-override-user-id') || url.searchParams.get('override');
+  const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.CLERK_SECRET_KEY && !useMock;
+
+  let userId: string | undefined = override || undefined;
+  if (!userId && clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
     userId = (await auth()).userId || undefined;
   }
@@ -50,9 +59,8 @@ export async function POST(req: NextRequest) {
     userId = session?.userId;
   }
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'No id provided' }, { status: 400 });
   }
-  const id = userId;
   let data;
   try {
     data = bodySchema.parse(await req.json());
@@ -60,7 +68,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
   try {
-    const user = await updateUser(id, data);
+    const user = await updateUser(userId, data);
     return NextResponse.json({ user });
   } catch (err) {
     console.error('Failed to update user', err);
