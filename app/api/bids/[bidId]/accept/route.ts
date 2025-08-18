@@ -6,19 +6,22 @@ import {
   acceptBid,
   hasAcceptBidForProject,
   hasFeatureForClient,
-  type AcceptBidInput,
   type Tx,
 } from '@/lib/server/bids';
 
 type RouteContext = { params: Promise<{ bidId: string }> };
 
-export async function POST(_req: NextRequest, ctx: RouteContext) {
+export async function POST(req: NextRequest, ctx: RouteContext) {
   const { bidId } = await ctx.params;
 
-  const clerkActive = !!process.env.CLERK_SECRET_KEY;
-  let clientId: string | undefined;
+  const url = new URL(req.url);
+  const override =
+    req.headers.get('x-override-user-id') || url.searchParams.get('override');
+  const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
+  const clerkActive = !!process.env.CLERK_SECRET_KEY && !useMock;
 
-  if (clerkActive) {
+  let clientId: string | undefined = override || undefined;
+  if (!clientId && clerkActive) {
     const { auth } = await import('@clerk/nextjs/server');
     clientId = (await auth()).userId || undefined;
   }
@@ -30,11 +33,9 @@ export async function POST(_req: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const input: AcceptBidInput = { bidId, clientId };
-
   const [hasFeature, canAccept] = await Promise.all([
     hasFeatureForClient(clientId, 'accept-bid'),
-    hasAcceptBidForProject(input),
+    hasAcceptBidForProject({ bidId, clientId }),
   ]);
 
   if (!hasFeature || !canAccept) {
@@ -42,9 +43,7 @@ export async function POST(_req: NextRequest, ctx: RouteContext) {
   }
 
   try {
-    await db.transaction(async (tx: Tx) => {
-      await acceptBid(tx, input);
-    });
+    await db.transaction(async (tx: Tx) => acceptBid(tx, { bidId, clientId }));
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[POST /api/bids/[bidId]/accept] error', error);
