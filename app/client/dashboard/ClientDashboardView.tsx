@@ -31,30 +31,33 @@ export default function ClientDashboardView({ override }: ClientDashboardViewPro
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const {
-    userId,
-    userRole,
-    authUser,
-    loading: authLoading,
-    isAuthenticated,
-    isClient,
-  } = useAuth();
+  const { userId, userRole, authUser, loading: authLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated && isClient && (override || userId)) {
+    if (
+      !authLoading &&
+      isAuthenticated &&
+      userRole === 'client' &&
+      (override || userId)
+    ) {
       void fetchProjects();
     }
-  }, [authLoading, isAuthenticated, isClient, userId, override]);
+  }, [authLoading, isAuthenticated, userRole, userId, override]);
 
   const fetchProjects = async () => {
     try {
       setLoading(true);
       setError(null);
       const id = override || userId;
-      const res = await fetch(`/api/clients/${id}/projects?override=${id}`);
+      const res = await fetch(`/api/clients/${id}/projects?override=${id}`, {
+        cache: 'no-store',
+      });
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error || 'Request failed');
+        console.error('Failed to fetch client projects:', json);
+        setError('Failed to load projects');
+        toast.error('Failed to load projects');
+        return;
       }
       setProjects(json.projects || []);
     } catch (err) {
@@ -170,13 +173,16 @@ export default function ClientDashboardView({ override }: ClientDashboardViewPro
 
       <InviteTalentBanner />
       <BudgetTracker projects={projects} />
-      <div className="grid gap-4">
-        {projects.map((proj) => {
-          const acceptBid = accountHasAcceptBid || proj.metadata?.acceptBidEnabled;
-          return (
-            <div key={proj.id} className="border rounded-lg p-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex-1 min-w-0">
+      {projects.length === 0 ? (
+        <p className="text-center text-gray-600">No projects yet</p>
+      ) : (
+        <div className="grid gap-4">
+          {projects.map((proj) => {
+            const acceptBid = accountHasAcceptBid || proj.metadata?.acceptBidEnabled;
+            return (
+              <div key={proj.id} className="border rounded-lg p-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold truncate flex items-center gap-2">
                     {proj.title}
                     {acceptBid && (
@@ -203,10 +209,11 @@ export default function ClientDashboardView({ override }: ClientDashboardViewPro
                   {getStatusDisplay(proj.status)}
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
