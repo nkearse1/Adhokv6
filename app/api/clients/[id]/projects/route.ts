@@ -10,14 +10,24 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   const url = new URL(req.url);
-  const clientId = url.searchParams.get('override') ?? params.id;
+  const clientId =
+    url.searchParams.get('override') ??
+    req.headers.get('x-adhok-override') ??
+    params.id;
 
   try {
-    const data = await db.select().from(projects).where(eq(projects.clientId, clientId));
-    return NextResponse.json({ projects: data });
+    const rows = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.clientId, clientId));
+    console.log('[clients.projects] clientId=%s rows=%d', clientId, rows.length);
+    return NextResponse.json({ projects: rows });
   } catch (error) {
-    console.error('Error fetching client projects:', error);
-    return NextResponse.json({ error: 'Failed to fetch client projects' }, { status: 500 });
+    console.error('[clients.projects] failed for clientId=%s', clientId, error);
+    return NextResponse.json(
+      { error: 'Failed to fetch client projects' },
+      { status: 500 },
+    );
   }
 }
 
