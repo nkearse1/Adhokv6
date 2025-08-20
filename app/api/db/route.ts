@@ -57,8 +57,7 @@ export async function GET(request: NextRequest) {
 
     let data;
     if (table === 'projects') {
-      // Use raw SQL to avoid projecting non-existent columns such as
-      // `accept_bid_enabled` which can break requests in older schemas.
+      // Use raw SQL to avoid projecting columns that may not exist in older schemas.
       if (id) {
         const result = await db.execute(sql`select * from projects where id = ${id}`);
         data = result.rows;

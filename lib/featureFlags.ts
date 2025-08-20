@@ -36,12 +36,10 @@ export async function hasFeatureForClient(
 
 export async function hasAcceptBidForProject(projectId: string): Promise<boolean> {
   const res = await db.execute(
-    sql`select accept_bid_enabled, client_id from projects where id = ${projectId} limit 1`,
+    sql`select client_id from projects where id = ${projectId} limit 1`,
   );
   const row = (res as any)?.rows?.[0];
-  if (!row) return false;
-  if (row.accept_bid_enabled) return true;
-  if (!row.client_id) return false;
+  if (!row || !row.client_id) return false;
   return hasFeatureForClient(row.client_id as string, 'accept-bid');
 }
 

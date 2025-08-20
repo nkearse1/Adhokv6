@@ -8,8 +8,3 @@ ALTER TABLE clients
 
 CREATE INDEX IF NOT EXISTS idx_clients_tier_id ON clients (tier_id);
 
--- Extend projects table with accept_bid_enabled
-ALTER TABLE projects
-    ADD COLUMN IF NOT EXISTS accept_bid_enabled BOOLEAN DEFAULT FALSE;
-
-CREATE INDEX IF NOT EXISTS idx_projects_accept_bid_enabled ON projects (accept_bid_enabled);

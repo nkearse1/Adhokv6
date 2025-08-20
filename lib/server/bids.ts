@@ -22,16 +22,13 @@ export async function hasAcceptBidForProject(
   if (!bid) return false;
 
   const projectRows = await db
-    .select({
-      clientId: projects.clientId,
-      acceptBidEnabled: projects.acceptBidEnabled,
-    })
+    .select({ clientId: projects.clientId, metadata: projects.metadata })
     .from(projects)
     .where(eq(projects.id, bid.projectId))
     .limit(1);
   const project = projectRows[0] as any;
   if (!project || project.clientId !== input.clientId) return false;
-  if (project.acceptBidEnabled) return true;
+  if (project.metadata?.acceptBidEnabled) return true;
   return hasFeatureForClient(input.clientId, 'accept-bid');
 }
 

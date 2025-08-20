@@ -14,10 +14,24 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     url.searchParams.get('override') ??
     req.headers.get('x-adhok-override') ??
     params.id;
+  if (!clientId) {
+    console.log('[clients.projects] no valid clientId');
+    return NextResponse.json(
+      { error: 'Missing client id' },
+      { status: 400 },
+    );
+  }
 
   try {
     const rows = await db
-      .select()
+      .select({
+        id: projects.id,
+        title: projects.title,
+        status: projects.status,
+        deadline: projects.deadline,
+        projectBudget: projects.projectBudget,
+        metadata: projects.metadata,
+      })
       .from(projects)
       .where(eq(projects.clientId, clientId));
     console.log('[clients.projects] clientId=%s rows=%d', clientId, rows.length);

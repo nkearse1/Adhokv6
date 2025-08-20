@@ -3,7 +3,6 @@ import {
   text,
   uuid,
   timestamp,
-  boolean,
   jsonb,
   integer
 } from 'drizzle-orm/pg-core';
@@ -39,6 +38,5 @@ export const clients = pgTable('clients', {
 
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey(),
-  accept_bid_enabled: boolean('accept_bid_enabled').default(false)
 });
 
