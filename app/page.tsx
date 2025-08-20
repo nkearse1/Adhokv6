@@ -3,7 +3,12 @@ import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import FindProjectsButton from "@/components/FindProjectsButton";
 
-export default function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  await searchParams;
   return (
     <main className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
