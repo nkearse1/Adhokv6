@@ -49,9 +49,11 @@ export default function ClientDashboardView({ override }: ClientDashboardViewPro
       setLoading(true);
       setError(null);
       const id = override || userId;
-      const res = await fetch(`/api/clients/${id}/projects?override=${id}`, {
-        cache: 'no-store',
-      });
+      let url = `/api/clients/${id}/projects`;
+      if (override) {
+        url += `?override=${override}`;
+      }
+      const res = await fetch(url, { cache: 'no-store' });
       const json = await res.json();
       if (!res.ok) {
         console.error('Failed to fetch client projects:', json);

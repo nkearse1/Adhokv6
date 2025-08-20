@@ -13,10 +13,3 @@ export async function getClientWithTier(clientId: string) {
   );
   return (res as any)?.rows?.[0] ?? null;
 }
-
-export async function enableProjectAcceptBid(projectId: string): Promise<void> {
-  await db.execute(
-    sql`update projects set accept_bid_enabled = true where id = ${projectId}`,
-  );
-}
-

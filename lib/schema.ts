@@ -65,7 +65,6 @@ export const projects = pgTable('projects', {
   hourlyRate: integer('hourly_rate'),
   minimumBadge: text('minimum_badge'),
   flagged: boolean('flagged').default(false),
-  acceptBidEnabled: boolean('accept_bid_enabled').default(false),
   clientId: uuid('client_id').references(() => users.id),
   talentId: uuid('talent_id').references(() => users.id),
   createdBy: uuid('created_by').references(() => users.id),
