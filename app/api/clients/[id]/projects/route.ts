@@ -23,7 +23,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 
   try {
-    const rows = await db
+    const rows: Array<{
+      id: string;
+      title: string;
+      status: string;
+      deadline: Date | null;
+      projectBudget: number | null;
+      metadata: unknown;
+    }> = await db
       .select({
         id: projects.id,
         title: projects.title,
@@ -34,6 +41,16 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       })
       .from(projects)
       .where(eq(projects.clientId, clientId));
+
+    const malformed = rows.some((r) =>
+      r.id === undefined || r.title === undefined || r.status === undefined,
+    );
+    if (malformed) {
+      console.warn('[clients.projects] unexpected project shape', rows[0]);
+      const safe = rows.map((r) => ({ id: r.id, title: r.title }));
+      return NextResponse.json({ projects: safe });
+    }
+
     console.log('[clients.projects] clientId=%s rows=%d', clientId, rows.length);
     return NextResponse.json({ projects: rows });
   } catch (error) {

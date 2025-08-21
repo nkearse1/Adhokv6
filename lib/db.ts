@@ -11,7 +11,10 @@ if (typeof window !== 'undefined') {
 // serverless environments interchangeable. Prefer DATABASE_URL when it is
 // set so developers can override locally.
 const connectionString =
-  process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+  process.env.DATABASE_URL ||
+  process.env.NETLIFY_DATABASE_URL_UNPOOLED ||
+  process.env.NETLIFY_DATABASE_URL ||
+  process.env.NEON_DATABASE_URL;
 
 if (typeof connectionString !== 'string') {
   throw new Error(
@@ -22,7 +25,13 @@ if (typeof connectionString !== 'string') {
 // Log which connection string is active so developers can verify the
 // configuration during startup. The full string can contain credentials, so
 // only print the first part for safety.
-const activeKey = process.env.DATABASE_URL ? 'DATABASE_URL' : 'NEON_DATABASE_URL';
+const activeKey = process.env.DATABASE_URL
+  ? 'DATABASE_URL'
+  : process.env.NETLIFY_DATABASE_URL_UNPOOLED
+    ? 'NETLIFY_DATABASE_URL_UNPOOLED'
+    : process.env.NETLIFY_DATABASE_URL
+      ? 'NETLIFY_DATABASE_URL'
+      : 'NEON_DATABASE_URL';
 const redacted = connectionString.replace(/:\S+@/, ':***@');
 console.log(`[db] using ${activeKey}: ${redacted}`);
 
