@@ -8,14 +8,13 @@ import { loadUserSession } from '@/lib/loadUserSession';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const url = new URL(req.url);
-  const clientId =
-    url.searchParams.get('override') ??
-    req.headers.get('x-adhok-override') ??
-    params.id;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const override = req.nextUrl.searchParams.get('override');
+  const clientId = override ?? params.id;
   if (!clientId) {
-    console.log('[clients.projects] no valid clientId');
     return NextResponse.json(
       { error: 'Missing client id' },
       { status: 400 },
@@ -42,19 +41,19 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       .from(projects)
       .where(eq(projects.clientId, clientId));
 
-    const malformed = rows.some((r) =>
-      r.id === undefined || r.title === undefined || r.status === undefined,
+    const malformed = rows.some(
+      (r) =>
+        r.id === undefined ||
+        r.title === undefined ||
+        r.status === undefined,
     );
     if (malformed) {
-      console.warn('[clients.projects] unexpected project shape', rows[0]);
       const safe = rows.map((r) => ({ id: r.id, title: r.title }));
       return NextResponse.json({ projects: safe });
     }
 
-    console.log('[clients.projects] clientId=%s rows=%d', clientId, rows.length);
     return NextResponse.json({ projects: rows });
   } catch (error) {
-    console.error('[clients.projects] failed for clientId=%s', clientId, error);
     return NextResponse.json(
       { error: 'Failed to fetch client projects' },
       { status: 500 },
