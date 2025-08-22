@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import ProjectDetailCard from '@/components/ProjectDetailCard';
 import SubmitWorkButton from '@/components/SubmitWorkButton';
 import LeaveReviewButton from '@/components/LeaveReviewButton';
-import { useMockData } from '@/lib/useMockData';
 
 interface Project {
   id: string;
@@ -19,23 +18,30 @@ export default function ProjectDetailPage() {
   const params = useParams();
   const project_id = params.project_id as string;
   const [project, setProject] = useState<Project | null>(null);
-  const { getProjectById } = useMockData();
 
   useEffect(() => {
-    if (project_id) {
-      const proj = getProjectById(project_id);
-      if (proj) {
-        setProject({
-          id: proj.id,
-          title: proj.title,
-          description: proj.description,
-          deadline: proj.deadline,
-          estimated_hours: proj.deliverables.reduce((a: number, d: any) => a + d.estimatedHours, 0),
-          hourly_rate: proj.hourlyRate,
-        });
+    async function load() {
+      if (!project_id) return;
+      try {
+        const res = await fetch(`/api/db?table=projects&id=${project_id}`);
+        const json = await res.json();
+        const proj = json.data?.[0];
+        if (proj) {
+          setProject({
+            id: proj.id,
+            title: proj.title,
+            description: proj.description,
+            deadline: proj.deadline,
+            estimated_hours: proj.estimatedHours,
+            hourly_rate: proj.hourlyRate,
+          });
+        }
+      } catch (err) {
+        console.error('Error loading project', err);
       }
     }
-  }, [project_id, getProjectById]);
+    load();
+  }, [project_id]);
 
   if (!project) {
     return <p className="p-6 text-center text-gray-600">Loading...</p>;

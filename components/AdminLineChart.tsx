@@ -121,7 +121,7 @@ export default function AdminLineChart({ selectedMetrics }: AdminLineChartProps)
           if (!talentMonths[m]) talentMonths[m] = new Set();
           talentMonths[m].add(t.id);
         });
-        Object.entries(talentMonths).forEach(([m, ids]: [string, Set<string>]) => {
+        (Object.entries(talentMonths ?? {}) as [string, Set<string>][]).forEach(([m, ids]) => {
           if (months[m]) months[m].activeTalent = ids.size;
         });
 
