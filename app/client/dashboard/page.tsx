@@ -1,18 +1,14 @@
 import ClientDashboardView from './ClientDashboardView';
 
-interface PageProps {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
 export default async function ClientDashboardPage({
   searchParams,
-}: PageProps) {
-  const params = (await searchParams) || {};
-  const override = Array.isArray(params.override)
-    ? params.override[0]
-    : params.override;
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const override = typeof sp.override === 'string' ? sp.override : undefined;
 
-  let clientId = override as string | undefined;
+  let clientId = override;
   if (!clientId) {
     try {
       const sessionRes = await fetch('/api/session', { cache: 'no-store' });
