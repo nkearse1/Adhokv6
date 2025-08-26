@@ -12,7 +12,7 @@ const bodySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  const url = new URL(req.url);
+  const url = req.nextUrl;
   const paramId = url.searchParams.get('id');
   const override =
     req.headers.get('x-override-user-id') || url.searchParams.get('override');
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const url = new URL(req.url);
+  const url = req.nextUrl;
   const override =
     req.headers.get('x-override-user-id') || url.searchParams.get('override');
   const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';

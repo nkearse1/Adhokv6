@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
   // Support optional mock user override via header or query param
   const userId =
     request.headers.get('x-override-user-id') ||
-    new URL(request.url).searchParams.get('override') ||
+    request.nextUrl.searchParams.get('override') ||
     undefined;
 
   try {
-    const url = new URL(request.url);
+    const url = request.nextUrl;
     const table = url.searchParams.get('table');
     const id = url.searchParams.get('id');
 
@@ -124,7 +124,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const url = new URL(request.url);
+    const url = request.nextUrl;
     const table = url.searchParams.get('table');
     const id = url.searchParams.get('id');
     
