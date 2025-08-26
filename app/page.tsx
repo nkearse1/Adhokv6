@@ -2,13 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
 import FindProjectsButton from "@/components/FindProjectsButton";
+import { use } from "react";
 
-export default async function Home({
+export default function Home({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[]>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const sp = await searchParams;
+  const sp = use(searchParams);
   const override = typeof sp.override === "string" ? sp.override : undefined;
   void override;
   return (
