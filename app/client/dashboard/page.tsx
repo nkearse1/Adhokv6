@@ -3,7 +3,7 @@ import ClientDashboardView from './ClientDashboardView';
 export default async function ClientDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[]>>;
 }) {
   const sp = await searchParams;
   const override = typeof sp.override === 'string' ? sp.override : undefined;
