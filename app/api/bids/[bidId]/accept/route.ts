@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
     clientId = (await auth()).userId || undefined;
   }
   if (!clientId) {
-    const session = await loadUserSession();
+    const session = await loadUserSession(req.headers);
     clientId = session?.userId;
   }
   if (!clientId) {

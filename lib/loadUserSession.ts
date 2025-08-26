@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -7,8 +6,7 @@ export type Session =
   | { userId: string; userRole: string | null; metadata: Record<string, unknown> }
   | null;
 
-export async function loadUserSession(): Promise<Session> {
-  const hdrs = await headers();
+export async function loadUserSession(hdrs: Headers): Promise<Session> {
   const overrideId = hdrs.get('x-override-user-id')?.trim();
 
   if (overrideId) {
