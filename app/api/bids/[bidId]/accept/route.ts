@@ -14,9 +14,9 @@ type RouteContext = { params: Promise<{ bidId: string }> };
 export async function POST(req: NextRequest, ctx: RouteContext) {
   const { bidId } = await ctx.params;
 
-  const url = new URL(req.url);
   const override =
-    req.headers.get('x-override-user-id') || url.searchParams.get('override');
+    req.headers.get('x-override-user-id') ||
+    req.nextUrl.searchParams.get('override');
   const useMock = process.env.NEXT_PUBLIC_USE_MOCK === 'true';
   const clerkActive = !!process.env.CLERK_SECRET_KEY && !useMock;
 
@@ -43,7 +43,9 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
   }
 
   try {
-    await db.transaction(async (tx: Tx) => acceptBid(tx, { bidId, clientId }));
+    await db.transaction(async (tx: unknown) => {
+      await acceptBid(tx as Tx, { bidId, clientId });
+    });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[POST /api/bids/[bidId]/accept] error', error);

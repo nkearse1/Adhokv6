@@ -5,10 +5,12 @@ import { projectBids, projects } from '@/lib/schema';
 import { eq, and, ne } from 'drizzle-orm';
 import { notifyBidAccepted } from '@/lib/server/notifications';
 import { hasFeatureForClient } from '@/lib/featureFlags';
+import type * as schema from '@/lib/schema';
+import type { NeonTransaction } from 'drizzle-orm/neon-http/session';
 export { hasFeatureForClient };
 
 export type AcceptBidInput = { bidId: string; clientId: string };
-export type Tx = typeof db;
+export type Tx = NeonTransaction<typeof schema, typeof schema>;
 
 export async function hasAcceptBidForProject(
   input: AcceptBidInput,

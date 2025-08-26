@@ -39,6 +39,9 @@ export async function GET(req: NextRequest) {
     if (process.env.NEXT_PUBLIC_DEBUG_AUTH === '1') {
       console.error('[api/session] failed to load session', err);
     }
-    return NextResponse.json({ session: null });
+    return NextResponse.json(
+      { error: 'Failed to load session' },
+      { status: 500 },
+    );
   }
 }
