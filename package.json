@@ -32,7 +32,8 @@
     "preinstall": "node scripts/check-banned-packages.cjs",
     "check-lockfile": "node scripts/check-package-manager.cjs",
     "check-eslint-versions": "node scripts/check-eslint-versions.cjs",
-    "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions",
+    "check-request-apis": "node scripts/check-request-apis.cjs",
+    "verify": "yarn lint && yarn type-check && yarn check-lockfile && yarn check-eslint-versions && yarn check-request-apis",
     "test": "vitest run"
   },
   "packageManager": "yarn@4.9.2",

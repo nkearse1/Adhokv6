@@ -2,8 +2,6 @@
 import '@/styles/globals.css';
 import Providers from './providers';
 
-export const dynamic = 'force-dynamic';
-
 export const metadata = {
   title: 'Adhok',
   description: 'Next.js + Clerk App',

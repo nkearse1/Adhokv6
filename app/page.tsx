@@ -6,7 +6,7 @@ import FindProjectsButton from "@/components/FindProjectsButton";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[]>>;
 }) {
   const sp = await searchParams;
   const override = typeof sp.override === "string" ? sp.override : undefined;
