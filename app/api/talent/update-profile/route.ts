@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     userId = (await auth()).userId || undefined;
   }
   if (!userId) {
-    const session = await loadUserSession();
+    const session = await loadUserSession(req.headers);
     userId = session?.userId;
   }
 

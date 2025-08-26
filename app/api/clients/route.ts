@@ -3,11 +3,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
-// Optional (only used if real Clerk keys are present)
-import { auth } from '@clerk/nextjs/server';
 
 function inMockMode() {
   // mock when explicit, or when no Clerk publishable key
@@ -15,18 +13,17 @@ function inMockMode() {
 }
 
 export async function GET(
-  req: Request,
-  ctx: { params: { id?: string } }
+  req: NextRequest,
+  ctx: { params: { id?: string } },
 ) {
   try {
-      const hdrs = await headers(); // ✅ request scope
     const url = new URL(req.url);
 
     // Preferred source is the dynamic segment, but support query/override too
     const pathId = ctx?.params?.id;
     const queryId = url.searchParams.get('id') ?? undefined;
     const override =
-      hdrs.get('x-override-user-id') ??
+      req.headers.get('x-override-user-id') ??
       url.searchParams.get('override') ??
       undefined;
 
@@ -40,6 +37,7 @@ export async function GET(
     // If not mocking, touch Clerk inside handler only (don’t throw on dev)
     if (!inMockMode()) {
       try {
+        const { auth } = await import('@clerk/nextjs/server');
         auth();
       } catch {
         /* ignore; keep response JSON-only */

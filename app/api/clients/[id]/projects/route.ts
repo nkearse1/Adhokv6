@@ -62,7 +62,7 @@ export async function GET(
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const sessionUser = await loadUserSession();
+  const sessionUser = await loadUserSession(req.headers);
   if (
     !sessionUser ||
     (sessionUser.userRole !== 'client' && sessionUser.userRole !== 'talent')
