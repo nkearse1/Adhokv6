@@ -2,8 +2,7 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { NextResponse, type NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 // Optional (only used if real Clerk keys are present)
@@ -15,18 +14,17 @@ function inMockMode() {
 }
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   ctx: { params: { id?: string } }
 ) {
   try {
-      const hdrs = await headers(); // ✅ request scope
-    const url = new URL(req.url);
+    const url = req.nextUrl;
 
     // Preferred source is the dynamic segment, but support query/override too
     const pathId = ctx?.params?.id;
     const queryId = url.searchParams.get('id') ?? undefined;
     const override =
-      hdrs.get('x-override-user-id') ??
+      req.headers.get('x-override-user-id') ??
       url.searchParams.get('override') ??
       undefined;
 

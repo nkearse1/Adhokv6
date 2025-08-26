@@ -1,14 +1,12 @@
 export const runtime = 'nodejs';
 
-import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { NextResponse, type NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET() {
-  const hdrs = await headers();
-  const overrideId = hdrs.get('x-override-user-id')?.trim();
+export async function GET(req: NextRequest) {
+  const overrideId = req.headers.get('x-override-user-id')?.trim();
   if (!overrideId) {
     return NextResponse.json({ session: null });
   }
