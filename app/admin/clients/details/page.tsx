@@ -11,7 +11,7 @@ interface Client {
   email: string;
   companyId: string;
   createdAt: string;
-  userRole: string;
+  user_role: string;
   companyProfiles?: {
     name?: string;
   };
@@ -79,7 +79,7 @@ export default function AdminClientDetails() {
           <strong>Company:</strong> {client.companyProfiles?.name || '—'}
           </div>
           <div>
-          <strong>Role:</strong> <Badge variant="outline">{client.userRole}</Badge>
+          <strong>Role:</strong> <Badge variant="outline">{client.user_role}</Badge>
           </div>
           <div>
           <strong>Joined:</strong> {new Date(client.createdAt).toLocaleDateString()}

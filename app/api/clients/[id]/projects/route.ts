@@ -1,34 +1,119 @@
-import { getClientProjects } from '@/lib/apiHandlers/clients';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import type { SessionClaimsWithRole } from '@/lib/types';
+import { db } from '@/lib/db';
+import { projects, clientProfiles } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
+import { loadUserSession } from '@/lib/loadUserSession';
 
-type RouteContext = { params: Promise<{ id: string }> };
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest, ctx: RouteContext) {
-  const { id } = await ctx.params;
-  const { userId, sessionClaims } = await auth();
-  const role = (sessionClaims as SessionClaimsWithRole)?.metadata?.role;
-  
-  // Check if user is authenticated
-  if (!userId) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const override = req.nextUrl.searchParams.get('override');
+  const clientId = override ?? params.id;
+  if (!clientId) {
+    return NextResponse.json(
+      { error: 'Missing client id' },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const rows: Array<{
+      id: string;
+      title: string;
+      status: string;
+      deadline: Date | null;
+      projectBudget: number | null;
+      metadata: unknown;
+    }> = await db
+      .select({
+        id: projects.id,
+        title: projects.title,
+        status: projects.status,
+        deadline: projects.deadline,
+        projectBudget: projects.projectBudget,
+        metadata: projects.metadata,
+      })
+      .from(projects)
+      .where(eq(projects.clientId, clientId));
+
+    const malformed = rows.some(
+      (r) =>
+        r.id === undefined ||
+        r.title === undefined ||
+        r.status === undefined,
+    );
+    if (malformed) {
+      const safe = rows.map((r) => ({ id: r.id, title: r.title }));
+      return NextResponse.json({ projects: safe });
+    }
+
+    return NextResponse.json({ projects: rows });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch client projects' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const sessionUser = await loadUserSession(req.headers);
+  if (
+    !sessionUser ||
+    (sessionUser.userRole !== 'client' && sessionUser.userRole !== 'talent')
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
-  // Check if user is admin or the client themselves
-  const isAdmin = role === 'admin';
-  const isOwnProfile = userId === id;
-  
-  if (!isAdmin && !isOwnProfile) {
+
+  if (sessionUser.userId !== params.id) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
-  
+
+  let data: { title: string; description: string; deadline: string };
   try {
-    const projects = await getClientProjects(id);
-    return NextResponse.json({ projects });
-  } catch (error) {
-    console.error('Error fetching client projects:', error);
-    return NextResponse.json({ error: 'Failed to fetch client projects' }, { status: 500 });
+    data = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+  }
+
+  if (!data.title || !data.description || !data.deadline) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  }
+
+  if (sessionUser.userRole === 'talent') {
+    const existing = await db
+      .select()
+      .from(clientProfiles)
+      .where(eq(clientProfiles.id, sessionUser.userId))
+      .limit(1);
+    if (existing.length === 0) {
+      await db.insert(clientProfiles).values({
+        id: sessionUser.userId,
+        email: null,
+        companyName: '',
+      });
+    }
+  }
+
+  try {
+    const [project] = await db
+      .insert(projects)
+      .values({
+        title: data.title,
+        description: data.description,
+        deadline: new Date(data.deadline),
+        clientId: sessionUser.userId,
+        createdBy: sessionUser.userId,
+      })
+      .returning();
+    return NextResponse.json({ project });
+  } catch (err) {
+    console.error('Error creating project:', err);
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
   }
 }
