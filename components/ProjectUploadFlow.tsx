@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Package } from 'lucide-react';
+import { ProjectReviewCard } from '@/components/ProjectReviewCard';
 import { calculateEstimatedHours, expertiseRates } from '@/lib/estimation';
 
 const projectPresets: { [key: string]: Array<{ title: string; description: string; deliverables: string; expertiseLevel: string }> } = {
@@ -43,8 +43,11 @@ const projectPresets: { [key: string]: Array<{ title: string; description: strin
 
 export function ProjectUploadFlow() {
   const router = useRouter();
+  useEffect(() => {
+    router.prefetch('/client/dashboard');
+  }, [router]);
   const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     briefFile: null as File | null,
     title: '',
@@ -61,6 +64,7 @@ export function ProjectUploadFlow() {
     deliverables: '',
     preferredTools: '',
     brandVoice: '',
+    deadline: '',
   });
 
   const getEstimatedHours = () =>
@@ -96,6 +100,47 @@ export function ProjectUploadFlow() {
       expertiseLevel: preset.expertiseLevel,
       budget: String(estimatedBudget),
     });
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      if (!form.deadline) {
+        toast.error('Please select a deadline');
+        setIsSubmitting(false);
+        return;
+      }
+      if (new Date(form.deadline) < new Date()) {
+        toast.error('Deadline must be in the future');
+        setIsSubmitting(false);
+        return;
+      }
+      const res = await fetch('/api/upload-project', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          clientName: form.clientName,
+          company: form.company,
+          email: form.email,
+          deadline: form.deadline,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Request failed');
+      }
+      const json = await res.json();
+      const projectId = json?.project?.id;
+      toast.success(`Project submitted! ID: ${projectId}`);
+      router.push('/client/dashboard');
+    } catch (err) {
+      console.error('upload error', err);
+      toast.error('Project submission failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -144,7 +189,223 @@ export function ProjectUploadFlow() {
         )}
         <Card className="max-w-xl mx-auto">
           <CardContent className="p-6">
-            <div>/* Your multistep logic remains unchanged */</div>
+            {step === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block font-medium mb-1">Upload a Brief (optional)</label>
+                  <Input type="file" onChange={handleFileChange} accept=".pdf,.doc,.docx" />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Select Category</label>
+                  <select
+                    value={form.expertType}
+                    onChange={(e) => setForm({ ...form, expertType: e.target.value })}
+                    className="w-full border px-3 py-2 rounded"
+                  >
+                    <option value="">Choose a Category</option>
+                    {Object.keys(projectPresets).map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {form.expertType && (
+                  <div>
+                    <p className="font-medium">Suggested Projects:</p>
+                    <ul className="space-y-2">
+                      {projectPresets[form.expertType].map((preset, i) => (
+                        <li
+                          key={i}
+                          className="border rounded p-2 cursor-pointer hover:border-blue-500"
+                          onClick={() => handleSuggestionClick(preset)}
+                        >
+                          <strong>{preset.title}</strong>
+                          <p className="text-sm text-gray-600">{preset.description}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block font-medium mb-1">Project Title</label>
+                  <Input
+                    value={form.title}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      const updatedForm = { ...form, title: newTitle };
+
+                      const matched = Object.values(projectPresets)
+                        .flat()
+                        .find((preset) =>
+                          newTitle
+                            .toLowerCase()
+                            .includes(preset.title.toLowerCase().split(' ')[0])
+                        );
+
+                      if (matched) {
+                        updatedForm.description = matched.description;
+                        updatedForm.deliverables = matched.deliverables;
+                        updatedForm.expertiseLevel = matched.expertiseLevel;
+                        const hoursGuess = {
+                          'Technical SEO Audit': 8,
+                          'Full SEO Strategy Plan': 16,
+                          'On-page Optimization for Blog': 6,
+                          'Google Ads Audit': 10,
+                        }[matched.title] || 10;
+                        const rate = expertiseRates[matched.expertiseLevel];
+                        updatedForm.budget = String(rate * hoursGuess);
+                        setTimeout(() => {
+                          toast.success(`Matched project: ${matched.title}`, {
+                            icon: '✨',
+                            duration: 2400,
+                            position: 'top-center',
+                          });
+                        }, 150);
+                      }
+
+                      setForm(updatedForm);
+                    }}
+                    placeholder="Enter a clear title"
+                  />
+                </div>
+                <Button onClick={() => setStep(2)} className="w-full">
+                  Next
+                </Button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="Project Description"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+                <Textarea
+                  placeholder="Deliverables (e.g., SEO audit, content brief)"
+                  value={form.deliverables}
+                  onChange={(e) => setForm({ ...form, deliverables: e.target.value })}
+                />
+                <div>
+                  <label className="block font-medium mb-1">Level of Expertise</label>
+                  <select
+                    value={form.expertiseLevel}
+                    onChange={(e) => setForm({ ...form, expertiseLevel: e.target.value })}
+                    className="w-full border rounded px-3 py-2"
+                  >
+                    <option value="">Select</option>
+                    <option value="Specialist">Specialist ($50/hr)</option>
+                    <option value="Pro Talent">Pro Talent ($100/hr)</option>
+                    <option value="Expert Talent">Expert Talent ($150/hr)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Budget (USD)</label>
+                  <Input
+                    type="number"
+                    value={form.budget}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setForm({ ...form, budget: e.target.value })
+                    }
+                  />
+                  {(() => {
+                    const hours = getEstimatedHours();
+                    return hours ? (
+                      <p className="text-sm text-gray-600 mt-1">Estimated Hours: {hours} hrs</p>
+                    ) : null;
+                  })()}
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Deadline</label>
+                  <Input
+                    type="date"
+                    value={form.deadline}
+                    onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+                  />
+                </div>
+                <Textarea
+                  placeholder="Target Audience"
+                  value={form.targetAudience}
+                  onChange={(e) => setForm({ ...form, targetAudience: e.target.value })}
+                />
+                <Textarea
+                  placeholder="Preferred Platforms / Tools"
+                  value={form.preferredTools}
+                  onChange={(e) => setForm({ ...form, preferredTools: e.target.value })}
+                />
+                <Textarea
+                  placeholder="Brand Voice or Tone"
+                  value={form.brandVoice}
+                  onChange={(e) => setForm({ ...form, brandVoice: e.target.value })}
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStep(1)}>
+                    Back
+                  </Button>
+                  <Button onClick={() => setStep(3)}>Next</Button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4">
+                <Input
+                  placeholder="Your Name"
+                  value={form.clientName}
+                  onChange={(e) => setForm({ ...form, clientName: e.target.value })}
+                />
+                <Input
+                  placeholder="Company Name"
+                  value={form.company}
+                  onChange={(e) => setForm({ ...form, company: e.target.value })}
+                />
+                <Input
+                  type="email"
+                  placeholder="Email Address"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+                <Input
+                  placeholder="Phone Number"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                />
+                <Input
+                  type="password"
+                  placeholder="Create Password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStep(2)}>
+                    Back
+                  </Button>
+                  <Button onClick={() => setStep(4)}>Next</Button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <ProjectReviewCard
+                  project={{
+                    ...form,
+                    briefFile: form.briefFile ? form.briefFile.name : null,
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setStep(3)}>
+                    Back
+                  </Button>
+                  <Button onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? 'Submitting...' : 'Submit Project'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

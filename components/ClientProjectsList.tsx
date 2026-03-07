@@ -63,16 +63,20 @@ export default function ClientProjectsList({ projects }: Props) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 mb-4">No projects yet. Create your first project to get started!</p>
-        <Button onClick={() => router.push('/upload')} className="bg-[#00D1C1] text-white hover:bg-[#00b4ab]">
+        <Button onClick={() => router.push('/client/upload')} className="bg-[#00D1C1] text-white hover:bg-[#00b4ab]">
           <Plus className="mr-2 w-4 h-4" /> Post Your First Project
         </Button>
       </div>
     );
   }
 
+  const sortedProjects = [...projects].sort(
+    (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+  );
+
   return (
     <>
-      {projects.map((proj) => (
+      {sortedProjects.map((proj) => (
         <div key={proj.id} className="border rounded-lg p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1 min-w-0">

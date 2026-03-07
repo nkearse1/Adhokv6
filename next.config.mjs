@@ -16,6 +16,15 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      canvas: '@empty/canvas',
+      'pdfjs-dist/canvas': '@empty/canvas',
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

@@ -31,7 +31,7 @@ export default function ProjectTemplateGrid({ templates, onSelectTemplate }: Pro
   return (
     <ScrollArea className="h-[600px] pr-4">
       <div className="space-y-8">
-        {Object.entries(groupedTemplates).map(([category, categoryTemplates]) => (
+        {(Object.entries(groupedTemplates ?? {}) as [string, ProjectTemplate[]][]).map(([category, categoryTemplates]) => (
           <div key={category}>
             <h2 className="text-lg font-semibold mb-4">{category}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

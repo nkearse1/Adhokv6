@@ -1,5 +1,5 @@
 export interface MetadataWithRole {
-  role?: string;
+  user_role?: string;
 }
 
 export interface SessionClaimsWithRole {

@@ -1,7 +1,6 @@
 declare module 'react-dnd';
 declare module 'react-dnd-html5-backend';
 declare module 'react-day-picker';
-declare module 'pdfjs-dist';
 
 
 declare module '@clerk/nextjs';
@@ -45,10 +44,5 @@ declare module 'tailwind-merge' {
 }
 
 // Stubs for dialect packages not used in this project
-declare module 'mysql2/promise';
 declare module 'bun-types';
 declare module 'pg-protocol/dist/messages';
-declare module 'drizzle-orm/mysql-core';
-declare module 'drizzle-orm/sqlite-core';
-declare module 'drizzle-orm/mysql-core/*';
-declare module 'drizzle-orm/sqlite-core/*';

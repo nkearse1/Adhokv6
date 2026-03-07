@@ -6,7 +6,7 @@
   NODE_VERSION = "18.20.8"
 
 [dev]
-  command = "next dev"
+  command = "yarn dev"
 
 
 [[headers]]

@@ -28,21 +28,6 @@
       "@/*": [
         "./*"
       ],
-      "drizzle-orm/mysql-core": [
-        "./types/stubs.d.ts"
-      ],
-      "drizzle-orm/mysql-core/*": [
-        "./types/stubs.d.ts"
-      ],
-      "drizzle-orm/sqlite-core": [
-        "./types/stubs.d.ts"
-      ],
-      "drizzle-orm/sqlite-core/*": [
-        "./types/stubs.d.ts"
-      ],
-      "mysql2/promise": [
-        "./types/stubs.d.ts"
-      ],
       "bun-types": [
         "./types/stubs.d.ts"
       ],
@@ -57,6 +42,7 @@
       ]
     },
     "types": [
+      "node",
       "react",
       "react-dom"
     ]
@@ -75,8 +61,6 @@
   ],
   "exclude": [
     "node_modules",
-    "node_modules/drizzle-orm/mysql-core",
-    "node_modules/drizzle-orm/sqlite-core",
     "node_modules/bun-types",
     "node_modules/pg-protocol/dist/messages"
   ]

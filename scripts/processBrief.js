@@ -49,7 +49,7 @@ async function extractKeyInfo(text) {
     expert: /\b(?:senior|expert|advanced|specialist)\b/i,
     mid: /\b(?:mid[\s-]level|intermediate|regular)\b/i
   };
-  for (const [level, pattern] of Object.entries(expertisePatterns)) {
+  for (const [level, pattern] of Object.entries(expertisePatterns ?? {})) {
     if (pattern.test(text)) {
       info.expertiseLevel = level;
       break;
@@ -63,7 +63,7 @@ async function extractKeyInfo(text) {
     content: /\b(?:content|blog|article|copywriting)\b/i
   };
   info.channels = {};
-  for (const [channel, pattern] of Object.entries(channels)) {
+  for (const [channel, pattern] of Object.entries(channels ?? {})) {
     info.channels[channel] = pattern.test(text);
   }
   return info;

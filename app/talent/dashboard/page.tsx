@@ -6,15 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/useAuth";
-import { useMockData } from "@/lib/useMockData";
-import {
-  Clock,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
+import { useAuth } from "@/lib/client/useAuthContext";
 import { formatDistanceToNow } from "date-fns";
-import TalentEarnings from "@/components/TalentEarnings";
 import CaseStudyModal from "@/components/CaseStudyModal";
 import RevenuePanel from "@/components/RevenuePanel";
 import { CompletedProjectsList } from "@/components/CompletedProjectsList";
@@ -28,11 +21,6 @@ import type { TalentProfile } from "@/lib/types/talent";
 
 const TEAL_COLOR = "#00A499";
 
-const experienceBadgeMap: Record<string, string> = {
-  "Entry Level": "Specialist",
-  "Mid-Level": "Pro Talent",
-  "Expert": "Expert Talent",
-};
 
 interface Deliverable {
   id: string;
@@ -97,8 +85,7 @@ interface Project {
 }
 
 export default function TalentDashboard() {
-  const { userId } = useAuth();
-  const { projects: allProjects, talents } = useMockData();
+  const { userId, userRole } = useAuth();
   const router = useRouter();
 
   const [currentTab, setCurrentTab] = useState<'activeBids' | 'earnings' | 'portfolio' | 'won'>('activeBids');
@@ -108,38 +95,71 @@ export default function TalentDashboard() {
   const [editOpen, setEditOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [loadedProfile, setLoadedProfile] = useState<TalentProfile | null>(null);
+  const [activeBidCount, setActiveBidCount] = useState(0);
+  const [totalEarnings, setTotalEarnings] = useState(0);
 
   useEffect(() => {
-    if (userId) {
-      const assigned = allProjects.filter(p => p.talent?.id === userId);
-      setProjects(assigned as unknown as Project[]);
-      const t = talents.find(t => t.id === userId) || talents[0];
-      if (t)
-        setProfile({
-          fullName: t.fullName,
-          username: t.username,
-          email: t.email,
-          expertise: t.expertise,
-          experienceBadge: t.badge,
-        });
+    async function load() {
+      if (!userId || userRole !== 'talent') return;
+      try {
+        const res = await fetch('/api/db?table=projects');
+        const json = await res.json();
+        const all = json.data || [];
+        const assigned = all.filter((p: any) => p.talentId === userId);
+        setProjects(assigned as Project[]);
+
+        const completed = assigned.filter((p: any) => p.status === 'complete');
+        const earnings = completed.reduce(
+          (sum: number, p: any) =>
+            sum + (p.projectBudget || p.metadata?.marketing?.budget || 0),
+          0,
+        );
+        setTotalEarnings(earnings);
+
+        const bidRes = await fetch('/api/db?table=project_bids');
+        const bidJson = await bidRes.json();
+        const userBids = (bidJson.data || []).filter(
+          (b: any) => b.professionalId === userId,
+        );
+        setActiveBidCount(userBids.length);
+
+        const profRes = await fetch(`/api/talent/profile?id=${userId}`);
+        const profJson = await profRes.json();
+        const t = profJson.profile;
+        if (t) {
+          setProfile({
+            fullName: t.fullName,
+            username: t.username,
+            email: t.email,
+            expertise: t.expertise,
+            experienceBadge: t.experienceBadge,
+          });
+        }
+      } catch (err) {
+        console.error('Error loading data', err);
+      }
     }
-  }, [userId, allProjects, talents]);
+    load();
+  }, [userId, userRole]);
+
+  const filteredProjects = projects.filter(p => p.status === 'complete');
+  const wonProjects = projects.filter(
+    (p) => p.status === 'awarded' || p.status === 'complete',
+  );
 
   const statLabelMap: Record<string, string> = {
-    activeBids: "Active Bids",
-    earnings: "Revenue Overview",
-    portfolio: "Completed Projects",
-    won: "Won Projects",
+    activeBids: 'Active Bids',
+    earnings: 'Revenue Overview',
+    portfolio: 'Completed Projects',
+    won: 'Won Projects',
   };
 
   const statValueMap: Record<string, string | number> = {
-    activeBids: 1,
-    earnings: "$7,200",
-    portfolio: 1,
-    won: projects.filter(p => p.status === 'awarded' || p.status === 'complete').length,
+    activeBids: activeBidCount,
+    earnings: `$${totalEarnings.toLocaleString()}`,
+    portfolio: filteredProjects.length,
+    won: wonProjects.length,
   };
-  const filteredProjects = projects.filter(p => p.status === 'complete');
-  const wonProjects = projects.filter(p => p.status === 'awarded' || p.status === 'complete');
 
   const handleSaveCaseStudy = (projectId: string, updated: CaseStudy) => {
     const updatedProjects = projects.map(p =>

@@ -20,8 +20,8 @@ yarn install
 
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Ensure `NEXT_PUBLIC_SELECTED_USER_ID` is defined. This ID will be used on
-     the server when no runtime override is present.
+   - Provide your database credentials and Clerk keys if you intend to use the
+     hosted authentication service.
 
 4. Set up mock data (optional):
 
@@ -41,28 +41,17 @@ Before pushing changes, run the verification suite:
 yarn verify
 ```
 
-### Dev Role Switcher
-
-During development a floating `DevRoleSwitcher` appears in the bottom left
-corner of the app. It lets you simulate different roles without signing in by
-updating `localStorage.dev_user_role`. The `useAuth` hook reads this value to
-load real user records from the database and refreshes the page when a new role is selected.
 ### Neon User Switcher
 
-When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It loads available users from `/api/dev/list-users` and stores the selected ID in `localStorage.adhok_active_user`. If no runtime value exists the server falls back to the `NEXT_PUBLIC_SELECTED_USER_ID` environment variable.
+When developing locally, a `NeonUserSwitcher` is displayed in the bottom right. It stores the selected ID in `localStorage.adhok_active_user` and calls `refreshSession(id)` before reloading the page. The switcher waits for `/api/session` to resolve and shows a small spinner while the update is in progress. Once the context reflects the selected user, the page reloads so the app hydrates with that user session.
 
 
 ### Preview Mock Mode
 
-Preview deployments (e.g. StackBlitz) can use mock authentication by setting
-`NEXT_PUBLIC_USE_MOCK=true` in the environment. This skips Clerk checks in
-`middleware.ts` and tells `useAuth.tsx` to read the `dev_user_role` value from
-`localStorage` even when `NODE_ENV` is not `development`. If you encounter 401
-errors or redirect loops when testing a preview, enable this variable and select
-a role using the DevRoleSwitcher to force mock mode.
-When active, the DevRoleSwitcher loads a real user record from the database via
-the `/api/test-user` route so you can interact with authentic data while the
-login flow itself is mocked.
+Preview deployments (e.g. StackBlitz) can still use a mock authentication flow
+by setting `NEXT_PUBLIC_USE_MOCK=true` in the environment. This bypasses Clerk
+and loads a test user via the `/api/test-user` route so you can interact with
+authentic data while the login flow itself is mocked.
 
 ### Favicon
 
@@ -114,21 +103,35 @@ All test users have the password: `password123`
 - **Expertise:** Web Design & Development
 - **Badge:** Specialist
 
-## DevRoleSwitcher
+## Tier Seeding
 
-The development layout includes a floating **DevRoleSwitcher** tool. It
-appears only when `NODE_ENV` is `development` and lets you pick a temporary
-user role for testing. The selected role is saved to `localStorage` under the
-`dev_user_role` key. Removing or changing this key will refresh the page and
-update the mock auth state.
+Populate default tier data for development by running the seed script:
 
-For preview environments such as StackBlitz, set
-`NEXT_PUBLIC_USE_MOCK=true` in your `.env` file. This bypasses Clerk and tells
-`useAuth.tsx` to read `dev_user_role` even in production mode, so choose a role
-via the DevRoleSwitcher before testing.
+```bash
+yarn seed:tiers
+```
 
-If you encounter `401` errors or an infinite reload loop, ensure that a role is
-stored in `dev_user_role` or clear the key and choose a role again.
+This loads baseline tiers into the database so the app has meaningful values to work with locally.
+
+## Stripe Test Events
+
+To simulate Stripe webhooks in test mode, use the Stripe CLI helper:
+
+```bash
+yarn stripe:test-event
+```
+
+The command triggers a `payment_intent.succeeded` event against your configured test endpoint.
+
+## Per-Project Unlocks
+
+When experimenting with gated functionality, unlock a specific project:
+
+```bash
+yarn project:unlock <projectId>
+```
+
+Replace `<projectId>` with the target project identifier to enable features on a case-by-case basis.
 
 ## Project Structure
 
